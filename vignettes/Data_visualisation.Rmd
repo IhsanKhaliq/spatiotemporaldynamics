@@ -1,0 +1,126 @@
+---
+title: "Visualise spatiotemporal spread data"
+author: "Ihsan Khaliq"
+date: "`r Sys.Date()`"
+output:html_vignette
+vignette: >
+  %\VignetteIndexEntry{Visualise spatiotemporal spread data}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+knitr::opts_chunk$set(progress = TRUE, verbose=TRUE)
+```
+
+## Load libraries 
+
+```{r libraries, message=FALSE, echo=TRUE, warning=FALSE}
+library("readxl")
+library("tidyverse")
+library("ggplot2")
+library("ggpubr")
+library("here")
+library("lubridate")
+library("ggmap")
+library("remotes")
+if (!require(theme.usq)) {
+   remotes::install_github("adamhsparks/theme.usq")
+   library(theme.usq.)
+}
+```
+
+## Visaulise temporal GAMs
+
+
+## Import data
+
+Spreadsheet-1 of `SpatioTemporalSpreadData.xlsx` has temporal spread data, spreadsheet-2 has spatial spread data and spreadsheet-3 has both combined with an extra column `spread_type` indicating spatial and temporal spread.
+
+```{r import data}
+dat <- read_excel("SpatioTemporalSpreadData.xlsx", sheet = 1)
+
+```
+
+## Examine data
+
+```{r examine data}
+str(dat)
+```
+
+
+```{r prepare data}
+cols_1 <- c("location", "distance", "plot_number","quadrat","min_temp","max_temp", "min_rh", "max_rh", "avg_wind_speed", "avg_rh", "avg_temp", "assessment_number", "total_rain")
+dat[cols_1] <- lapply(dat[cols_1], factor)
+
+cols_2 <- c("infected_plants","total_plants")
+dat[cols_2] <- lapply(dat[cols_2], as.integer)
+dat$assessment_date <- as.Date(dat$assessment_date)
+```
+
+## Re-check class
+
+```{r check class}
+sapply(dat, class)
+```
+#### Visualise data distribution 
+
+### Density plot
+
+```{r}
+ggplot(dat, aes(incidence)) +
+  geom_density() +
+  facet_grid(distance~location, labeller = label_both) 
+  
+```
+
+### Line plot
+```{r}
+ggplot(dat, aes(assessment_date, incidence)) +
+  geom_point () + geom_line() +
+  facet_grid(distance~location, labeller = label_both) 
+```
+
+### Line plot with median values
+
+```{r}
+ggplot(
+   data = dat,
+   mapping = aes(x = assessment_date, y = incidence),
+   colour = usq_cols("usq charcoal")
+) +
+   geom_pointrange(
+      stat = "summary",
+      fun.min = min,
+      fun.max = max,
+      fun = median
+   ) +
+   stat_summary(
+      fun = median,
+      geom = "line",
+      aes(group = location),
+      colour = usq_cols("usq charcoal")
+   ) +
+   facet_grid(distance ~ location) +
+   xlab("Assessment Date") +
+   ylab("Disease Incidence") +
+   theme_usq()
+```
+
+
+### Scatter plot
+
+```{r}
+ggplot(dat, aes(assessment_date, incidence)) +
+  geom_point() +
+  geom_smooth() +
+  facet_grid(distance~location, labeller = label_both) 
+```
+
+
+
+
+
+
+
