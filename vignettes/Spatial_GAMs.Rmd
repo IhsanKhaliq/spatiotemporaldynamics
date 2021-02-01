@@ -27,17 +27,17 @@ knitr::opts_chunk$set(
 library("readxl")
 library("mgcv")
 library("broom")
-library("ggpubr")
-library("tidyverse")
 library("mgcViz")
-library("lubridate")
 ```
 
 ## Import data
 
 ```{r import data}
-spatial_dat <- read_excel("SpatioTemporalSpreadData.xlsx", sheet = 2)
-
+spatial_dat <-
+   read_excel(
+      system.file("extdata", "SpatioTemporalSpreadData.xlsx", package = "spatiotemporaldynamics"),
+      sheet = 1
+   )
 ```
 
 ## Examine data
@@ -50,7 +50,7 @@ str(spatial_dat)
 ## Prepare data to fit GAMs
 
 ```{r prepare data}
-cols_1 <- c("location","quadrat", "direction")
+cols_1 <- c("location", "quadrat", "direction")
 spatial_dat[cols_1] <- lapply(spatial_dat[cols_1], factor)
 
 ```
@@ -63,7 +63,7 @@ sapply(spatial_dat, class)
 
 ## Fit univariate GAMs
 
-Use 'set.seed()' for reproducibility purposes
+Use `set.seed()` for reproducibility purposes
 
 ```{r set seed, echo=TRUE}
 set.seed(30)
@@ -73,7 +73,7 @@ set.seed(30)
 
 ```{r fit model_1}
 model_1 <-
-  gam(incidence ~ s(distance, k = 10),
+  gam(incidence ~ s(distance, k = 4),
       data = spatial_dat,
       method = "REML")
 
@@ -85,13 +85,12 @@ plot(
   residuals = TRUE,
   shade = TRUE,
   seWithMean = TRUE,
-  shift = coef(model_1) [1]
+  shift = coef(model_1)[1]
 )
-
 ```
 
 
-### Model_2 -s(total_rain)
+### Model_2 s(total_rain)
 
 ```{r fit model_2}
 model_2 <-
@@ -107,11 +106,11 @@ plot(
   residuals = TRUE,
   shade = TRUE,
   seWithMean = TRUE,
-  shift = coef(model_1) [1]
+  shift = coef(model_1)[1]
 )
 ```
 
-### Model_2.1 -s(total_rain, by=location)
+### Model_2.1 s(total_rain, by=location)
 
 ```{r fit model 2.1}
 model_2.1 <-
@@ -127,17 +126,16 @@ plot(
   residuals = TRUE,
   shade = TRUE,
   seWithMean = TRUE,
-  shift = coef(model_2.1) [1]
+  shift = coef(model_2.1)[1]
 )
-
 ```
-
-
-
 
 ### Comments on model_2 and model_2.1
 
-The variable `total_rain` should have shown a linear trend. Upon closer inspection of data, rainfall amount increased gradually with time at Billa Billa. However, this wasn't the case at Tosari, where more rain occurred at the beginning, less frequent at the middle season and then one final big rain occurred towards the end of the season. It should a bell shape trend for Tosari, not downward trend though?  
+The variable `total_rain` should have shown a linear trend.
+Upon closer inspection of data, rainfall amount increased gradually with time at Billa Billa.
+However, this wasn't the case at Tosari, where more rain occurred at the beginning, less frequent at the middle season and then one final big rain occurred towards the end of the season.
+It should a bell shape trend for Tosari, not downward trend though?  
 
 ### Model_3 assessment_number
 
@@ -156,7 +154,7 @@ plot(
   all.terms = TRUE,
   shade = TRUE,
   seWithMean = TRUE,
-  shift = coef(model_3) [1]
+  shift = coef(model_3)[1]
 )
 
 ```
@@ -179,7 +177,7 @@ plot(
   all.terms = TRUE,
   shade = TRUE,
   seWithMean = TRUE,
-  shift = coef(model_4) [1]
+  shift = coef(model_4)[1]
 )
 ```
 
@@ -207,13 +205,15 @@ plot(
 
 ### Comments on model 4 and 4.1
 
-By looking at the plots of both models, the relationship seem very complex in `model_4`.The `model 4.1` shows that `avg_wind_speed` has more influence at `Billa Billa`. We had only two assessments for spatial spread - more assessments are required to accurately determine data patterns
+By looking at the plots of both models, the relationship seem very complex in `model_4`.
+The `model 4.1` shows that `avg_wind_speed` has more influence at `Billa Billa`.
+We had only two assessments for spatial spread - more assessments are required to accurately determine data patterns.
 
 ### Model_5 s(avg_rh)
 
 ```{r fit model_5}
 model_5 <-
-  gam(incidence ~ s(avg_rh, k = 3, by=location),
+  gam(incidence ~ s(avg_rh, k = 3, by = location),
       data = spatial_dat,
       method = "REML")
 
@@ -226,15 +226,15 @@ plot(
   all.terms = TRUE,
   shade = TRUE,
   seWithMean = TRUE,
-  shift = coef(model_5) [1]
+  shift = coef(model_5)[1]
 )
 ```
 
-### Model_6 s(avg _temp)
+### Model_6 s(avg_temp)
 
 ```{r fit model_6}
 model_6 <-
-  gam(incidence ~ s(avg_temp, k=3),
+  gam(incidence ~ s(avg_temp, k = 3),
       data = spatial_dat,
       method = "REML")
 
@@ -247,7 +247,7 @@ plot(
   all.terms = TRUE,
   shade = TRUE,
   seWithMean = TRUE,
-  shift = coef(model_6) [1]
+  shift = coef(model_6)[1]
 )
 ```
 
@@ -255,7 +255,7 @@ plot(
 
 ```{r fit model 6.1}
 model_6.1 <-
-  gam(incidence ~ s(avg_temp, by=location, k=3),
+  gam(incidence ~ s(avg_temp, by = location, k = 3),
       data = spatial_dat,
       method = "REML")
 
@@ -292,7 +292,7 @@ plot(
   shade = TRUE,
   shade.col = "lightblue",
   seWithMean = TRUE,
-  shift = coef(model_7) [1]
+  shift = coef(model_7)[1]
 )
 ```
 
@@ -302,7 +302,8 @@ Please note that direction `NA` refers to 0 metre distance.
 
 ```{r fit model 7.1}
 model_7.1 <-
-  gam(incidence ~ direction, by=location,
+  gam(incidence ~ direction,
+      by = location,
       data = spatial_dat,
       method = "REML")
 
@@ -329,8 +330,12 @@ plot(
 ```{r fit model 8}
 model_8 <-
   gam(
-    incidence ~ s(total_rain, k=3) + s(distance, k=10) + s(avg_wind_speed, k=3) 
-    + s(avg_rh, k=3) + s(avg_temp, k=3) + location + assessment_number + direction,
+    incidence ~ s(total_rain, k = 3) +
+      s(distance, k = 3) +
+      s(avg_wind_speed, k = 3) +
+      s(avg_rh, k = 3) +
+      s(avg_temp, k = 3) +
+      location + assessment_number + direction,
     data = spatial_dat,
     method = "REML"
   )
@@ -356,8 +361,14 @@ plot(
 ```{r fit model 9}
 model_9 <-
   gam(
-    incidence ~ s(total_rain, k=3, by=location) + s(distance, k=10, by=location) + s(avg_wind_speed, k=3, by=location) 
-    + s(avg_rh, k=3, by=location) + s(avg_temp, k=3, by=location) + assessment_number + direction, by=location + location,
+    incidence ~ s(total_rain, k = 3, by = location) +
+      s(distance, k = 3, by = location) +
+      s(avg_wind_speed, k = 3, by = location)
+    + s(avg_rh, k = 3, by = location) +
+      s(avg_temp, k = 3, by = location) +
+      assessment_number +
+      direction,
+    by = location + location,
     data = spatial_dat,
     method = "REML"
   )
@@ -371,16 +382,20 @@ plot(model_9,
 
 ### Comments on model_8 and model_9
 
-By fitting different smooths for each term by location, `total_rain` , `avg_wind_speed` and `avg_rh` are no longer significant in model_9, but adjusted R^2 and Deviance explained values got improved
+By fitting different smooths for each term by location, `total_rain` , `avg_wind_speed` and `avg_rh` are no longer significant in model_9, but adjusted R^2 and Deviance Explained values improved.
 
+### Model_ 10 (Remove avg_rh)
 
-### Model_ 10 (Remove `avg_rh`)
-
-```{r fit model 10}
+```{r fit model-10}
 model_10 <-
   gam(
-    incidence ~ s(total_rain, k=3, by=location) + s(distance, k=10, by=location) + s(avg_wind_speed, k=3, by=location) 
-    + s(avg_temp, k=3, by=location) + direction + assessment_number + location,
+    incidence ~ s(total_rain, k = 3, by = location) +
+      s(distance, k = 3, by = location) +
+      s(avg_wind_speed, k = 3, by = location) +
+      s(avg_temp, k = 3, by = location) +
+      direction +
+      assessment_number +
+      location,
     data = spatial_dat,
     method = "REML"
   )
@@ -398,8 +413,13 @@ plot(model_10,
 ```{r fit model_11}
 model_11 <-
   gam(
-    incidence ~ s(total_rain, k=3) + s(distance, k=10) + s(avg_wind_speed, k=3) 
-  +  s(avg_rh, k=3) + location + assessment_number + direction,
+    incidence ~ s(total_rain, k = 3) +
+      s(distance, k = 3) +
+      s(avg_wind_speed, k = 3) +
+      s(avg_rh, k = 3) +
+      location +
+      assessment_number +
+      direction,
     data = spatial_dat,
     method = "REML"
   )
@@ -418,86 +438,104 @@ plot(
 ```
 
 
-### Model_ 12 (Interaction between `total_rain` and `avg_wind_speed` by location)
+### Model 12 (Interaction between total_rain and avg_wind_speed by location)
 
-```{r fit model 12}
+```{r fit model-12}
 model_12 <-
   gam(
-    incidence ~ s(total_rain, avg_wind_speed, k=3, by=location) + s(distance, k=10, by=location) +  s(avg_temp, k=3, by=location) + assessment_number + location + direction,
+    incidence ~ s(total_rain, avg_wind_speed, k = 19, by = location) +
+      s(distance, k = 3, by = location) +
+      s(avg_temp, k = 3, by = location) +
+      assessment_number +
+      direction,
     data = spatial_dat,
     method = "REML"
   )
 
 summary(model_12)
-plot(model_12,  scheme = 1, pages = 1)
 
+plot(model_12,  scheme = 1, pages = 1)
 ```
 
 
+### Visualize the interaction between avg_wind_speed and total_rain of model_12
 
-### Visualize the interaction between `avg_wind_speed` and `total_rain` of model_13
 
-
-```{r visualise interaction}
-vis.gam(x=model_12,
-     view = c("total_rain", "avg_wind_speed"),
-     plot.type = "persp",
-     theta = 135
-   )
+```{r visualise-interaction}
+vis.gam(
+  x = model_12,
+  view = c("total_rain", "avg_wind_speed"),
+  plot.type = "persp",
+  theta = 135
+)
 ```
 
 ### Add confidence interval to the interaction visualisation/predictions
 
-```{r add CI to the visualisation}
-vis.gam(x=model_12,
-     view = c("total_rain", "avg_wind_speed"),
-     plot.type = "persp",
-     se=2, theta=135)
+```{r add-CI-to-the-visualisation}
+vis.gam(
+  x = model_12,
+  view = c("total_rain", "avg_wind_speed"),
+  plot.type = "persp",
+  se = 2,
+  theta = 135
+)
 ```
 
-The plot indicates the number of standard errors (2 in this case) away from the average prediction to plot high and low prediction surfaces 
+The plot indicates the number of standard errors (2 in this case) away from the average prediction to plot high and low prediction surfaces.
 
-### Model_ 14 (Interaction between `total_rain` and `avg_wind_speed` NOT by location)
+### Model 13 (Interaction between total_rain and avg_wind_speed NOT by location)
 
-```{r fit model 13}
+```{r fit model-13}
 model_13 <-
   gam(
-    incidence ~ s(total_rain, avg_wind_speed, k=3) + s(distance, k=10)  
-  +  s(avg_rh, k=3) + location + assessment_number + direction,
+    incidence ~ s(total_rain, avg_wind_speed, k = 19) +
+      s(distance, k = 3) +
+      s(avg_rh, k = 3) +
+      location +
+      assessment_number +
+      direction,
     data = spatial_dat,
     method = "REML"
   )
 
-
 summary(model_13)
-plot(model_14, all.terms=TRUE, scheme = 1, pages = 1)
 
+plot(model_13,
+     all.terms = TRUE,
+     scheme = 1,
+     pages = 1)
 ```
 
 
-### Model_ 14 (Try Tensor interaction between `total_rain` and `avg_wind_speed` NOT by location)
+### Model 14 (Try Tensor interaction between total_rain and avg_wind_speed NOT by location)
 
-```{r}
+```{r model-14}
 model_14 <-
   gam(
-    incidence ~ ti(total_rain, avg_wind_speed, k=3) + s(distance, k=10)  
-  +  s(avg_rh, k=3) + location + assessment_number + direction,
+    incidence ~ ti(total_rain, avg_wind_speed, k = 16) +
+      s(distance, k = 3) +
+      s(avg_rh, k = 3) +
+      location +
+      assessment_number +
+      direction,
     data = spatial_dat,
     method = "REML"
   )
 
 summary(model_14)
-plot(model_15, all.terms=TRUE, scheme = 1, pages = 1)
 
+plot(model_14,
+     all.terms = TRUE,
+     scheme = 1,
+     pages = 1)
 ```
-
-
 
 ## Compare the models
 
 ### AIC, BIC
 
-```{r compare the models}
+```{r compare-models}
 models <- list(
   model_1 = model_1,
   model_2 = model_2,
@@ -562,21 +600,18 @@ anova(
   model_12,
   model_13,
   model_14,
- test = "F")
-  
-
+  test = "F"
+)
 ```
 
+## Perform checks on best fitting model
 
-
-## Perform checks on  best fitting model
-
-### `gam.check()`
-### Concurvity
+#### gam.check()
 
 ```{r Check model_12}
 gam.check(model_12)
 ```
+
 ### Concurvity
 
 ```{r Check concurvity}
@@ -585,4 +620,7 @@ concurvity(model_12, full = TRUE)
 
 ## Thoughts
 
-Both `model_12` and `model_10` have same  AIC, BIC and adjusted R^2 values. Both rain and wind speed are not significant in model_10, but these are significant in model_12, therefore model 12 should be chosen because it makes more sense and will be easier to interpret in Results/Discussions. 
+<!-- This is not true when using optimal `k` values for the models... -->
+Both `model_12` and `model_10` have same AIC, BIC and adjusted R^2 values.
+Both rain and wind speed are not significant in `model_10`, but these are significant in `model_12`.
+Therefore `model_12` should be chosen because it makes more sense and will be easier to interpret in Results/Discussions. 
