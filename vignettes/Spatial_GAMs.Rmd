@@ -2,7 +2,7 @@
 title: "Spatial dynamics of Ascocyta rabiei"
 author: "Ihsan Khaliq"
 date: "`r Sys.Date()`"
-output:rmarkdown::html_vignette
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Spatial dynamics of Ascocyta blight}
   %\VignetteEngine{knitr::rmarkdown}
