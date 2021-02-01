@@ -1,13 +1,14 @@
 Package: spatiotemporaldynamics
-Title: What the Package Does (One Line, Title Case)
+Title: Document data visualisation and GAM fitting for chickpea Ascochyta blight
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Ihanul",
+           family = "Khaliq",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "Ihsan.Khaliq@usq.edu.au")
+Description: Research compendium documenting data visualisation and generalised
+            additive model (GAM) fitting for the spatiotemporal dynamics of
+            chickpea Ascochyta blight spread.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -15,7 +16,15 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends: 
     R (>= 2.10)
+Imports:
+    broom,
+    ggplot2,
+    mgcv,
+    mgcViz,
+    readxl
 Suggests: 
     knitr,
     rmarkdown
+Remotes:
+    adamhsparks/theme.usq
 VignetteBuilder: knitr
