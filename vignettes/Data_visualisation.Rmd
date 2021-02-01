@@ -11,36 +11,37 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, error = TRUE)
-knitr::opts_chunk$set(progress = TRUE, verbose=TRUE)
+knitr::opts_chunk$set(progress = TRUE, verbose = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.width = 7,
+  fig.height = 7,
+  fig.align = "center"
+)
 ```
 
 ## Load libraries 
 
 ```{r libraries, message=FALSE, echo=TRUE, warning=FALSE}
 library("readxl")
-library("tidyverse")
 library("ggplot2")
-library("ggpubr")
-library("here")
-library("lubridate")
-library("ggmap")
-library("remotes")
-if (!require(theme.usq)) {
-   remotes::install_github("adamhsparks/theme.usq")
-   library(theme.usq.)
-}
+library("theme.usq")
 ```
 
-## Visaulise temporal GAMs
+## Visualise temporal GAMs
 
 
 ## Import data
 
 Spreadsheet-1 of `SpatioTemporalSpreadData.xlsx` has temporal spread data, spreadsheet-2 has spatial spread data and spreadsheet-3 has both combined with an extra column `spread_type` indicating spatial and temporal spread.
 
-```{r import data}
-dat <- read_excel("SpatioTemporalSpreadData.xlsx", sheet = 1)
-
+```{r import-data}
+dat <-
+   read_excel(
+      system.file("extdata", "SpatioTemporalSpreadData.xlsx",
+                  package = "spatiotemporaldynamics"),
+      sheet = 1
+   )
 ```
 
 ## Examine data
