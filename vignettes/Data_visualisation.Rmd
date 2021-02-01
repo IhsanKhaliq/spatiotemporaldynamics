@@ -52,10 +52,25 @@ str(dat)
 
 
 ```{r prepare data}
-cols_1 <- c("location", "distance", "plot_number","quadrat","min_temp","max_temp", "min_rh", "max_rh", "avg_wind_speed", "avg_rh", "avg_temp", "assessment_number", "total_rain")
+cols_1 <-
+   c(
+      "location",
+      "distance",
+      "plot_number",
+      "quadrat",
+      "min_temp",
+      "max_temp",
+      "min_rh",
+      "max_rh",
+      "avg_wind_speed",
+      "avg_rh",
+      "avg_temp",
+      "assessment_number",
+      "total_rain"
+   )
 dat[cols_1] <- lapply(dat[cols_1], factor)
 
-cols_2 <- c("infected_plants","total_plants")
+cols_2 <- c("infected_plants", "total_plants")
 dat[cols_2] <- lapply(dat[cols_2], as.integer)
 dat$assessment_date <- as.Date(dat$assessment_date)
 ```
@@ -65,32 +80,25 @@ dat$assessment_date <- as.Date(dat$assessment_date)
 ```{r check class}
 sapply(dat, class)
 ```
-#### Visualise data distribution 
+
+## Visualise data distribution 
 
 ### Density plot
 
 ```{r}
 ggplot(dat, aes(incidence)) +
-  geom_density() +
-  facet_grid(distance~location, labeller = label_both) 
-  
+   geom_density() +
+   facet_grid(distance ~ location, labeller = label_both) +
+   theme_usq()
 ```
 
-### Line plot
-```{r}
-ggplot(dat, aes(assessment_date, incidence)) +
-  geom_point () + geom_line() +
-  facet_grid(distance~location, labeller = label_both) 
-```
-
-### Line plot with median values
+### Line plot with median and max/min values
 
 ```{r}
 ggplot(
    data = dat,
    mapping = aes(x = assessment_date, y = incidence),
-   colour = usq_cols("usq charcoal")
-) +
+   colour = usq_cols("usq charcoal")) +
    geom_pointrange(
       stat = "summary",
       fun.min = min,
@@ -110,18 +118,14 @@ ggplot(
 ```
 
 
-### Scatter plot
+### Scatter plot with smoothed fit lines
 
 ```{r}
 ggplot(dat, aes(assessment_date, incidence)) +
-  geom_point() +
-  geom_smooth() +
-  facet_grid(distance~location, labeller = label_both) 
+   geom_point() +
+   geom_smooth() +
+   facet_grid(distance ~ location, labeller = label_both) +
+   xlab("Assessment Date") +
+   ylab("Disease Incidence") +
+   theme_usq()
 ```
-
-
-
-
-
-
-
