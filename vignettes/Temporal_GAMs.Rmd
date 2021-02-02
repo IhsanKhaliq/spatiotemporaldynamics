@@ -304,7 +304,7 @@ Noam Ross encourages this practice in his own words,
 
 ### Model_10 (Remove by argument from avg_rh and avg_wind_speed)
 
-Remove `by` argument as `avg_rh` and `avg_wind_speed` as they are only weakly significant for Tosari.
+Remove `by` argument from `avg_rh` and `avg_wind_speed` as they are only weakly significant for Tosari only.
 
 ```{r fit-model_10}
 model_10 <-
@@ -415,8 +415,9 @@ model_13 <-
       s(avg_temp, k = 18, by = location) +
       s(avg_wind_speed, k = 18) +
       assessment_number +
-      location + direction,
-    data = dat,
+      location + 
+      direction,
+      data = dat,
     method = "REML"
   )
 
@@ -469,7 +470,7 @@ model_15 <-
       s(distance, k = 4, by = location) +
       s(avg_temp, k = 18, by = location) +
       assessment_number +
-      location,
+      location + direction,
     data = dat,
     method = "REML"
   )
