@@ -571,9 +571,6 @@ anova(
 gam.check(model_15)
 ```
 
-```{r check-model_15}
-gam.check(model_15)
-```
 
 ### Comments on the model check
 
