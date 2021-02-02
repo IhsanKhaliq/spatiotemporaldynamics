@@ -584,4 +584,4 @@ concurvity(model_15, full=TRUE)
 
 ## Final thoughts
 
-The `model_13` seems to be a best fit model.
+The `model_15` seems to be the best fit model.
