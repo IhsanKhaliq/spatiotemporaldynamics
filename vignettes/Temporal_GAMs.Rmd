@@ -406,7 +406,6 @@ plot(model_12, scheme = 1, pages = 1)
 ### Model_13
 
 Same as `model_10` but relative humidity removed.
-Wind speed is not significant but have been included because it improved adjusted R^2^ and lowered AIC, BIC values (compared to `model_15`).
 
 ```{r fit-model_13}
 model_13 <-
