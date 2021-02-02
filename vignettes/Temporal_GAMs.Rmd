@@ -332,10 +332,6 @@ plot(
 )
 ```
 
-### Comments on model_11
-
-The removal or addition of `avg_wind_speed`, didn't have any affect on the model fit, but I included it in the model.
-In case, we select `model_11` we can say that the effect of wind speed wasn't significant on its own, but it was significant in interaction with `total_rain`
 
 ### Model_ 11 (Interaction between total_rain and avg_wind_speed)
 
