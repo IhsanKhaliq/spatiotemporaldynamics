@@ -380,17 +380,6 @@ vis.gam(
 ```
 The plot indicates the number of standard errors (2 in this case) away from the average prediction to plot high and low prediction surfaces 
 
-## Perform checks on model_11
-### gam.check and concurvity
-
-
-```{r check-model_11}
-gam.check(model_11)
-```
-
-```{r Concurvity}
-concurvity(model_11, full=TRUE)
-```
 
 ### Model_12 Try tensor interactions instead of smooth interactions
 
