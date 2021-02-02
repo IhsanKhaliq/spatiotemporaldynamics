@@ -441,7 +441,7 @@ model_14 <-
     incidence ~ s(total_rain, avg_wind_speed, k = 18, by = location) +
       s(distance, k = 4, by = location) +
       s(avg_temp, k = 18, by = location) +
-      assessment_number + location,
+      assessment_number + location + direction,
     data = dat,
     method = "REML"
   )
