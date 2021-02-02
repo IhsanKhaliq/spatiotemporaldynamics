@@ -415,7 +415,7 @@ model_13 <-
       s(avg_temp, k = 18, by = location) +
       s(avg_wind_speed, k = 18) +
       assessment_number +
-      location,
+      location + direction,
     data = dat,
     method = "REML"
   )
