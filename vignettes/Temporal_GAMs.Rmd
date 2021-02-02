@@ -394,7 +394,7 @@ model_12 <-
       s(avg_temp, k = 18, by = location) +
       s(avg_rh, k = 18) +
       assessment_number +
-      location,
+      location + direction,
     data = dat,
     method = "REML"
   )
