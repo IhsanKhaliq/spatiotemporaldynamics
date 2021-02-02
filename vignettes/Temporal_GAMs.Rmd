@@ -267,7 +267,7 @@ plot(
 
 ### Model_9 (Fit different smooths for each term by location)
 
-Same as model_8 but different smooths have been considered for each term BY LOCATION
+Same as `model_8` but different smooths have been considered for each term BY LOCATION
 
 ```{r fit-model_9}
 model_9 <-
@@ -297,10 +297,10 @@ plot(
 
 ### Comments on model_8 and model_9
 
-Fitting different smooths for each term by location improved the adjusted R^2^ and percent deviance explained values in `model_9`.
+Fitting different smooths for each term by location in `model_9`improved the adjusted R^2 and percent deviance explained values.
 Noam Ross encourages this practice in his own words,
 
-> "By specifying the 'by' argument to the s() function, we can tell R to calculate a different smooth for each unique category. Usually, when we have smooth-factor interactions, we want to also include a varying intercept, in case the different categories are different in overall means in addition to shape of their smooths. Here, you see adding this varying intercept improves the estimate of the smooth for diesel cars."
+> "By specifying the 'by' argument to the s() function, we can tell R to calculate a different smooth for each unique category. Usually, when we have smooth-factor interactions, we want to also include a varying intercept, in case the different categories are different in overall means in addition to shape of their smooths. Here, you see adding this varying intercept improves the estimate of the smooth."
 
 ### Model_10 (Remove by argument from avg_rh and avg_wind_speed)
 
