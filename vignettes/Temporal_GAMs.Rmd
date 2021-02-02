@@ -384,7 +384,7 @@ The plot indicates the number of standard errors (2 in this case) away from the 
 ### Model_12 Try tensor interactions instead of smooth interactions
 
 Tensor smooths let us model interactions that operate on different scales.
-This takes longer to run the model, and requires more data to run tensor interactions.
+Tensor interaction takes longer to run the model, and requires more data. 
 
 ```{r fit-model_12}
 model_12 <-
