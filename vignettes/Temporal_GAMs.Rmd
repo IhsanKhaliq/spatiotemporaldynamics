@@ -52,7 +52,7 @@ str(dat)
 
 ## Prepare data to fit GAMs
 
-No output was produced when variables, such as `distance` were stored as `factors`, therefore, they were saved as `numeric` variables.
+Assign variables to the correct classes
 
 ```{r prepare-data}
 cols_1 <- c("location", "quadrat", "direction")
