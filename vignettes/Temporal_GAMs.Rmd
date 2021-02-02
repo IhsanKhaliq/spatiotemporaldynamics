@@ -343,7 +343,7 @@ model_11 <-
       s(avg_temp, k = 18, by = location) +
       s(avg_rh, k = 18) +
       assessment_number +
-      location,
+      location + direction,
     data = dat,
     method = "REML"
   )
@@ -354,7 +354,7 @@ plot(model_11, scheme = 1, pages = 1)
 
 ### Comments on model_11
 
-The effect of `avg_wind_speed` is not significant at its own, but significant in interaction with `total_rain` for Tosari only
+The effect of `avg_wind_speed` is not significant at its own in model_10, but significant in interaction with `total_rain` for Tosari only
 
 ### Visualize the interaction between avg_wind_speed and total_rain
 
