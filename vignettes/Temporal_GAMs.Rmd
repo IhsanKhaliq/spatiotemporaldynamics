@@ -27,7 +27,10 @@ knitr::opts_chunk$set(
 library("readxl")
 library("mgcv")
 library("broom")
+library("ggpubr")
+library("tidyverse")
 library("mgcViz")
+library("lubridate")
 ```
 
 ## Import data
