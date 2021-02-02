@@ -333,7 +333,7 @@ plot(
 ```
 
 
-### Model_ 11 (Interaction between total_rain and avg_wind_speed)
+### Model_11 (Interaction between total_rain and avg_wind_speed)
 
 ```{r fit-model_11}
 model_11 <-
@@ -458,7 +458,7 @@ plot(
 )
 ```
 
-### Model 15 
+### Model_15 
 
 Same as `model_13` but without wind speed.
 
@@ -563,12 +563,12 @@ anova(
  )
 ```
 
-## Perform checks on the best fitting `model_13`
+## Perform checks on the best fitting `model_15`
 
 ### gam.check and concurvity
 
-```{r check-model_13}
-gam.check(model_13)
+```{r check-model_15}
+gam.check(model_15)
 ```
 
 ```{r check-model_15}
