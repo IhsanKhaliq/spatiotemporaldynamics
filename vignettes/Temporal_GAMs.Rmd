@@ -70,7 +70,7 @@ sapply(dat, class)
 Use 'set.seed()' for reproducibility purposes
 
 ```{r set-seed, echo=TRUE}
-set.seed(30)
+set.seed(42)
 ```
 
 ### Model_1 s(distance)
@@ -214,10 +214,6 @@ plot(
 )
 ```
 
-### Comments on model_6 and model 6.1
-
-Increasing `avg_temp` is showing a positive relation with incidence, which is counter intuitive and doesn't make any sense.
-It's not significant in multivariate GAMS though, so should be fine.
 
 ### Model_7 location
 
