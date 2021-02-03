@@ -487,6 +487,40 @@ plot(
 )
 ```
 
+### Model_16
+
+Add the effect `avg_rh` to `model_15` if a better fit can be achieved
+
+```{r fit-model_16}
+model_16 <-
+  gam(
+    incidence ~ s(total_rain, k = 16, by = location) +
+      s(distance, k = 4, by = location) +
+      s(avg_temp, k = 18, by = location) +
+      s(avg_rh, k = 18) +
+      assessment_number +
+      location +
+      direction,
+    data = dat,
+    method = "REML"
+  )
+
+summary(model_16)
+
+plot(
+  model_16,
+  all.terms = TRUE,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_16)[1]
+)
+
+```
+
+### Comments on model_16
+
+The effect of `avg_rh` is not significant but adding it to the model resulted in a better fit, so `avg_rh` has been included in the final model. 
 
 ## Compare the models
 
@@ -509,7 +543,8 @@ models <- list(
   model_12 = model_12,
   model_13 = model_13,
   model_14 = model_14,
-  model_15 = model_15
+  model_15 = model_15,
+  model_16 = model_16
 )
 map_df(models, glance, .id = "model") %>%
   arrange(AIC)
@@ -535,7 +570,8 @@ enframe(
     model_12 = summary(model_12)$r.sq,
     model_13 = summary(model_13)$r.sq,
     model_14 = summary(model_14)$r.sq,
-    model_15 = summary(model_15)$r.sq
+    model_15 = summary(model_15)$r.sq,
+    model_16 = summary(model_16)$r.sq
   )
 ) %>%
   arrange(desc(value))
