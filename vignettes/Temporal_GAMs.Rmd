@@ -600,19 +600,19 @@ anova(
  )
 ```
 
-## Perform checks on the best fitting `model_15`
+## Perform checks on the best fitting `model_16`
 
 ### gam.check and concurvity
 
-```{r check-model_15}
-gam.check(model_15)
+```{r check-model_16}
+gam.check(model_16)
 ```
 
 
 ### Comments on the model check
 
-The model fit could have been much better if we had enough basis function for `total_rain`, `distance` and `avg_temp` (shown by significant result in the diagnostic function).
-However, only assessment_number has enough number of basis function.
+The model fit could have been much better if we had enough basis function for `total_rain`, `distance` and `avg_temp` and `avg_rh` (shown by significant result in the diagnostic function).
+
 
 ```{r concurvity-15}
 concurvity(model_15, full=TRUE)
@@ -621,4 +621,4 @@ concurvity(model_15, full=TRUE)
 
 ## Final thoughts
 
-The `model_15` seems to be the best fit model.
+The `model_16` seems to be the best fit model based on lower AIC/BIC values and high adjusted R^2^ value.
