@@ -213,8 +213,8 @@ wind_direc_dat <-
       )
    ) %>% 
    mutate(wind_direction_degrees = as.numeric(wind_direction_degrees)) %>%
-   rename(date=Date, location=Location)
+   rename(date=Date, location=Location) 
 
-summary(wind_dat)
+
 ```
 
