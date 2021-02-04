@@ -1,6 +1,6 @@
 ---
 title: "Visualise spatiotemporal spread data"
-author: "Ihsan Khaliq"
+author: "Adam Sparks and Ihsan Khaliq"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -20,6 +20,32 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r fonts, include=FALSE, message=FALSE, eval=FALSE}
+# Note that GhostScript needs to be installed at the system level for the PS files to be generated.
+# MacOS users can use `brew install ghostscript`
+# 
+# Windows users can follow these directions:
+# 1.	Go to the GhostScript website (https://www.ghostscript.com/download/gsdnld.html)
+# 2.	Download the windows installer suitable for your machine
+# 3.	Run the installer file which you downloaded and follow the prompts
+# 4.	After running the installer click the windows "Start" button and type "Edit environment variables for your account" and open
+# 5.	In the tab 'Advanced' click the button at the bottom 'Enviroment Variables...'
+# 6.	Under 'System variables' find the variable 'Path', select 'Path' and click the 'Edit' button
+# 7. 	Select a new line and copy the Ghostscript 'bin' folder location into the field.
+# 7.1	If you installed ghostscript to the default folder location; then the folder location will likely be "C:\Program Files\gs\gs9.52\bin", the version number (9.52) may differ.
+# 8.	Save and exit the environmental variables window
+# This chunk is then run only if knitting on new computer that the files have not been generated on
+# this is necessary to embed fonts in .eps files 
+library("extrafont")
+if (.Platform$OS.type == "windows") {
+   font_import(pattern = "arial", prompt = FALSE)
+   loadfonts(device = "postscript", quiet = TRUE)
+} else {
+   font_import(pattern = "Arial", prompt = FALSE)
+   loadfonts(device = "postscript", quiet = TRUE)
+}
+```
+
 ## Load libraries 
 
 ```{r libraries, message=FALSE, echo=TRUE, warning=FALSE}
@@ -28,6 +54,11 @@ library("ggplot2")
 library("theme.usq")
 library("dplyr")
 library("knitr")
+library("clifro")
+library("viridis")
+library("ggpubr")
+library("here")
+library("ChickpeaAscoDispersal")
 ```
 
 ## Visualise temporal GAMs
@@ -48,12 +79,12 @@ dat <-
 
 ## Examine data
 
-```{r examine data}
+```{r examine-data}
 str(dat)
 ```
 
 
-```{r prepare data}
+```{r prepare-data}
 cols_1 <-
    c(
       "location",
@@ -79,7 +110,7 @@ dat$assessment_date <- as.Date(dat$assessment_date)
 
 ## Re-check class
 
-```{r check class}
+```{r check-class}
 sapply(dat, class)
 ```
 
@@ -87,7 +118,7 @@ sapply(dat, class)
 
 ### Density plot
 
-```{r}
+```{r density-plot}
 ggplot(dat, aes(incidence)) +
    geom_density() +
    facet_grid(distance ~ location, labeller = label_both) +
@@ -122,7 +153,7 @@ ggplot(
 
 ### Scatter plot with smoothed fit lines
 
-```{r}
+```{r scatter-plot}
 ggplot(dat, aes(assessment_date, incidence)) +
    geom_point() +
    geom_smooth() +
@@ -181,7 +212,8 @@ wind_dat <-
          TRUE ~ wind_direction
       )
    ) %>% 
-   mutate(wind_direction_degrees = as.numeric(wind_direction_degrees))
+   mutate(wind_direction_degrees = as.numeric(wind_direction_degrees)) %>%
+   rename(date=Date, location=Location)
 
 summary(wind_dat)
 ```
