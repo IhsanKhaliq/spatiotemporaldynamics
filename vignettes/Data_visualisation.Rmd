@@ -169,7 +169,7 @@ ggplot(dat, aes(assessment_date, incidence)) +
 ### Import wind direction data and covert wind direction from text to degrees
 
 ```{r plot-wind-rose}
-wind_dat <-
+wind_direc_dat <-
    read_excel(
       system.file("extdata", "WindDirectionData.xlsx",
                   package = "spatiotemporaldynamics"),
