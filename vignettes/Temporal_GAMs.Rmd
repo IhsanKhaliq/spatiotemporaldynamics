@@ -623,36 +623,5 @@ concurvity(model_15, full=TRUE)
 
 The `model_16` seems to be the best fit model based on lower AIC/BIC values and high adjusted R^2^ value.
 
-# Generate a new plot.gam object just for the publication 
-```{r}
-p16 <- p_gam(x = getViz(model_16))
-```
 
-
-# Save png and eps files of the best fit model plot
-
-```{r visualise-best-fit-model}
-png(
-   file = here::here("man/figures", "Fig2.png"),
-   width = 640,
-   height = 640,
-   units = "px",
-   pointsize = 14
-)
-print(p16, pages = 1)
-dev.off()
-
-postscript(file = here::here("man/figures", "Fig2.eps"),
-           family = "Arial")
-par(mar = c(5, 3, 2, 2) + 0.1)
-print(p16, pages = 1)
-dev.off()
-
-embed_fonts(
-   file = here::here("man/figures", "Fig2.eps"),
-   outfile = here::here("man/figures", "Fig2.eps"),
-   options = "-dEPSCrop"
-)
-
-```
 
