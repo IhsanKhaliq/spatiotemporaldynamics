@@ -215,6 +215,15 @@ wind_direc_dat <-
    mutate(wind_direction_degrees = as.numeric(wind_direction_degrees)) %>%
    rename(date=Date, location=Location) 
 
+```
 
+```{r}
+# Import wind speed data
+wind_speed_dat <-
+   read_excel(
+      system.file("extdata", "WindSpeedData.xlsx",
+                  package = "spatiotemporaldynamics"),
+      sheet = 1
+   )
 ```
 
