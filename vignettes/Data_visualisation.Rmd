@@ -269,8 +269,8 @@ ggplot (dat, aes(assessment_date, incidence, fill=incidence)) +
    geom_tile(length=5000, width=5000) +
    xlab("Assessment date") +
    ylab("Disease incidence") +
-   facet_grid(distance ~ location, labeller = label_both) +
-   scale_fill_gradient(low = "blue", high = "orange")
+   facet_wrap(facets = vars(distance), ncol = 1) +
+   scale_fill_gradient(low = "green", high = "red")
 ```
 
 
