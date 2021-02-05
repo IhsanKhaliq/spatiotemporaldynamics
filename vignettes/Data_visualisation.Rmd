@@ -61,8 +61,6 @@ library("here")
 library("ChickpeaAscoDispersal")
 ```
 
-## Visualise temporal GAMs
-
 
 ## Import data
 
@@ -83,6 +81,7 @@ dat <-
 str(dat)
 ```
 
+### Convert variables to thier correct classes
 
 ```{r prepare-data}
 cols_1 <-
@@ -108,7 +107,7 @@ dat[cols_2] <- lapply(dat[cols_2], as.integer)
 dat$assessment_date <- as.Date(dat$assessment_date)
 ```
 
-## Re-check class
+### Re-check class
 
 ```{r check-class}
 sapply(dat, class)
@@ -235,6 +234,7 @@ wind_speed_dat <-
 ```
 
 ### Plot a wind rose
+
 ```{r plot-wind-rose,  message=FALSE, warning=FALSE}
 pw <-
    with(
@@ -251,5 +251,26 @@ pw +
    scale_fill_viridis_d(name = "Wind Speed (m/s)", direction = -1) +
    xlab("") +
    theme_pubclean()
+
+ggsave(here::here("man", "figures/Fig4.png"))
+ggsave(here::here("man", "figures/Fig4.eps"))
+extrafont::embed_fonts(
+   file = here::here("man",
+                     "figures/Fig4.eps"),
+   outfile = here::here("man",
+                        "figures/Fig4.eps"),
+   options = "-dEPSCrop")
 ```
+
+## Heat map
+
+```{r plot-heat-map}
+ggplot (dat, aes(assessment_date, incidence, fill=incidence)) +
+   geom_tile(length=5000, width=5000) +
+   xlab("Assessment date") +
+   ylab("Disease incidence") +
+   facet_grid(distance ~ location, labeller = label_both) +
+   scale_fill_gradient(low = "blue", high = "orange")
+```
+
 
