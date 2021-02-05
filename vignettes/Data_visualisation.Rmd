@@ -14,8 +14,8 @@ knitr::opts_chunk$set(echo = TRUE, error = TRUE)
 knitr::opts_chunk$set(progress = TRUE, verbose = TRUE)
 knitr::opts_chunk$set(
   echo = TRUE,
-  fig.width = 7,
-  fig.height = 7,
+  fig.width = 9.4,
+  fig.height = 9.4,
   fig.align = "center"
 )
 ```
