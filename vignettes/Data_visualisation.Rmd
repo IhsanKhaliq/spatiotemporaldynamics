@@ -218,7 +218,7 @@ save(wind_direc_dat, file = "../data/wind_direc_dat.rda")
 
 ```
 
-### Join wind speed and wind direction data
+### Join wind speed and wind direction data 
 
 ```{r join-data}
 # Import wind speed data
@@ -234,4 +234,22 @@ wind_speed_dat <-
    select(-date, -wind_direction)
 ```
 
+### Plot a wind rose
+```{r plot-wind-rose,  message=FALSE, warning=FALSE}
+pw <-
+   with(
+      wind_dat,
+      windrose(
+         wind_speed,
+         wind_direction_degrees,
+         location,
+         n_col = 2,
+         legend_title = "Wind speed (m/s)"
+      )
+   )
+pw +
+   scale_fill_viridis_d(name = "Wind Speed (m/s)", direction = -1) +
+   xlab("") +
+   theme_pubclean()
+```
 
