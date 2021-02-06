@@ -50,12 +50,20 @@ dat <-
 str(dat)
 ```
 
+### Combine direction & location columns to get information on whether the rate of disease progress was signficantly faster in located in a particular direction  
+
+
+```{r combine-location-and-direction-column}
+dat<-
+  unite(dat, direc_loc, c(location, direction), remove = FALSE) 
+```
+
 ## Prepare data to fit GAMs
 
 Assign variables to the correct classes
 
 ```{r prepare-data}
-cols_1 <- c("location", "quadrat", "direction")
+cols_1 <- c("location", "quadrat", "direction", "direc_loc")
 dat[cols_1] <- lapply(dat[cols_1], factor)
 ```
 
@@ -248,7 +256,9 @@ model_8 <-
       s(avg_wind_speed, k = 18) +
       s(avg_rh, k = 18) +
       s(avg_temp, k = 18) +
-      location + assessment_number + direction,
+      location +
+      assessment_number +
+      direc_loc,
     data = dat,
     method = "REML"
   )
@@ -278,7 +288,8 @@ model_9 <-
       s(avg_temp, k = 18, by = location) +
       s(avg_rh, k = 18, by = location) +
       assessment_number +
-      location + direction,
+      location +
+      direc_loc,
     data = dat,
     method = "REML"
   )
@@ -315,7 +326,8 @@ model_10 <-
       s(avg_temp, k = 18, by = location) +
       s(avg_rh, k = 18) +
       assessment_number +
-      location + direction,
+      location + 
+      direc_loc,
     data = dat,
     method = "REML"
   )
@@ -343,7 +355,8 @@ model_11 <-
       s(avg_temp, k = 18, by = location) +
       s(avg_rh, k = 18) +
       assessment_number +
-      location + direction,
+      location +
+      direc_loc,
     data = dat,
     method = "REML"
   )
@@ -394,7 +407,8 @@ model_12 <-
       s(avg_temp, k = 18, by = location) +
       s(avg_rh, k = 18) +
       assessment_number +
-      location + direction,
+      location +
+      direc_loc,
     data = dat,
     method = "REML"
   )
@@ -416,7 +430,7 @@ model_13 <-
       s(avg_wind_speed, k = 18) +
       assessment_number +
       location + 
-      direction,
+      direc_loc,
       data = dat,
     method = "REML"
   )
@@ -442,7 +456,9 @@ model_14 <-
     incidence ~ s(total_rain, avg_wind_speed, k = 18, by = location) +
       s(distance, k = 4, by = location) +
       s(avg_temp, k = 18, by = location) +
-      assessment_number + location + direction,
+      assessment_number +
+      location +
+      direc_loc,
     data = dat,
     method = "REML"
   )
@@ -451,7 +467,6 @@ summary(model_14)
 
 plot(
   model_14,
-  all.terms = TRUE,
   pages = 1,
   shade = TRUE,
   seWithMean = TRUE,
@@ -470,7 +485,7 @@ model_15 <-
       s(distance, k = 4, by = location) +
       s(avg_temp, k = 18, by = location) +
       assessment_number +
-      location + direction,
+      location + direc_loc,
     data = dat,
     method = "REML"
   )
@@ -500,7 +515,7 @@ model_16 <-
       s(avg_rh, k = 18) +
       assessment_number +
       location +
-      direction,
+     direc_loc,
     data = dat,
     method = "REML"
   )
@@ -521,6 +536,7 @@ plot(
 ### Comments on model_16
 
 The effect of `avg_rh` is not significant but adding it to the model resulted in a better fit, so `avg_rh` has been included in the final model. 
+
 
 ## Compare the models
 
@@ -545,7 +561,7 @@ models <- list(
   model_14 = model_14,
   model_15 = model_15,
   model_16 = model_16
-)
+ )
 map_df(models, glance, .id = "model") %>%
   arrange(AIC)
 ```
@@ -596,7 +612,8 @@ anova(
   model_12,
   model_13, 
   model_14,
-  model_15
+  model_15,
+  model_
  )
 ```
 
