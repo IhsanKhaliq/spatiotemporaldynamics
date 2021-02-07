@@ -19,12 +19,12 @@ This analysis is packaged and fully reproducible. All data from this work are in
 
 **Project PI:**
 
-- Associate Professor Adam H. Sparks, University of Southern Queensland, Centre for Crop Health, Toowoomba, Queensland 4350, Australia
+- Adjunct Associate Professor Adam H. Sparks, University of Southern Queensland, Centre for Crop Health, Toowoomba, Queensland 4350, Australia
 
 ## Citation
 
 As these analysis notes are an integral part of the paper and do not have their own DOI, we kindly request that you cite the full research compendium as follows:
-> Ihsanul Khaliq and Adam H. Sparks. spatiotemporaldynamics: A research compendium to accompany 'Spatiotemporal dynamics of Ascochyta blight in chickpea`. Available at https://github.com/IhsanKhaliq/spatiotemporaldynamics
+> Ihsanul Khaliq and Adam H. Sparks. Spatiotemporaldynamics: A research compendium to accompany 'Spatiotemporal dynamics of Ascochyta blight in chickpea`. Available at https://github.com/IhsanKhaliq/spatiotemporaldynamics
 
 
 ## Contributions
