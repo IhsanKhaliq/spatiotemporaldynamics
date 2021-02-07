@@ -1,10 +1,10 @@
 ---
-title: "Temporal dynamics of Ascocyta blight"
+title: "Fit GAMs to Ascocyta blight spatiotemporal development data"
 author: "Ihsan Khaliq"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Temporal dynamics of Ascocyta blight}
+  %\VignetteIndexEntry{Fit GAMs to Ascocyta blight spatiotemporal development data}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
  
@@ -50,7 +50,7 @@ dat <-
 str(dat)
 ```
 
-### Combine direction & location columns to get information on whether the rate of disease progress was signficantly faster in located in a particular direction  
+### Combine direction & location columns to get information on whether the rate of disease progress was signficantly faster in quadrats located in a particular direction  
 
 
 ```{r combine-location-and-direction-column}
