@@ -315,7 +315,7 @@ dat <-
 
 ggplot(dat, aes(x = x, y = y)) +
   geom_tile(aes(fill = incidence)) +
-  facet_wrap(. ~ assessment_number + location)
+facet_wrap(. ~ assessment_number + location, nrow = 3)
 
 ggsave(here::here("man", "figures/Fig2.png"))
 ggsave(here::here("man", "figures/Fig2.eps"))
