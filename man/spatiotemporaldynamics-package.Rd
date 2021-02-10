@@ -4,14 +4,29 @@
 \name{spatiotemporaldynamics-package}
 \alias{spatiotemporaldynamics}
 \alias{spatiotemporaldynamics-package}
-\title{spatiotemporaldynamics: Document data visualisation and GAM fitting for chickpea Ascochyta blight}
+\title{spatiotemporaldynamics: Spatiotemporal dynamics of chickpea ascochyta blight spread in the paddock}
 \description{
 Research compendium documenting data visualisation and generalised
             additive model (GAM) fitting for the spatiotemporal dynamics of
-            chickpea Ascochyta blight spread.
+            chickpea Ascochyta blight spread in the paddock from research
+            studies conducted in Queensland, AU during the 2020 winter 
+            cropping season.
 }
 \author{
 \strong{Maintainer}: Ihanul Khaliq \email{Ihsan.Khaliq@usq.edu.au}
+
+Authors:
+\itemize{
+  \item Adam H. Sparks \email{Adam.Sparks@dpird.wa.gov.au} (\href{https://orcid.org/0000-0002-0061-8359}{ORCID}) [conceptor]
+}
+
+Other contributors:
+\itemize{
+  \item Grains Research and Development Corporation (Provided support through funding GRDC Project
+           USQ1907-003RTX) [funder, copyright holder]
+  \item Western Australia Agriculture Authority (Provided support through Adam Sparks' time.) [funder, copyright holder]
+  \item University of Southern Queensland [copyright holder]
+}
 
 }
 \keyword{internal}
