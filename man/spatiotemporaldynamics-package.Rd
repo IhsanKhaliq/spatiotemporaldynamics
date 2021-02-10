@@ -23,7 +23,7 @@ Authors:
 Other contributors:
 \itemize{
   \item Grains Research and Development Corporation (Provided support through funding GRDC Project
-           USQ1907-003RTX) [funder, copyright holder]
+           USQ1903-003RTX) [funder, copyright holder]
   \item Western Australia Agriculture Authority (Provided support through Adam Sparks' time.) [funder, copyright holder]
   \item University of Southern Queensland [copyright holder]
 }
