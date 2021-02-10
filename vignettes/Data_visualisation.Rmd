@@ -14,13 +14,13 @@ knitr::opts_chunk$set(echo = TRUE, error = TRUE)
 knitr::opts_chunk$set(progress = TRUE, verbose = TRUE)
 knitr::opts_chunk$set(
   echo = TRUE,
-  fig.width = 9.4,
-  fig.height = 9.4,
+  fig.width = 7,
+  fig.height = 7,
   fig.align = "center"
 )
 ```
 
-```{r fonts, include=FALSE, message=FALSE, eval=FALSE}
+```{r fonts, include=FALSE, message=FALSE, eval=TRUE}
 # Note that GhostScript needs to be installed at the system level for the PS files to be generated.
 # MacOS users can use `brew install ghostscript`
 # 
@@ -50,13 +50,14 @@ if (.Platform$OS.type == "windows") {
 
 ```{r libraries, message=FALSE, echo=TRUE, warning=FALSE}
 library("readxl")
+library("cowplot")
 library("ggplot2")
-library("theme.usq")
+library("ggpubr")
+library("grDevices")
 library("dplyr")
-library("knitr")
 library("clifro")
 library("viridis")
-library("ggpubr")
+library("showtext")
 library("here")
 ```
 
@@ -78,7 +79,7 @@ dat <-
 str(dat)
 ```
 
-### Convert variables to thier correct classes
+### Convert variables to their correct classes
 
 ```{r prepare-data}
 cols_1 <-
@@ -118,16 +119,15 @@ sapply(dat, class)
 ggplot(dat, aes(incidence)) +
    geom_density() +
    facet_grid(distance ~ location, labeller = label_both) +
-   theme_usq()
+   theme_pubclean(base_family = "Arial Unicode MS")
 ```
 
 ### Line plot with median and max/min values
 
 ```{r}
-ggplot(
+fig_1 <- ggplot(
    data = dat,
-   mapping = aes(x = assessment_date, y = incidence),
-   colour = usq_cols("usq charcoal")
+   mapping = aes(x = assessment_date, y = incidence)
 ) +
    geom_pointrange(
       stat = "summary",
@@ -138,23 +138,26 @@ ggplot(
    stat_summary(
       fun = median,
       geom = "line",
-      aes(group = location),
-      colour = usq_cols("usq charcoal")
+      aes(group = location)
    ) +
    facet_grid(distance ~ location) +
    xlab("Assessment Date") +
    ylab("Disease Incidence") +
-   theme_usq()
+   theme_pubclean(base_family = "Arial Unicode MS")
 
-ggsave(here::here("man", "figures/Fig1.png"))
-ggsave(here::here("man", "figures/Fig1.eps"))
-extrafont::embed_fonts(
-   file = here::here("man",
-                     "figures/Fig1.eps"),
-   outfile = here::here("man",
-                        "figures/Fig1.eps"),
-   options = "-dEPSCrop"
+ggsave(
+   here("man", "figures/Fig1.png"),
+   width = 9,
+   height = 9,
+   units = "in",
+   dpi = 600
 )
+
+cairo_ps(here("man", "figures/Fig1.eps"),
+         family = "Arial Unicode MS")
+
+fig_1
+dev.off()
 ```
 
 
@@ -167,7 +170,7 @@ ggplot(dat, aes(assessment_date, incidence)) +
    facet_grid(distance ~ location, labeller = label_both) +
    xlab("Assessment Date") +
    ylab("Disease Incidence") +
-   theme_usq()
+   theme_pubclean(base_family = "Arial Unicode MS")
 ```
 
 
@@ -241,38 +244,9 @@ wind_speed_dat <-
    select(-date, -wind_direction)
 ```
 
-### Plot a wind rose
+## Heat map of disease incidence in quadrats
 
-```{r plot-wind-rose,  message=FALSE, warning=FALSE}
-pw <-
-   with(
-      wind_dat,
-      windrose(
-         wind_speed,
-         wind_direction_degrees,
-         location,
-         n_col = 2,
-         legend_title = "Wind speed (m/s)"
-      )
-   )
-pw +
-   scale_fill_viridis_d(name = "Wind Speed (m/s)", direction = -1) +
-   xlab("") +
-   theme_pubclean()
-
-ggsave(here::here("man", "figures/Fig3.png"))
-ggsave(here::here("man", "figures/Fig3.eps"))
-extrafont::embed_fonts(
-   file = here::here("man",
-                     "figures/Fig3.eps"),
-   outfile = here::here("man",
-                        "figures/Fig3.eps"),
-   options = "-dEPSCrop")
-```
-
-## Heat map 
-
-```{r plot-heat-map}
+```{r plot-heat-map, warning=FALSE}
 dat <-
    read_excel(
       system.file("extdata", "SpatioTemporalSpreadData.xlsx",
@@ -313,19 +287,80 @@ dat <-
     )
   )
 
-ggplot(dat, aes(x = x, y = y)) +
+fig_2 <- ggplot(dat, aes(x = x, y = y)) +
   geom_tile(aes(fill = incidence)) +
-facet_wrap(. ~ assessment_number + location, nrow = 3)
+  scale_fill_viridis_c(option = "cividis") +
+  facet_wrap(. ~ assessment_number + location, nrow = 3) +
+  labs(x = "metres",
+       y = "metres",
+       fill = "Incidence (%)") +
+  theme_pubclean(base_family = "Arial Unicode MS") +
+  theme(plot.margin = unit(c(3, 0, 0, 0), "lines"),
+        legend.position = "bottom") +
+  coord_cartesian(clip = "off")
 
-ggsave(here::here("man", "figures/Fig2.png"))
-ggsave(here::here("man", "figures/Fig2.eps"))
-extrafont::embed_fonts(
-   file = here::here("man",
-                     "figures/Fig2.eps"),
-   outfile = here::here("man",
-                        "figures/Fig2.eps"),
-   options = "-dEPSCrop"
+fig_2 <- ggdraw(fig_2) +
+   draw_label("North \u2191",
+              x = 0.55,
+              y = 0.95,
+              fontfamily = "Arial Unicode MS")
+fig_2
+
+ggsave(
+   here("man", "figures/Fig2.png"),
+   plot = fig_2,
+   width = 9,
+   height = 9,
+   units = "in",
+   dpi = 600
 )
 
+cairo_ps(
+   here("man", "figures/Fig2.eps"),
+   family = "Arial Unicode MS"
+)
+fig_2
+dev.off()
+```
+
+
+
+### Plot a wind rose
+
+```{r plot-wind-rose,  message=FALSE, warning=FALSE}
+fig_3 <-
+   with(
+      wind_dat,
+      windrose(
+         wind_speed,
+         wind_direction_degrees,
+         location,
+         n_col = 2,
+         legend_title = "Wind speed (m/s)"
+      )
+   )
+
+fig_3 <-
+   fig_3 +
+   scale_fill_viridis_d(name = "Wind Speed (m/s)", direction = -1) +
+   xlab("") +
+   theme_pubclean(base_family = "Arial Unicode MS")
+
+fig_3
+
+ggsave(
+   here("man", "figures/Fig3.png"),
+   width = 9,
+   height = 9,
+   units = "in",
+   dpi = 600
+)
+
+cairo_ps(
+   here("man", "figures/Fig3.eps"),
+   family = "Arial Unicode MS"
+)
+fig_3
+dev.off()
 ```
 

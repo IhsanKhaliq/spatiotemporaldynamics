@@ -18,13 +18,14 @@ Depends:
     R (>= 2.10)
 Imports:
     broom,
+    cowplot,
+    clifro,
     ggplot2,
+    ggpubr,
     mgcv,
     mgcViz,
     readxl
 Suggests: 
     knitr,
     rmarkdown
-Remotes:
-    adamhsparks/theme.usq
 VignetteBuilder: knitr
