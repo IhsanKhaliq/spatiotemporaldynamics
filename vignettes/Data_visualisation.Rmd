@@ -6,7 +6,12 @@ output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Visualise spatiotemporal spread data}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\usepackage[utf8]{inputenc}
+  %\VignetteDepends{cowplot}
+  %\VignetteDepends{clifro}
+  %\VignetteDepends{ggplot2}
+  %\VignetteDepends{ggpubr}
+  %\VignetteDepends{readxl}
 ---
 
 ```{r setup, include=FALSE}

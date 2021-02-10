@@ -11,21 +11,25 @@ Description: Research compendium documenting data visualisation and generalised
             chickpea Ascochyta blight spread.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
-Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends: 
     R (>= 2.10)
-Imports:
+Suggests: 
     broom,
     cowplot,
     clifro,
+    dplyr,
+    extrafont,
     ggplot2,
     ggpubr,
+    here,
+    knitr,
+    lubridate,
     mgcv,
     mgcViz,
-    readxl
-Suggests: 
-    knitr,
-    rmarkdown
+    readxl,
+    rmarkdown,
+    showtext,
+    tidyverse,
+    viridis
 VignetteBuilder: knitr

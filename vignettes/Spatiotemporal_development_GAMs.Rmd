@@ -1,0 +1,646 @@
+---
+title: "Fit GAMs to Ascocyta blight spatiotemporal development data"
+author: "Ihsan Khaliq"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Fit GAMs to Ascocyta blight spatiotemporal development data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+  %\VignetteDepends{broom}
+  %\VignetteDepends{mgcv}
+  %\VignetteDepends{mgcViz}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+knitr::opts_chunk$set(progress = TRUE, verbose = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.width = 9,
+  fig.height = 9,
+  fig.align = "center"
+)
+```
+
+## Load libraries 
+
+```{r libraries, message=FALSE, echo=TRUE, warning=FALSE}
+library("readxl")
+library("mgcv")
+library("broom")
+library("ggpubr")
+library("tidyverse")
+library("mgcViz")
+library("lubridate")
+```
+
+## Import data
+
+```{r import-data}
+dat <-
+   read_excel(
+      system.file("extdata", "SpatioTemporalSpreadData.xlsx",
+                  package = "spatiotemporaldynamics"),
+      sheet = 1
+   )
+```
+
+## Examine data
+
+```{r examine-data}
+str(dat)
+```
+
+### Combine direction & location columns to get information on whether the rate of disease progress was signficantly faster in quadrats located in a particular direction  
+
+
+```{r combine-location-and-direction-column}
+dat<-
+  unite(dat, direc_loc, c(location, direction), remove = FALSE) 
+```
+
+## Prepare data to fit GAMs
+
+Assign variables to the correct classes
+
+```{r prepare-data}
+cols_1 <- c("location", "quadrat", "direction", "direc_loc")
+dat[cols_1] <- lapply(dat[cols_1], factor)
+```
+
+## Re-check class
+
+```{r check-class}
+sapply(dat, class)
+```
+
+## Fit univariate GAMs
+
+Use 'set.seed()' for reproducibility purposes
+
+```{r set-seed, echo=TRUE}
+set.seed(42)
+```
+
+### Model_1 s(distance)
+
+```{r fit-model_1}
+model_1 <-
+  gam(incidence ~ s(distance, k = 4),
+      data = dat,
+      method = "REML")
+
+summary(model_1)
+
+plot(
+  model_1,
+  pages = 1,
+  residuals = TRUE,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_1)[1]
+)
+```
+
+### Model_2 s(total_rain)
+
+```{r fit-model_2}
+model_2 <-
+  gam(incidence ~ s(total_rain, k = 16),
+      data = dat,
+      method = "REML")
+
+summary(model_2)
+
+plot(
+  model_2,
+  residuals = TRUE,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_2)[1]
+)
+```
+
+
+### Model_3 assessment_number
+
+```{r fit-model_3}
+model_3 <-
+  gam(incidence ~ assessment_number,
+      data = dat,
+      method = "REML")
+
+summary(model_3)
+
+plot(
+  model_3,
+  all.terms = TRUE,
+  residuals = TRUE,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_3)
+)
+```
+
+
+### Model_4 s(avg_wind_speed)
+
+```{r fit-model_4}
+model_4 <-
+  gam(incidence ~ s(avg_wind_speed, k = 18),
+      data = dat,
+      method = "REML")
+
+summary(model_4)
+
+plot(
+  model_4,
+  residuals = TRUE,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_4)[1]
+)
+```
+
+### Model_5 s(avg_rh)
+
+```{r fit-model_5}
+model_5 <-
+  gam(incidence ~ s(avg_rh, k = 18),
+      data = dat,
+      method = "REML")
+
+summary(model_5)
+
+plot(model_5,
+     residuals = TRUE,
+     pages = 1,
+     shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_5)[1])
+```
+
+### Model_6 s(avg _temp)
+
+```{r fit-model_6}
+model_6 <-
+  gam(incidence ~ s(avg_temp, k = 18),
+      data = dat,
+      method = "REML")
+
+summary(model_6)
+
+plot(
+  model_6,
+  residuals = TRUE,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_6)[1]
+)
+```
+
+### Model_6.1 s(avg _temp, by = location)
+
+```{r fit-model_6.1}
+model_6.1 <-
+  gam(incidence ~ s(avg_temp, by = location, k = 18),
+      data = dat,
+      method = "REML")
+
+summary(model_6.1)
+
+plot(
+  model_6.1,
+  residuals = TRUE,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_6.1)[1]
+)
+```
+
+
+### Model_7 location
+
+```{r fit-model_7}
+model_7 <-
+  gam(incidence ~ location,
+      data = dat,
+      method = "REML")
+
+summary(model_7)
+
+plot(
+  model_7,
+  residuals = TRUE,
+  all.terms = TRUE,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_7)[1]
+)
+```
+
+## Fit multivariate GAMs
+
+### Model_8 (All variables)
+
+```{r fit-model_8}
+model_8 <-
+  gam(
+    incidence ~ s(total_rain, k = 16) +
+      s(distance, k = 4) +
+      s(avg_wind_speed, k = 18) +
+      s(avg_rh, k = 18) +
+      s(avg_temp, k = 18) +
+      location +
+      assessment_number +
+      direc_loc,
+    data = dat,
+    method = "REML"
+  )
+
+summary(model_8)
+
+plot(
+  model_8,
+  all.terms = TRUE,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_8)[1]
+)
+```
+
+### Model_9 (Fit different smooths for each term by location)
+
+Same as `model_8` but different smooths have been considered for each term BY LOCATION
+
+```{r fit-model_9}
+model_9 <-
+  gam(
+    incidence ~ s(total_rain, k = 16, by = location) +
+      s(distance, k = 4, by = location) +
+      s(avg_wind_speed, k = 18, by = location) +
+      s(avg_temp, k = 18, by = location) +
+      s(avg_rh, k = 18, by = location) +
+      assessment_number +
+      location +
+      direc_loc,
+    data = dat,
+    method = "REML"
+  )
+
+summary(model_9)
+
+plot(
+  model_9,
+  all.terms = TRUE,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_9)[1]
+)
+```
+
+### Comments on model_8 and model_9
+
+Fitting different smooths for each term by location in `model_9`improved the adjusted R^2 and percent deviance explained values.
+Noam Ross encourages this practice in his own words,
+
+> "By specifying the 'by' argument to the s() function, we can tell R to calculate a different smooth for each unique category. Usually, when we have smooth-factor interactions, we want to also include a varying intercept, in case the different categories are different in overall means in addition to shape of their smooths. Here, you see adding this varying intercept improves the estimate of the smooth."
+
+### Model_10 (Remove by argument from avg_rh and avg_wind_speed)
+
+Remove `by` argument from `avg_rh` and `avg_wind_speed` as they are only weakly significant for Tosari only.
+
+```{r fit-model_10}
+model_10 <-
+  gam(
+    incidence ~ s(total_rain, k = 16, by = location) +
+      s(distance, k = 4, by = location) +
+      s(avg_wind_speed, k = 18) +
+      s(avg_temp, k = 18, by = location) +
+      s(avg_rh, k = 18) +
+      assessment_number +
+      location + 
+      direc_loc,
+    data = dat,
+    method = "REML"
+  )
+
+summary(model_10)
+
+plot(
+  model_10,
+  all.terms = TRUE,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_10)[1]
+)
+```
+
+
+### Model_11 (Interaction between total_rain and avg_wind_speed)
+
+```{r fit-model_11}
+model_11 <-
+  gam(
+    incidence ~ s(total_rain, avg_wind_speed, k = 18, by = location) +
+      s(distance, k = 4, by = location)  +
+      s(avg_temp, k = 18, by = location) +
+      s(avg_rh, k = 18) +
+      assessment_number +
+      location +
+      direc_loc,
+    data = dat,
+    method = "REML"
+  )
+
+summary(model_11)
+plot(model_11, scheme = 1, pages = 1)
+```
+
+### Comments on model_11
+
+The effect of `avg_wind_speed` is not significant at its own in model_10, but significant in interaction with `total_rain` for Tosari only
+
+### Visualize the interaction between avg_wind_speed and total_rain
+
+```{r visualise-interaction}
+vis.gam(
+  x = model_11,
+  view = c("total_rain", "avg_wind_speed"),
+  plot.type = "persp",
+  theta = 135
+)
+```
+
+### Add confidence interval to the interaction visualisation/predictions
+
+```{r add-CI-to-the-visualisation}
+vis.gam(
+  x = model_11,
+  view = c("total_rain", "avg_wind_speed"),
+  plot.type = "persp",
+  se = 2,
+  theta = 135
+)
+```
+The plot indicates the number of standard errors (2 in this case) away from the average prediction to plot high and low prediction surfaces 
+
+
+### Model_12 Try tensor interactions instead of smooth interactions
+
+Tensor smooths let us model interactions that operate on different scales.
+Tensor interaction takes longer to run the model, and requires more data. 
+
+```{r fit-model_12}
+model_12 <-
+  gam(
+    incidence ~ s(total_rain, avg_wind_speed, k = 18, by = location) +
+      s(distance, k = 4, by = location)  +
+      s(avg_temp, k = 18, by = location) +
+      s(avg_rh, k = 18) +
+      assessment_number +
+      location +
+      direc_loc,
+    data = dat,
+    method = "REML"
+  )
+
+summary(model_12)
+plot(model_12, scheme = 1, pages = 1)
+```
+
+### Model_13
+
+Same as `model_10` but relative humidity removed.
+
+```{r fit-model_13}
+model_13 <-
+  gam(
+    incidence ~ s(total_rain, k = 16, by = location) +
+      s(distance, k = 4, by = location) +
+      s(avg_temp, k = 18, by = location) +
+      s(avg_wind_speed, k = 18) +
+      assessment_number +
+      location + 
+      direc_loc,
+      data = dat,
+    method = "REML"
+  )
+
+summary(model_13)
+
+plot(
+  model_13,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_13)[1]
+)
+```
+
+### Model_14
+
+Same as `model_13` but considering the interaction between total rain and wind speed.
+
+```{r fit-model_14}
+model_14 <-
+  gam(
+    incidence ~ s(total_rain, avg_wind_speed, k = 18, by = location) +
+      s(distance, k = 4, by = location) +
+      s(avg_temp, k = 18, by = location) +
+      assessment_number +
+      location +
+      direc_loc,
+    data = dat,
+    method = "REML"
+  )
+
+summary(model_14)
+
+plot(
+  model_14,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_14)[1]
+)
+```
+
+### Model_15 
+
+Same as `model_13` but without wind speed.
+
+```{r fit-model_15}
+model_15 <-
+  gam(
+    incidence ~ s(total_rain, k = 16, by = location) +
+      s(distance, k = 4, by = location) +
+      s(avg_temp, k = 18, by = location) +
+      assessment_number +
+      location + direc_loc,
+    data = dat,
+    method = "REML"
+  )
+
+summary(model_15)
+
+plot(
+  model_15,
+  all.terms = TRUE,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_15)[1]
+)
+```
+
+### Model_16
+
+Add the effect `avg_rh` to `model_15` if a better fit can be achieved
+
+```{r fit-model_16}
+model_16 <-
+  gam(
+    incidence ~ s(total_rain, k = 16, by = location) +
+      s(distance, k = 4, by = location) +
+      s(avg_temp, k = 18, by = location) +
+      s(avg_rh, k = 18) +
+      assessment_number +
+      location +
+     direc_loc,
+    data = dat,
+    method = "REML"
+  )
+
+summary(model_16)
+
+plot(
+  model_16,
+  all.terms = TRUE,
+  pages = 1,
+  shade = TRUE,
+  seWithMean = TRUE,
+  shift = coef(model_16)[1]
+)
+
+```
+
+### Comments on model_16
+
+The effect of `avg_rh` is not significant but adding it to the model resulted in a better fit, so `avg_rh` has been included in the final model. 
+
+
+## Compare the models
+
+### AIC, BIC
+
+```{r compare-models}
+models <- list(
+  model_1 = model_1,
+  model_2 = model_2,
+  model_3 = model_3,
+  model_4 = model_4,
+  model_5 = model_5,
+  model_6 = model_6,
+  model_6.1 = model_6.1,
+  model_7 = model_7,
+  model_8 = model_8,
+  model_9 = model_9,
+  model_10 = model_10,
+  model_11 = model_11,
+  model_12 = model_12,
+  model_13 = model_13,
+  model_14 = model_14,
+  model_15 = model_15,
+  model_16 = model_16
+ )
+map_df(models, glance, .id = "model") %>%
+  arrange(AIC)
+```
+
+### R^2^
+
+```{r r2}
+enframe(
+  c(
+    model_1 = summary(model_1)$r.sq,
+    model_2 = summary(model_2)$r.sq,
+    model_3 = summary(model_3)$r.sq,
+    model_4 = summary(model_4)$r.sq,
+    model_5 = summary(model_5)$r.sq,
+    model_6 = summary(model_6)$r.sq,
+    model_6.1 = summary(model_6.1)$r.sq,
+    model_7 = summary(model_7)$r.sq,
+    model_8 = summary(model_8)$r.sq,
+    model_9 = summary(model_9)$r.sq,
+    model_10 = summary(model_10)$r.sq,
+    model_11 = summary(model_11)$r.sq,
+    model_12 = summary(model_12)$r.sq,
+    model_13 = summary(model_13)$r.sq,
+    model_14 = summary(model_14)$r.sq,
+    model_15 = summary(model_15)$r.sq,
+    model_16 = summary(model_16)$r.sq
+  )
+) %>%
+  arrange(desc(value))
+```
+
+### ANOVA
+
+```{r anova}
+anova(
+  model_1,
+  model_2,
+  model_3,
+  model_4,
+  model_5,
+  model_6,
+  model_6.1,
+  model_7,
+  model_8,
+  model_9,
+  model_10,
+  model_11,
+  model_12,
+  model_13, 
+  model_14,
+  model_15,
+  model_
+ )
+```
+
+## Perform checks on the best fitting `model_16`
+
+### gam.check and concurvity
+
+```{r check-model_16}
+gam.check(model_16)
+```
+
+
+### Comments on the model check
+
+The model fit could have been much better if we had enough basis function for `total_rain`, `distance` and `avg_temp` and `avg_rh` (shown by significant result in the diagnostic function).
+
+
+```{r concurvity-15}
+concurvity(model_15, full=TRUE)
+```
+
+
+## Final thoughts
+
+The `model_16` seems to be the best fit model based on lower AIC/BIC values and high adjusted R^2^ value.
+
+
+
