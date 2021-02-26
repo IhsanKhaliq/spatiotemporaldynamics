@@ -5,8 +5,10 @@
 
 # Spatiotemporal dynamics of Ascochyta blight in chickpea
 
-The goal of of this project is to investigate the spatiotemporal development of Ascochyta blight from primary infection foci, and to investigate the key environmental factors influencing disease progress in space and time 
+The goal of of this project is to investigate the spatiotemporal development of Ascochyta blight from primary infection foci, and to investigate the key environmental factors influencing disease progress in space and time. 
 
+A user-friendly website of this research compendium is available here, <https://ihsankhaliq.github.io/spatiotemporaldynamics/>.
+Interested parties may wish to view the data analysis and visualisation pipeline as well as model fitting, these are available under the "Articles" menu item of the [web page](https://ihsankhaliq.github.io/spatiotemporaldynamics/).
 
 ## Reproducibility and data availability
 
