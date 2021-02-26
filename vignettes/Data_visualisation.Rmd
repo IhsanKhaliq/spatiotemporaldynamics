@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r fonts, include=FALSE, message=FALSE, eval=TRUE}
+```{r fonts, include=FALSE, message=FALSE, eval=FALSE}
 # Note that GhostScript needs to be installed at the system level for the PS files to be generated.
 # MacOS users can use `brew install ghostscript`
 # 
@@ -163,6 +163,7 @@ cairo_ps(here("man", "figures/Fig1.eps"),
 
 fig_1
 dev.off()
+fig_1
 ```
 
 
