@@ -1,0 +1,17 @@
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(bibtype = "Manual",
+         title = "{spatiotemporaldynamics}: A research compendium to accompany 'Spatiotemporaldynamics of Ascochyta blight in chickpea'",
+         author = c(person("Ihsanul", "Khaliq"),
+                  person("Adam H.", "Sparks")),
+         year = year,
+         note = note,
+         url = "https://github.com/IhsanKhaliq/spatiotemporaldynamics",
+         DOI = "10.5281/zenodo.4563709")
+
+textVersion =
+  paste0("Ihsanul Khaliq and Adam H. Sparks (",
+         year,
+         "). spatiotemporaldynamics: A research compendium to accompany 'Spatiotemporaldynamics of Ascochyta blight in chickpea",
+         note, ". DOI: 10.5281/zenodo.4563709")
