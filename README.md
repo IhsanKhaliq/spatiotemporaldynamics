@@ -2,7 +2,7 @@
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable) 
 <!-- badges: end -->
 
-# Spatiotemporaldynamics of Ascochyta blight in chickpea
+# Spatiotemporal dynamics of Ascochyta blight in chickpea
 
 The goal of of this project is to investigate the spatiotemporal development of Ascochyta blight from primary infection foci, and to investigate the key environmental factors influencing disease progress in space and time 
 
@@ -15,11 +15,11 @@ This analysis is packaged and fully reproducible. All data from this work are in
 
 - Dr Ihsanul Khaliq, University of Southern Queensland, Centre for Crop Health, Toowoomba, Queensland 4350, Australia
 
-- Associate Professor Adam H. Sparks, University of Southern Queensland, Centre for Crop Health, Toowoomba, Queensland 4350, Australia
+- Associate Professor Adam H. Sparks, University of Southern Queensland, Centre for Crop Health, Toowoomba, Queensland 4350, Australia and Department of Primary Industries and Regional Development, Department of Primary Industries and Regional Development, Western Australia, Australia
 
 **Project PI:**
 
-- Adjunct Associate Professor Adam H. Sparks, University of Southern Queensland, Centre for Crop Health, Toowoomba, Queensland 4350, Australia
+- Associate Professor Adam H. Sparks, University of Southern Queensland, Centre for Crop Health, Toowoomba, Queensland 4350, Australia and Department of Primary Industries and Regional Development, Department of Primary Industries and Regional Development, Western Australia, Australia
 
 ## Citation
 

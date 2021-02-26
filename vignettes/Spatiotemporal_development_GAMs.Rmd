@@ -10,6 +10,8 @@ vignette: >
   %\VignetteDepends{broom}
   %\VignetteDepends{mgcv}
   %\VignetteDepends{mgcViz}
+  %\VignetteDepends{ggpubr}
+  %\VignetteDepends{lubridate}
 ---
 
 ```{r setup, include=FALSE}
