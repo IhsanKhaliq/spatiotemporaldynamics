@@ -1,0 +1,8 @@
+pandoc: 2.11.2
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  Data_visualisation: Data_visualisation.html
+  Spatiotemporal_development_GAMs: Spatiotemporal_development_GAMs.html
+last_built: 2021-02-26T06:20Z
+
