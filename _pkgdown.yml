@@ -1,0 +1,10 @@
+title: spatiotemporaldynamics
+template:
+  params:
+    bootswatch: journal
+figures:
+  dev: grDevices::png
+  dpi: 96
+  dev.args: []
+  fig.ext: png
+  fig.retina: 2
