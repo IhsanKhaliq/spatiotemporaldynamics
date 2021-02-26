@@ -1,5 +1,6 @@
 <!-- badges: start -->
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable) 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4563709.svg)](https://doi.org/10.5281/zenodo.4563709)
 <!-- badges: end -->
 
 # Spatiotemporal dynamics of Ascochyta blight in chickpea
@@ -19,7 +20,8 @@ This analysis is packaged and fully reproducible. All data from this work are in
 
 **Project PI:**
 
-- Associate Professor Adam H. Sparks, University of Southern Queensland, Centre for Crop Health, Toowoomba, Queensland 4350, Australia and Department of Primary Industries and Regional Development, Department of Primary Industries and Regional Development, Western Australia, Australia
+- Associate Professor Adam H. Sparks, University of Southern Queensland, Centre for Crop Health, Toowoomba, Queensland 4350, Australia and Senior Research Scientist Department of Primary Industries and Regional Development, Department of Primary Industries and Regional Development, Western Australia, Australia
+
 
 ## Citation
 
