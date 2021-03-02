@@ -1,5 +1,8 @@
 {
-  "@context": ["https://doi.org/10.5063/schema/codemeta-2.0", "http://schema.org"],
+  "@context": [
+    "https://doi.org/10.5063/schema/codemeta-2.0",
+    "http://schema.org"
+  ],
   "@type": "SoftwareSourceCode",
   "identifier": "spatiotemporaldynamics",
   "description": "Research compendium documenting data visualisation and generalised\n            additive model (GAM) fitting for the spatiotemporal dynamics of\n            chickpea Ascochyta blight spread in the paddock from research\n            studies conducted in Queensland, AU during the 2020 winter \n            cropping season.",
@@ -72,18 +75,6 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=broom"
-    },
-    {
-      "@type": "SoftwareApplication",
-      "identifier": "cowplot",
-      "name": "cowplot",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=cowplot"
     },
     {
       "@type": "SoftwareApplication",
@@ -263,8 +254,7 @@
     }
   ],
   "codeRepository": "https://github.com/IhsanKhaliq/spatiotemporaldynamics",
-  "readme": "https://github.com/IhsanKhaliq/spatiotemporaldynamics/blob/master/README.md",
-  "fileSize": "11029.027KB",
+  "fileSize": "10951.441KB",
   "developmentStatus": "https://www.tidyverse.org/lifecycle/#stable",
   "citation": [
     {

@@ -7,7 +7,6 @@ vignette: >
   %\VignetteIndexEntry{Visualise spatiotemporal spread data}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
-  %\VignetteDepends{cowplot}
   %\VignetteDepends{clifro}
   %\VignetteDepends{ggplot2}
   %\VignetteDepends{ggpubr}
@@ -59,7 +58,6 @@ if (.Platform$OS.type == "windows") {
 
 ```{r libraries, message=FALSE, echo=TRUE, warning=FALSE}
 library("readxl")
-library("cowplot")
 library("ggplot2")
 library("ggpubr")
 library("grDevices")
