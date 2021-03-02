@@ -7,13 +7,16 @@ vignette: >
   %\VignetteIndexEntry{Visualise spatiotemporal spread data}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
+  %\VignetteDepends{cowplot}
   %\VignetteDepends{clifro}
   %\VignetteDepends{ggplot2}
   %\VignetteDepends{ggpubr}
   %\VignetteDepends{readxl}
   %\VignetteDepends{ggpubr}
+  %\VignetteDepends{lubridate}
   %\VignetteDepends{viridis}
   %\VignetteDepends{showtext}
+  %\VignetteDepends{readr}
   %\VignetteDepends{here}
 ---
 
@@ -58,13 +61,16 @@ if (.Platform$OS.type == "windows") {
 
 ```{r libraries, message=FALSE, echo=TRUE, warning=FALSE}
 library("readxl")
+library("cowplot")
 library("ggplot2")
 library("ggpubr")
 library("grDevices")
 library("dplyr")
+library("lubridate")
 library("clifro")
 library("viridis")
 library("showtext")
+library("readr")
 library("here")
 ```
 
@@ -131,7 +137,7 @@ ggplot(dat, aes(incidence)) +
 
 ### Line plot with median and max/min values
 
-```{r}
+```{r fig-1}
 fig_1 <- ggplot(
    data = dat,
    mapping = aes(x = assessment_date, y = incidence)
@@ -184,7 +190,7 @@ ggplot(dat, aes(assessment_date, incidence)) +
 
 ## Heat map of disease incidence in quadrats
 
-```{r plot-heat-map, warning=FALSE}
+```{r fig-2, warning=FALSE}
 dat <-
    read_excel(
       system.file("extdata", "SpatioTemporalSpreadData.xlsx",
@@ -269,10 +275,9 @@ dev.off()
 
 ```{r convert-text-to-degrees}
 wind_direc_dat <-
-   read_excel(
-      system.file("extdata", "WindDirectionData.xlsx",
-                  package = "spatiotemporaldynamics"),
-      sheet = 1
+   read_csv(
+      system.file("extdata", "WindDirectionData.csv",
+                  package = "spatiotemporaldynamics")
    ) %>%
    mutate(
       wind_direction_degrees = case_when(
@@ -311,8 +316,8 @@ wind_direc_dat <-
          TRUE ~ wind_direction
       )
    ) %>%
-   mutate(wind_direction_degrees = as.numeric(wind_direction_degrees)) %>%
-   rename(date = Date, location = Location)
+   mutate(wind_direction_degrees = as.numeric(wind_direction_degrees)) %>% 
+   mutate(date = dmy(date))
 ```
 
 ### Join wind speed and wind direction data 
@@ -320,20 +325,18 @@ wind_direc_dat <-
 ```{r join-data}
 # Import wind speed data
 wind_speed_dat <-
-   read_excel(
-      system.file("extdata", "WindSpeedData.xlsx",
-                  package = "spatiotemporaldynamics"),
-      sheet = 1
-   )
-
+   read_csv(
+      system.file("extdata", "WindSpeedData.csv",
+                  package = "spatiotemporaldynamics")) %>% 
+   mutate(date = as_date(dmy_hm(date)))
+   
 ### Join wind speed and wind direction data
-wind_dat <- left_join(wind_speed_dat, wind_direc_dat) %>%
-   select(-date, -wind_direction)
+wind_dat <- left_join(wind_speed_dat, wind_direc_dat)
 ```
 
 ### Plot wind rose
 
-```{r plot-wind-rose,  message=FALSE, warning=FALSE}
+```{r fig-3,  message=FALSE, warning=FALSE}
 fig_3 <-
    with(
       wind_dat,

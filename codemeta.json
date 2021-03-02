@@ -78,6 +78,18 @@
     },
     {
       "@type": "SoftwareApplication",
+      "identifier": "cowplot",
+      "name": "cowplot",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=cowplot"
+    },
+    {
+      "@type": "SoftwareApplication",
       "identifier": "clifro",
       "name": "clifro",
       "provider": {
@@ -254,7 +266,8 @@
     }
   ],
   "codeRepository": "https://github.com/IhsanKhaliq/spatiotemporaldynamics",
-  "fileSize": "10951.441KB",
+  "readme": "https://github.com/IhsanKhaliq/spatiotemporaldynamics/blob/master/README.md",
+  "fileSize": "11452.219KB",
   "developmentStatus": "https://www.tidyverse.org/lifecycle/#stable",
   "citation": [
     {
