@@ -154,6 +154,8 @@ fig_1 <- ggplot(
    ylab("Disease Incidence") +
    theme_pubclean(base_family = "Arial Unicode MS")
 
+fig_1
+
 ggsave(
    here("man", "figures/Fig1.png"),
    width = 9,
@@ -167,7 +169,6 @@ cairo_ps(here("man", "figures/Fig1.eps"),
 
 fig_1
 dev.off()
-fig_1
 ```
 
 
@@ -314,8 +315,6 @@ wind_direc_dat <-
    ) %>%
    mutate(wind_direction_degrees = as.numeric(wind_direction_degrees)) %>%
    rename(date = Date, location = Location)
-save(wind_direc_dat, file = "../data/wind_direc_dat.rda")
-
 ```
 
 ### Join wind speed and wind direction data 
@@ -327,10 +326,10 @@ wind_speed_dat <-
       system.file("extdata", "WindSpeedData.xlsx",
                   package = "spatiotemporaldynamics"),
       sheet = 1
-   ) 
-   
-   ### Join wind speed and wind direction data
-   wind_dat <- left_join(wind_speed_dat, wind_direc_dat) %>%
+   )
+
+### Join wind speed and wind direction data
+wind_dat <- left_join(wind_speed_dat, wind_direc_dat) %>%
    select(-date, -wind_direction)
 ```
 
