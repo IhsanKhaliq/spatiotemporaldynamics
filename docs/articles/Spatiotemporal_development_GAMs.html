@@ -133,9 +133,10 @@
 ##  $ min_rh           : num [1:1800] 35.2 35.2 35.2 35.2 35.2 ...
 ##  $ max_rh           : num [1:1800] 82.7 82.7 82.7 82.7 82.7 ...
 ##  $ avg_rh           : num [1:1800] 58.9 58.9 58.9 58.9 58.9 ...</code></pre>
-<div id="combine-direction-location-columns-to-get-information-on-whether-the-rate-of-disease-progress-was-signficantly-faster-in-quadrats-located-in-a-particular-direction" class="section level3">
+<div id="combine-direction-location-columns" class="section level3">
 <h3 class="hasAnchor">
-<a href="#combine-direction-location-columns-to-get-information-on-whether-the-rate-of-disease-progress-was-signficantly-faster-in-quadrats-located-in-a-particular-direction" class="anchor"></a>Combine direction &amp; location columns to get information on whether the rate of disease progress was signficantly faster in quadrats located in a particular direction</h3>
+<a href="#combine-direction-location-columns" class="anchor"></a>Combine direction &amp; location columns</h3>
+<p>This provides information on whether the rate of disease progress was significantly faster in quadrats located in a particular direction.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">dat</span><span class="op">&lt;-</span>
   <span class="fu">unite</span><span class="op">(</span><span class="va">dat</span>, <span class="va">direc_loc</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">location</span>, <span class="va">direction</span><span class="op">)</span>, remove <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </code></pre></div>
@@ -144,7 +145,7 @@
 <div id="prepare-data-to-fit-gams" class="section level2">
 <h2 class="hasAnchor">
 <a href="#prepare-data-to-fit-gams" class="anchor"></a>Prepare data to fit GAMs</h2>
-<p>Assign variables to the correct classes</p>
+<p>Assign variables to the correct classes.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cols_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"location"</span>, <span class="st">"quadrat"</span>, <span class="st">"direction"</span>, <span class="st">"direc_loc"</span><span class="op">)</span>
 <span class="va">dat</span><span class="op">[</span><span class="va">cols_1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span><span class="va">cols_1</span><span class="op">]</span>, <span class="va">factor</span><span class="op">)</span></code></pre></div>
@@ -214,7 +215,7 @@
 <div id="fit-univariate-gams" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fit-univariate-gams" class="anchor"></a>Fit univariate GAMs</h2>
-<p>Use ‘set.seed()’ for reproducibility purposes</p>
+<p>Use <code><a href="https://rdrr.io/r/base/Random.html">set.seed()</a></code> for reproducibility purposes</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
 <div id="model_1-sdistance" class="section level3">
