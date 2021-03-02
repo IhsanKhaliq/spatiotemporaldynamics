@@ -230,7 +230,7 @@ dat <-
 fig_2 <- ggplot(dat, aes(x = x, y = y)) +
   geom_tile(aes(fill = incidence)) +
   scale_fill_viridis_c(option = "cividis") +
-  facet_wrap(. ~ assessment_number + location, nrow = 3) +
+  facet_wrap(location ~ assessment_number, nrow = 3) +
   labs(x = "metres",
        y = "metres",
        fill = "Incidence (%)") +
