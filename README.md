@@ -12,7 +12,7 @@ Interested parties may wish to view the data analysis and visualisation pipeline
 
 ## Reproducibility and data availability
 
-This analysis is packaged and fully reproducible. All data from this work are included in this repository and R package in the "inst/extdata" folder. The code used in the statistical analyses and data visualisation is available to run in R Markdown vignettes, including extra instruction for which we did not have space in the paper. The also archived and documented with Zenodo,https://doi.org/10.5281/zenodo.4563709, for reuse
+This analysis is packaged and fully reproducible. All data from this work are included in this repository and R package in the "inst/extdata" folder. The code used in the statistical analyses and data visualisation is available to run in R Markdown vignettes, including extra instruction for which we did not have space in the paper. These are also archived and documented with Zenodo,https://doi.org/10.5281/zenodo.4563709, for reuse
 
 ## Project team
 
