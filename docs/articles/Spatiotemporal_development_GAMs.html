@@ -78,7 +78,7 @@
       <h1 data-toc-skip>Fit GAMs to Ascocyta blight spatiotemporal development data</h1>
                         <h4 class="author">Ihsan Khaliq</h4>
             
-            <h4 class="date">2021-02-26</h4>
+            <h4 class="date">2021-03-02</h4>
       
       
       <div class="hidden name"><code>Spatiotemporal_development_GAMs.Rmd</code></div>
@@ -96,7 +96,6 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://broom.tidymodels.org/">"broom"</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://rpkgs.datanovia.com/ggpubr/">"ggpubr"</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="http://tidyverse.tidyverse.org">"tidyverse"</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/mfasiolo/mgcViz">"mgcViz"</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://lubridate.tidyverse.org">"lubridate"</a></span><span class="op">)</span></code></pre></div>
 </div>
 <div id="import-data" class="section level2">
@@ -258,7 +257,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_1</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_1-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_1-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="model_2-stotal_rain" class="section level3">
 <h3 class="hasAnchor">
@@ -300,7 +299,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_2</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_2-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_2-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="model_3-assessment_number" class="section level3">
 <h3 class="hasAnchor">
@@ -339,7 +338,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_3</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_3-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_3-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="model_4-savg_wind_speed" class="section level3">
 <h3 class="hasAnchor">
@@ -381,7 +380,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_4</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_4-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_4-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="model_5-savg_rh" class="section level3">
 <h3 class="hasAnchor">
@@ -421,7 +420,7 @@
      shade <span class="op">=</span> <span class="cn">TRUE</span>,
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_5</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_5-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_5-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="model_6-savg-_temp" class="section level3">
 <h3 class="hasAnchor">
@@ -463,7 +462,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_6</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_6-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_6-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="model_6-1-savg-_temp-by-location" class="section level3">
 <h3 class="hasAnchor">
@@ -506,7 +505,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_6.1</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_6.1-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_6.1-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="model_7-location" class="section level3">
 <h3 class="hasAnchor">
@@ -545,7 +544,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_7</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_7-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_7-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div id="fit-multivariate-gams" class="section level2">
@@ -626,7 +625,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_8</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_8-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_8-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="model_9-fit-different-smooths-for-each-term-by-location" class="section level3">
 <h3 class="hasAnchor">
@@ -710,7 +709,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_9</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_9-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_9-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="comments-on-model_8-and-model_9" class="section level3">
 <h3 class="hasAnchor">
@@ -800,7 +799,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_10</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_10-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_10-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="model_11-interaction-between-total_rain-and-avg_wind_speed" class="section level3">
 <h3 class="hasAnchor">
@@ -879,7 +878,7 @@
 ## -REML =   7504  Scale est. = 254.09    n = 1800</code></pre>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_11</span>, scheme <span class="op">=</span> <span class="fl">1</span>, pages <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_11-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_11-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="comments-on-model_11" class="section level3">
 <h3 class="hasAnchor">
@@ -896,7 +895,7 @@
   plot.type <span class="op">=</span> <span class="st">"persp"</span>,
   theta <span class="op">=</span> <span class="fl">135</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/visualise-interaction-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/visualise-interaction-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="add-confidence-interval-to-the-interaction-visualisationpredictions" class="section level3">
 <h3 class="hasAnchor">
@@ -909,7 +908,7 @@
   se <span class="op">=</span> <span class="fl">2</span>,
   theta <span class="op">=</span> <span class="fl">135</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/add-CI-to-the-visualisation-1.png" width="864" style="display: block; margin: auto;"> The plot indicates the number of standard errors (2 in this case) away from the average prediction to plot high and low prediction surfaces</p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/add-CI-to-the-visualisation-1.png" width="672" style="display: block; margin: auto;"> The plot indicates the number of standard errors (2 in this case) away from the average prediction to plot high and low prediction surfaces</p>
 </div>
 <div id="model_12-try-tensor-interactions-instead-of-smooth-interactions" class="section level3">
 <h3 class="hasAnchor">
@@ -989,7 +988,7 @@
 ## -REML =   7504  Scale est. = 254.09    n = 1800</code></pre>
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_12</span>, scheme <span class="op">=</span> <span class="fl">1</span>, pages <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_12-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_12-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="model_13" class="section level3">
 <h3 class="hasAnchor">
@@ -1068,7 +1067,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_13</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_13-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_13-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="model_14" class="section level3">
 <h3 class="hasAnchor">
@@ -1151,7 +1150,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_14</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_14-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_14-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="model_15" class="section level3">
 <h3 class="hasAnchor">
@@ -1227,7 +1226,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_15</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_15-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_15-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="model_16" class="section level3">
 <h3 class="hasAnchor">
@@ -1306,7 +1305,7 @@
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_16</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_16-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_16-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="comments-on-model_16" class="section level3">
 <h3 class="hasAnchor">
@@ -1446,7 +1445,7 @@
 <a href="#gam-check-and-concurvity" class="anchor"></a>gam.check and concurvity</h3>
 <div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.check.html">gam.check</a></span><span class="op">(</span><span class="va">model_16</span><span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/check-model_16-1.png" width="864" style="display: block; margin: auto;"></p>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/check-model_16-1.png" width="672" style="display: block; margin: auto;"></p>
 <pre><code>## 
 ## Method: REML   Optimizer: outer newton
 ## full convergence after 11 iterations.
