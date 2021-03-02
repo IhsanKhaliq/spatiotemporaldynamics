@@ -9,7 +9,6 @@ vignette: >
   %\usepackage[utf8]{inputenc}
   %\VignetteDepends{broom}
   %\VignetteDepends{mgcv}
-  %\VignetteDepends{mgcViz}
   %\VignetteDepends{ggpubr}
   %\VignetteDepends{lubridate}
 ---
@@ -19,8 +18,8 @@ knitr::opts_chunk$set(echo = TRUE, error = TRUE)
 knitr::opts_chunk$set(progress = TRUE, verbose = TRUE)
 knitr::opts_chunk$set(
   echo = TRUE,
-  fig.width = 9,
-  fig.height = 9,
+  fig.width = 7,
+  fig.height = 7,
   fig.align = "center"
 )
 ```
@@ -33,7 +32,6 @@ library("mgcv")
 library("broom")
 library("ggpubr")
 library("tidyverse")
-library("mgcViz")
 library("lubridate")
 ```
 

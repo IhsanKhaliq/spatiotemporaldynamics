@@ -41,7 +41,6 @@ Suggests:
     knitr,
     lubridate,
     mgcv,
-    mgcViz,
     readxl,
     rmarkdown,
     showtext,
