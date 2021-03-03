@@ -1,4 +1,3 @@
-
 context("circular.averaging()")
 
 # Test that circular.averaging() returns expected results
