@@ -12,6 +12,7 @@ vignette: >
   %\VignetteDepends{ggpubr}
   %\VignetteDepends{lubridate}
   %\VignetteDepends{tidyverse}
+   %\VignetteDepends{SDMTools}
 ---
 
 ```{r setup, include=FALSE}
@@ -34,17 +35,126 @@ library("broom")
 library("ggpubr")
 library("tidyverse")
 library("lubridate")
+library("SDMTools")
 ```
 
 ## Import data
 
 ```{r import-data}
+### import spatiotemporal spread data
 dat <-
    read_excel(
       system.file("extdata", "SpatioTemporalSpreadData.xlsx",
                   package = "spatiotemporaldynamics"),
       sheet = 1
    )
+View(dat)
+### import daily average wind direction data
+dt <- 
+  read_excel(
+      system.file("extdata", "DailyWindDirectionData.xlsx",
+                  package = "spatiotemporaldynamics"),
+      sheet = 1
+   )
+```
+
+
+## Convert text to degrees
+
+Wind direction for the Billa Billa site is the character format. Convert it to degress for calculations
+
+```{r convert-text-to-degrees}
+dt %>%
+  mutate(
+    wind_direc = case_when(
+      daily_avg_wind_direction == "N" ~ "0",
+      daily_avg_wind_direction == "NbE" ~ "11.25",
+      daily_avg_wind_direction == "NNE" ~ "22.5",
+      daily_avg_wind_direction == "NEbN" ~ "33.75",
+      daily_avg_wind_direction == "NE" ~ "45",
+      daily_avg_wind_direction == "NEbE" ~ "56.25",
+      daily_avg_wind_direction == "ENE" ~ "67.5",
+      daily_avg_wind_direction == "EbN" ~ "73.5",
+      daily_avg_wind_direction == "E" ~ "90",
+      daily_avg_wind_direction == "EbS" ~ "101.2",
+      daily_avg_wind_direction == "ESE" ~ "112.5",
+      daily_avg_wind_direction == "SEbE" ~ "123.8",
+      daily_avg_wind_direction == "SE" ~ "135.1",
+      daily_avg_wind_direction == "SEbS" ~ "146.3",
+      daily_avg_wind_direction == "SSE" ~ "157.6",
+      daily_avg_wind_direction == "SbE" ~ "168.8",
+      daily_avg_wind_direction == "S" ~ "180",
+      daily_avg_wind_direction == "SbW" ~ "191.2",
+      daily_avg_wind_direction == "SSW" ~ "202.5",
+      daily_avg_wind_direction == "SWbS" ~ "213.8",
+      daily_avg_wind_direction == "SW" ~ "225",
+      daily_avg_wind_direction == "SWbW" ~ "236.2",
+      daily_avg_wind_direction == "WSW" ~ "247.5",
+      daily_avg_wind_direction == "WbS" ~ "258.8",
+      daily_avg_wind_direction == "W" ~ "270",
+      daily_avg_wind_direction == "WbN" ~ "281.2",
+      daily_avg_wind_direction == "WNW" ~ "292.5",
+      daily_avg_wind_direction == "NWbW" ~ "303.8",
+      daily_avg_wind_direction == "NW" ~ "315",
+      daily_avg_wind_direction == "NWbN" ~ "326.2",
+      daily_avg_wind_direction == "NNW" ~ "337.5",
+      daily_avg_wind_direction == "NbW" ~ "348.8",
+      TRUE ~   daily_avg_wind_direction
+    )
+  ) %>%
+  mutate(wind_direc = as.numeric(wind_direc)) %>%
+  group_by(assessment_number, location) %>%
+  summarise(circular.averaging(wind_direc)) %>%
+  rename(wind_direc = 'circular.averaging(wind_direc)')
+
+```
+
+
+## Copy `wind_direc` column to the spatiotemporal spread data
+
+```{r}
+dat <- dat %>%
+  mutate(
+    wind_direc = case_when(
+      location == "Billa Billa" & assessment_number == 1 ~ 88.5,
+      location == "Billa Billa" &
+        assessment_number == 2 ~  110,
+      location == "Billa Billa" &
+        assessment_number == 3 ~  239,
+      location == "Billa Billa" &
+        assessment_number == 4 ~  84.5,
+      location == "Billa Billa" &
+        assessment_number == 5 ~  207,
+      location == "Billa Billa" &
+        assessment_number == 6 ~  45.9,
+      location == "Billa Billa" &
+        assessment_number == 7 ~  63.5,
+      location == "Billa Billa" &
+        assessment_number == 8 ~  56.5,
+      location == "Billa Billa" &
+        assessment_number == 9 ~  77.3,
+      location == "Billa Billa" &
+        assessment_number == 10 ~  359,
+      location == "Tosari" &
+        assessment_number == 1 ~  195,
+      location == "Tosari" &
+        assessment_number == 2 ~  176,
+      location == "Tosari" &
+        assessment_number == 3 ~  241,
+      location == "Tosari" &
+        assessment_number == 4 ~  131,
+      location == "Tosari" &
+        assessment_number == 5 ~  137,
+      location == "Tosari" &
+        assessment_number == 6 ~  125,
+      location == "Tosari" &
+        assessment_number == 7 ~  119,
+      location == "Tosari" &
+        assessment_number == 8 ~  165
+    )
+  ) %>%
+  mutate(wind_direc = as.numeric(wind_direc))
+
 ```
 
 ## Examine data
