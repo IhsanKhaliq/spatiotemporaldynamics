@@ -6,18 +6,10 @@ Authors@R: c(
            family = "Khaliq",
            role = c("aut", "cre"),
            email = "Ihsan.Khaliq@usq.edu.au"),
-    person(given = "Adam H.",
-           family = "Sparks",
-           role = c("aut", "ccp"),
-           email = "Adam.Sparks@dpird.wa.gov.au",
-           comment = c(ORCID = "0000-0002-0061-8359")),
     person(given = "Grains Research and Development Corporation",
            role = c("fnd", "cph"),
            comment = "Provided support through funding GRDC Project
            USQ1903-003RTX"),
-    person(given = "Western Australia Agriculture Authority",
-           comment = "Provided support through Adam Sparks' time.",
-           role = c("fnd", "cph")),
     person(given = "University of Southern Queensland", role = "cph"))
 Description: Research compendium documenting data visualisation and generalised
             additive model (GAM) fitting for the spatiotemporal dynamics of
