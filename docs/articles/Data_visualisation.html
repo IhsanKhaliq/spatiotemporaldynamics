@@ -78,7 +78,7 @@
       <h1 data-toc-skip>Visualise spatiotemporal spread data</h1>
                         <h4 class="author">Adam Sparks and Ihsan Khaliq</h4>
             
-            <h4 class="date">2021-03-02</h4>
+            <h4 class="date">2021-03-13</h4>
       
       
       <div class="hidden name"><code>Data_visualisation.Rmd</code></div>
@@ -102,7 +102,12 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/sjmgarnier/viridis">"viridis"</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/yixuan/showtext">"showtext"</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://readr.tidyverse.org">"readr"</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://here.r-lib.org/">"here"</a></span><span class="op">)</span></code></pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://here.r-lib.org/">"here"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://patchwork.data-imaginist.com">"patchwork"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://r-spatial.github.io/classInt/">"classInt"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/wch/extrafont">"extrafont"</a></span><span class="op">)</span>
+
+<span class="fu">extrafont</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/extrafont/man/loadfonts.html">loadfonts</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="import-data" class="section level2">
 <h2 class="hasAnchor">
@@ -416,9 +421,9 @@
 <span class="va">wind_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">wind_speed_dat</span>, <span class="va">wind_direc_dat</span><span class="op">)</span></code></pre></div>
 <pre><code>## Joining, by = c("date", "location")</code></pre>
 </div>
-<div id="plot-wind-rose" class="section level3">
+<div id="plot-windrose-over-chickpea-growing-season" class="section level3">
 <h3 class="hasAnchor">
-<a href="#plot-wind-rose" class="anchor"></a>Plot wind rose</h3>
+<a href="#plot-windrose-over-chickpea-growing-season" class="anchor"></a>Plot windrose over chickpea growing season</h3>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fig_3</span> <span class="op">&lt;-</span>
    <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span>
@@ -457,6 +462,152 @@
 <span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## quartz_off_screen 
 ##                 2</code></pre>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">wind_dt</span> <span class="op">&lt;-</span>
+   <span class="va">wind_dat</span> <span class="op">%&gt;%</span>
+   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
+      assessment_number<span class="op">=</span>
+         <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span><span class="op">(</span>
+            <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-07-02"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Billa Billa"</span> <span class="op">~</span> <span class="fl">1</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-07-02"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-07-16"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Billa Billa"</span> <span class="op">~</span> <span class="fl">2</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-07-16"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-07-30"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Billa Billa"</span> <span class="op">~</span> <span class="fl">3</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-07-30"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-08-13"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Billa Billa"</span> <span class="op">~</span> <span class="fl">4</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-08-13"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-08-26"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Billa Billa"</span> <span class="op">~</span> <span class="fl">5</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-08-26"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-09-10"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Billa Billa"</span> <span class="op">~</span> <span class="fl">6</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-09-10"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-09-24"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Billa Billa"</span> <span class="op">~</span> <span class="fl">7</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-09-24"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-10-08"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Billa Billa"</span> <span class="op">~</span> <span class="fl">8</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-10-08"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-10-22"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Billa Billa"</span> <span class="op">~</span> <span class="fl">9</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-10-22"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-10-27"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Billa Billa"</span> <span class="op">~</span> <span class="fl">10</span>,
+            <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-07-30"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Tosari"</span> <span class="op">~</span> <span class="fl">1</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-07-30"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-08-14"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Tosari"</span> <span class="op">~</span> <span class="fl">2</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-08-14"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-08-27"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Tosari"</span> <span class="op">~</span> <span class="fl">3</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-08-27"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-09-10"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Tosari"</span> <span class="op">~</span> <span class="fl">4</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-09-10"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-09-25"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Tosari"</span> <span class="op">~</span> <span class="fl">5</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-09-25"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-10-09"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Tosari"</span> <span class="op">~</span> <span class="fl">6</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-10-09"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-10-23"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Tosari"</span> <span class="op">~</span> <span class="fl">7</span>,
+            <span class="va">date</span> <span class="op">&gt;</span> <span class="st">"2020-10-23"</span> <span class="op">&amp;</span>
+               <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-11-05"</span> <span class="op">&amp;</span> <span class="va">location</span> <span class="op">==</span> <span class="st">"Tosari"</span> <span class="op">~</span> <span class="fl">8</span>
+         <span class="op">)</span>
+   <span class="op">)</span> <span class="op">%&gt;%</span>
+   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>assessment_number  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">assessment_number</span><span class="op">)</span><span class="op">)</span>
+
+
+<span class="va">Billa_Billa_wind_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">wind_dt</span>, <span class="va">location</span> <span class="op">==</span> <span class="st">"Billa Billa"</span><span class="op">)</span>
+<span class="va">Tosari_wind_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">wind_dt</span>, <span class="va">location</span> <span class="op">==</span> <span class="st">"Tosari"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html">droplevels</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="plot-windros-by-assessment-number" class="section level3">
+<h3 class="hasAnchor">
+<a href="#plot-windros-by-assessment-number" class="anchor"></a>Plot windros by assessment number</h3>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># create breaks for the windroses </span>
+<span class="va">breaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/classInt/reference/classIntervals.html">classIntervals</a></span><span class="op">(</span><span class="va">wind_dat</span><span class="op">$</span><span class="va">wind_speed</span>, n <span class="op">=</span> <span class="fl">4</span>, style <span class="op">=</span> <span class="st">"jenks"</span><span class="op">)</span>
+
+<span class="co"># Billa Billa windrose</span>
+<span class="va">fig_3.1</span> <span class="op">&lt;-</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span>
+   <span class="va">Billa_Billa_wind_dt</span>,
+    <span class="fu"><a href="https://docs.ropensci.org/clifro/reference/windrose.html">windrose</a></span><span class="op">(</span>
+      <span class="va">wind_speed</span>,
+      <span class="va">wind_direction_degrees</span>,
+      facet <span class="op">=</span> <span class="va">assessment_number</span>,
+      n_col <span class="op">=</span> <span class="fl">5</span>,
+      legend_title <span class="op">=</span> <span class="st">"Wind speed (m/s)"</span>,
+      speed_cuts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1.4</span>, <span class="fl">2.8</span>, <span class="fl">4.2</span>, <span class="fl">5.6</span>, <span class="fl">7</span><span class="op">)</span>
+    <span class="op">)</span>
+  <span class="op">)</span>
+
+<span class="va">fig_3.1</span> <span class="op">&lt;-</span>
+   <span class="va">fig_3.1</span> <span class="op">+</span>
+   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_fill_viridis_d</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Wind Speed (m/s)"</span>,
+                        direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,
+                        option <span class="op">=</span> <span class="st">"cividis"</span><span class="op">)</span> <span class="op">+</span>
+   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Proportion (%)"</span>,
+                      labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">30</span>, <span class="fl">40</span>, <span class="fl">50</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span>
+   <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/theme_pubr.html">theme_pubclean</a></span><span class="op">(</span>base_family <span class="op">=</span> <span class="st">"Arial Unicode MS"</span><span class="op">)</span> <span class="op">+</span>
+   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>
+      axis.ticks.length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">0</span>, <span class="st">"mm"</span><span class="op">)</span>,
+      axis.line <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>,
+      panel.spacing.x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">0</span>, <span class="st">"lines"</span><span class="op">)</span>,
+      panel.spacing.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">0</span>, <span class="st">"lines"</span><span class="op">)</span>,
+      plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">margin</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="st">"cm"</span><span class="op">)</span>
+   <span class="op">)</span>
+
+<span class="co"># Tosari windrose</span>
+<span class="va">fig_3.2</span> <span class="op">&lt;-</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span>
+   <span class="va">Tosari_wind_dt</span>,
+    <span class="fu"><a href="https://docs.ropensci.org/clifro/reference/windrose.html">windrose</a></span><span class="op">(</span>
+      <span class="va">wind_speed</span>,
+      <span class="va">wind_direction_degrees</span>,
+      facet <span class="op">=</span> <span class="va">assessment_number</span>,
+      n_col <span class="op">=</span> <span class="fl">5</span>,
+      legend_title <span class="op">=</span> <span class="st">"Wind speed (m/s)"</span>,
+      speed_cuts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1.4</span>, <span class="fl">2.8</span>, <span class="fl">4.2</span>, <span class="fl">5.6</span>, <span class="fl">7</span><span class="op">)</span>
+    <span class="op">)</span>
+  <span class="op">)</span>
+
+<span class="va">fig_3.2</span> <span class="op">&lt;-</span>
+   <span class="va">fig_3.2</span> <span class="op">+</span>
+   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_fill_viridis_d</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Wind Speed (m/s)"</span>,
+                        direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,
+                        option <span class="op">=</span> <span class="st">"cividis"</span><span class="op">)</span> <span class="op">+</span>
+   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Proportion (%)"</span>,
+                      labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">30</span>, <span class="fl">40</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span>
+   <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/theme_pubr.html">theme_pubclean</a></span><span class="op">(</span>base_family <span class="op">=</span> <span class="st">"Arial Unicode MS"</span><span class="op">)</span> <span class="op">+</span>
+   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>
+      legend.position <span class="op">=</span> <span class="st">"none"</span>,
+      axis.ticks.length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">0</span>, <span class="st">"mm"</span><span class="op">)</span>,
+      axis.line <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>,
+      panel.spacing.x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">0</span>, <span class="st">"lines"</span><span class="op">)</span>,
+      panel.spacing.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">0</span>, <span class="st">"lines"</span><span class="op">)</span>,
+      plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">margin</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="st">"cm"</span><span class="op">)</span>
+   <span class="op">)</span>
+
+<span class="va">fig_3</span> <span class="op">&lt;-</span>
+  <span class="va">fig_3.1</span> <span class="op">/</span> <span class="va">fig_3.2</span>
+
+<span class="va">fig_3</span> <span class="op">&lt;-</span>
+   <span class="va">fig_3</span> <span class="op">+</span>
+   <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html">plot_annotation</a></span><span class="op">(</span>tag_levels <span class="op">=</span> <span class="st">"A"</span><span class="op">)</span> <span class="op">&amp;</span>
+   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">fig_3</span><span class="op">)</span></code></pre></div>
+<p><img src="Data_visualisation_files/figure-html/windrose-by-assessment-number-1.png" width="672" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span>
+   <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"figures/Fig3.png"</span><span class="op">)</span>,
+   width <span class="op">=</span> <span class="fl">9</span>,
+   height <span class="op">=</span> <span class="fl">9</span>,
+   units <span class="op">=</span> <span class="st">"in"</span>,
+   dpi <span class="op">=</span> <span class="fl">600</span>
+<span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/grDevices/cairo.html">cairo_ps</a></span><span class="op">(</span>
+   <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"figures/Fig3.eps"</span><span class="op">)</span>,
+   family <span class="op">=</span> <span class="st">"Arial Unicode MS"</span>
+<span class="op">)</span>
+<span class="va">fig_3</span>
+<span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
 </div>
 </div>
   </div>
@@ -472,7 +623,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Ihanul Khaliq, Adam H. Sparks, Grains Research and Development Corporation, Western Australia Agriculture Authority.</p>
+  <p>Developed by Ihanul Khaliq, Grains Research and Development Corporation.</p>
 </div>
 
 <div class="pkgdown">

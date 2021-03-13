@@ -78,7 +78,7 @@
       <h1 data-toc-skip>Fit GAMs to Ascocyta blight spatiotemporal development data</h1>
                         <h4 class="author">Ihsan Khaliq</h4>
             
-            <h4 class="date">2021-03-02</h4>
+            <h4 class="date">2021-03-13</h4>
       
       
       <div class="hidden name"><code>Spatiotemporal_development_GAMs.Rmd</code></div>
@@ -96,32 +96,168 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://broom.tidymodels.org/">"broom"</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://rpkgs.datanovia.com/ggpubr/">"ggpubr"</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="http://tidyverse.tidyverse.org">"tidyverse"</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://lubridate.tidyverse.org">"lubridate"</a></span><span class="op">)</span></code></pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://lubridate.tidyverse.org">"lubridate"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">"spatiotemporaldynamics"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="http://www.rforge.net/SDMTools/">"SDMTools"</a></span><span class="op">)</span></code></pre></div>
 </div>
 <div id="import-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#import-data" class="anchor"></a>Import data</h2>
+<div id="disease-spread-data" class="section level3">
+<h3 class="hasAnchor">
+<a href="#disease-spread-data" class="anchor"></a>Disease spread data</h3>
+<p>Import disease data.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dat</span> <span class="op">&lt;-</span>
-   <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html">read_excel</a></span><span class="op">(</span>
-      <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"SpatioTemporalSpreadData.xlsx"</span>,
+<code class="sourceCode R"><span class="co">### import spatiotemporal spread data</span>
+<span class="va">dat</span> <span class="op">&lt;-</span>
+  <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html">read_excel</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"SpatioTemporalSpreadData.xlsx"</span>,
+                package <span class="op">=</span> <span class="st">"spatiotemporaldynamics"</span><span class="op">)</span>,
+    sheet <span class="op">=</span> <span class="fl">1</span>,
+    na <span class="op">=</span> <span class="st">"NA"</span>
+  <span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></code></pre></div>
+<pre><code>##    location         assessment_date               assessment_number
+##  Length:1800        Min.   :2020-07-02 00:00:00   Min.   : 1.000   
+##  Class :character   1st Qu.:2020-08-13 00:00:00   1st Qu.: 3.000   
+##  Mode  :character   Median :2020-09-10 00:00:00   Median : 5.000   
+##                     Mean   :2020-09-08 21:20:00   Mean   : 5.056   
+##                     3rd Qu.:2020-10-09 00:00:00   3rd Qu.: 7.000   
+##                     Max.   :2020-11-05 00:00:00   Max.   :10.000   
+##   plot_number      distance      quadrat           direction        
+##  Min.   :1.00   Min.   :0.00   Length:1800        Length:1800       
+##  1st Qu.:1.75   1st Qu.:3.00   Class :character   Class :character  
+##  Median :2.50   Median :6.00   Mode  :character   Mode  :character  
+##  Mean   :2.50   Mean   :5.76                                        
+##  3rd Qu.:3.25   3rd Qu.:9.00                                        
+##  Max.   :4.00   Max.   :9.00                                        
+##  infected_plants   total_plants     incidence         min_temp     
+##  Min.   : 0.000   Min.   :16.00   Min.   :  0.00   Min.   : 2.943  
+##  1st Qu.: 0.000   1st Qu.:36.00   1st Qu.:  0.00   1st Qu.: 4.421  
+##  Median : 0.000   Median :44.00   Median :  0.00   Median : 7.633  
+##  Mean   : 8.672   Mean   :43.53   Mean   : 19.30   Mean   : 8.052  
+##  3rd Qu.: 4.000   3rd Qu.:51.00   3rd Qu.: 11.51   3rd Qu.:11.350  
+##  Max.   :74.000   Max.   :74.00   Max.   :100.00   Max.   :15.580  
+##     max_temp        avg_temp     avg_wind_speed    total_rain   
+##  Min.   :18.19   Min.   :10.57   Min.   :1.524   Min.   : 0.00  
+##  1st Qu.:19.98   1st Qu.:12.16   1st Qu.:1.752   1st Qu.: 1.00  
+##  Median :25.81   Median :16.72   Median :2.468   Median : 4.80  
+##  Mean   :24.13   Mean   :16.09   Mean   :2.506   Mean   :12.16  
+##  3rd Qu.:27.47   3rd Qu.:19.35   3rd Qu.:3.024   3rd Qu.:20.80  
+##  Max.   :29.24   Max.   :21.71   Max.   :3.507   Max.   :57.40  
+##      min_rh          max_rh          avg_rh     
+##  Min.   :14.57   Min.   :63.64   Min.   :39.11  
+##  1st Qu.:25.69   1st Qu.:75.38   1st Qu.:50.54  
+##  Median :34.60   Median :81.25   Median :58.70  
+##  Mean   :31.88   Mean   :80.59   Mean   :56.23  
+##  3rd Qu.:36.92   3rd Qu.:85.93   3rd Qu.:60.81  
+##  Max.   :47.56   Max.   :89.81   Max.   :68.69</code></pre>
+</div>
+<div id="daily-average-wind-direction-data" class="section level3">
+<h3 class="hasAnchor">
+<a href="#daily-average-wind-direction-data" class="anchor"></a>Daily average wind direction data</h3>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">wind</span> <span class="op">&lt;-</span> 
+  <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html">read_excel</a></span><span class="op">(</span>
+      <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"DailyWindDirectionData.xlsx"</span>,
                   package <span class="op">=</span> <span class="st">"spatiotemporaldynamics"</span><span class="op">)</span>,
       sheet <span class="op">=</span> <span class="fl">1</span>
-   <span class="op">)</span></code></pre></div>
+   <span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">wind</span><span class="op">)</span></code></pre></div>
+<pre><code>##      date             location         assessment_number
+##  Length:247         Length:247         Min.   : 1.000   
+##  Class :character   Class :character   1st Qu.: 3.000   
+##  Mode  :character   Mode  :character   Median : 5.000   
+##                                        Mean   : 4.798   
+##                                        3rd Qu.: 7.000   
+##                                        Max.   :10.000   
+##  daily_avg_wind_direction
+##  Length:247              
+##  Class :character        
+##  Mode  :character        
+##                          
+##                          
+## </code></pre>
+</div>
+</div>
+<div id="convert-text-to-degrees" class="section level2">
+<h2 class="hasAnchor">
+<a href="#convert-text-to-degrees" class="anchor"></a>Convert text to degrees</h2>
+<p>Wind direction for the Billa Billa site is the character format recorded as the text value of the wind direction. We need to convert it to degrees for calculations and then calculate the fortnightly average wind direction for use in the GAMs.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">wind</span> <span class="op">&lt;-</span>
+  <span class="va">wind</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>wind_degrees <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span><span class="op">(</span>
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"N"</span> <span class="op">~</span> <span class="st">"0"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"NbE"</span> <span class="op">~</span> <span class="st">"11.25"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"NNE"</span> <span class="op">~</span> <span class="st">"22.5"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"NEbN"</span> <span class="op">~</span> <span class="st">"33.75"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"NE"</span> <span class="op">~</span> <span class="st">"45"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"NEbE"</span> <span class="op">~</span> <span class="st">"56.25"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"ENE"</span> <span class="op">~</span> <span class="st">"67.5"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"EbN"</span> <span class="op">~</span> <span class="st">"73.5"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"E"</span> <span class="op">~</span> <span class="st">"90"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"EbS"</span> <span class="op">~</span> <span class="st">"101.2"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"ESE"</span> <span class="op">~</span> <span class="st">"112.5"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"SEbE"</span> <span class="op">~</span> <span class="st">"123.8"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"SE"</span> <span class="op">~</span> <span class="st">"135.1"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"SEbS"</span> <span class="op">~</span> <span class="st">"146.3"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"SSE"</span> <span class="op">~</span> <span class="st">"157.6"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"SbE"</span> <span class="op">~</span> <span class="st">"168.8"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"S"</span> <span class="op">~</span> <span class="st">"180"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"SbW"</span> <span class="op">~</span> <span class="st">"191.2"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"SSW"</span> <span class="op">~</span> <span class="st">"202.5"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"SWbS"</span> <span class="op">~</span> <span class="st">"213.8"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"SW"</span> <span class="op">~</span> <span class="st">"225"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"SWbW"</span> <span class="op">~</span> <span class="st">"236.2"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"WSW"</span> <span class="op">~</span> <span class="st">"247.5"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"WbS"</span> <span class="op">~</span> <span class="st">"258.8"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"W"</span> <span class="op">~</span> <span class="st">"270"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"WbN"</span> <span class="op">~</span> <span class="st">"281.2"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"WNW"</span> <span class="op">~</span> <span class="st">"292.5"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"NWbW"</span> <span class="op">~</span> <span class="st">"303.8"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"NW"</span> <span class="op">~</span> <span class="st">"315"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"NWbN"</span> <span class="op">~</span> <span class="st">"326.2"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"NNW"</span> <span class="op">~</span> <span class="st">"337.5"</span>,
+      <span class="va">daily_avg_wind_direction</span> <span class="op">==</span> <span class="st">"NbW"</span> <span class="op">~</span> <span class="st">"348.8"</span>,
+      <span class="cn">TRUE</span> <span class="op">~</span>   <span class="va">daily_avg_wind_direction</span>
+    <span class="op">)</span>
+  <span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">location</span>, <span class="va">assessment_number</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>wind_direction <span class="op">=</span> <span class="fu"><a href="../reference/circular.averaging.html">circular.averaging</a></span><span class="op">(</span><span class="va">wind_degrees</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## `summarise()` has grouped output by 'location'. You can override using the `.groups` argument.</code></pre>
+</div>
+<div id="join-the-data-sources" class="section level2">
+<h2 class="hasAnchor">
+<a href="#join-the-data-sources" class="anchor"></a>Join the data sources</h2>
+<p>Left-join the wind and disease data for analysis in the GAMs.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">wind</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"location"</span>, <span class="st">"assessment_number"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div id="combine-quadrat-direction-and-location-column-to-determine-whether-quadrats-located-in-particular-direction-has-significantly-faster-disease-progress-rates" class="section level3">
+<h3 class="hasAnchor">
+<a href="#combine-quadrat-direction-and-location-column-to-determine-whether-quadrats-located-in-particular-direction-has-significantly-faster-disease-progress-rates" class="anchor"></a>Combine quadrat direction and location column to determine whether quadrats located in particular direction has significantly faster disease progress rates</h3>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dat</span> <span class="op">&lt;-</span>
+  <span class="fu">unite</span><span class="op">(</span><span class="va">dat</span>, <span class="va">direc_loc</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">location</span>, <span class="va">direction</span><span class="op">)</span>, remove <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </code></pre></div>
+</div>
 </div>
 <div id="examine-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#examine-data" class="anchor"></a>Examine data</h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></code></pre></div>
-<pre><code>## tibble [1,800 × 18] (S3: tbl_df/tbl/data.frame)
+<pre><code>## tibble [1,800 × 20] (S3: tbl_df/tbl/data.frame)
+##  $ direc_loc        : chr [1:1800] "Billa Billa_NA" "Billa Billa_North" "Billa Billa_NorthEast" "Billa Billa_East" ...
 ##  $ location         : chr [1:1800] "Billa Billa" "Billa Billa" "Billa Billa" "Billa Billa" ...
 ##  $ assessment_date  : POSIXct[1:1800], format: "2020-07-02" "2020-07-02" ...
 ##  $ assessment_number: num [1:1800] 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ plot_number      : num [1:1800] 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ distance         : num [1:1800] 0 9 9 9 9 9 9 9 9 6 ...
 ##  $ quadrat          : chr [1:1800] "F" "N9" "NE9" "E9" ...
-##  $ direction        : chr [1:1800] "NA" "North" "NorthEast" "East" ...
+##  $ direction        : chr [1:1800] NA "North" "NorthEast" "East" ...
 ##  $ infected_plants  : num [1:1800] 0 0 0 0 0 0 0 0 0 0 ...
 ##  $ total_plants     : num [1:1800] 36 48 27 57 53 41 39 31 36 54 ...
 ##  $ incidence        : num [1:1800] 0 0 0 0 0 0 0 0 0 0 ...
@@ -132,28 +268,21 @@
 ##  $ total_rain       : num [1:1800] 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ min_rh           : num [1:1800] 35.2 35.2 35.2 35.2 35.2 ...
 ##  $ max_rh           : num [1:1800] 82.7 82.7 82.7 82.7 82.7 ...
-##  $ avg_rh           : num [1:1800] 58.9 58.9 58.9 58.9 58.9 ...</code></pre>
-<div id="combine-direction-location-columns" class="section level3">
-<h3 class="hasAnchor">
-<a href="#combine-direction-location-columns" class="anchor"></a>Combine direction &amp; location columns</h3>
-<p>This provides information on whether the rate of disease progress was significantly faster in quadrats located in a particular direction.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dat</span><span class="op">&lt;-</span>
-  <span class="fu">unite</span><span class="op">(</span><span class="va">dat</span>, <span class="va">direc_loc</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">location</span>, <span class="va">direction</span><span class="op">)</span>, remove <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </code></pre></div>
-</div>
+##  $ avg_rh           : num [1:1800] 58.9 58.9 58.9 58.9 58.9 ...
+##  $ wind_direction   : num [1:1800] 88.5 88.5 88.5 88.5 88.5 ...</code></pre>
 </div>
 <div id="prepare-data-to-fit-gams" class="section level2">
 <h2 class="hasAnchor">
 <a href="#prepare-data-to-fit-gams" class="anchor"></a>Prepare data to fit GAMs</h2>
 <p>Assign variables to the correct classes.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cols_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"location"</span>, <span class="st">"quadrat"</span>, <span class="st">"direction"</span>, <span class="st">"direc_loc"</span><span class="op">)</span>
 <span class="va">dat</span><span class="op">[</span><span class="va">cols_1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span><span class="va">cols_1</span><span class="op">]</span>, <span class="va">factor</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="re-check-class" class="section level2">
 <h2 class="hasAnchor">
 <a href="#re-check-class" class="anchor"></a>Re-check class</h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">class</span><span class="op">)</span></code></pre></div>
 <pre><code>## $direc_loc
 ## [1] "factor"
@@ -210,18 +339,21 @@
 ## [1] "numeric"
 ## 
 ## $avg_rh
+## [1] "numeric"
+## 
+## $wind_direction
 ## [1] "numeric"</code></pre>
 </div>
 <div id="fit-univariate-gams" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fit-univariate-gams" class="anchor"></a>Fit univariate GAMs</h2>
-<p>Use <code><a href="https://rdrr.io/r/base/Random.html">set.seed()</a></code> for reproducibility purposes</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<p>Use <code><a href="https://rdrr.io/r/base/Random.html">set.seed()</a></code> for reproducibility purposes.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
 <div id="model_1-sdistance" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model_1-sdistance" class="anchor"></a>Model_1 s(distance)</h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_1</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">distance</span>, k <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,
       data <span class="op">=</span> <span class="va">dat</span>,
@@ -249,7 +381,7 @@
 ## 
 ## R-sq.(adj) =  0.0849   Deviance explained = 8.64%
 ## -REML = 8953.3  Scale est. = 1222.8    n = 1800</code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
   <span class="va">model_1</span>,
   pages <span class="op">=</span> <span class="fl">1</span>,
@@ -263,7 +395,7 @@
 <div id="model_2-stotal_rain" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model_2-stotal_rain" class="anchor"></a>Model_2 s(total_rain)</h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_2</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">total_rain</span>, k <span class="op">=</span> <span class="fl">16</span><span class="op">)</span>,
       data <span class="op">=</span> <span class="va">dat</span>,
@@ -291,7 +423,7 @@
 ## 
 ## R-sq.(adj) =  0.691   Deviance explained = 69.4%
 ## -REML = 8023.9  Scale est. = 412.71    n = 1800</code></pre>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
   <span class="va">model_2</span>,
   residuals <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -305,7 +437,7 @@
 <div id="model_3-assessment_number" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model_3-assessment_number" class="anchor"></a>Model_3 assessment_number</h3>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_3</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">incidence</span> <span class="op">~</span> <span class="va">assessment_number</span>,
       data <span class="op">=</span> <span class="va">dat</span>,
@@ -329,7 +461,7 @@
 ## 
 ## R-sq.(adj) =  0.339   Deviance explained = 33.9%
 ## -REML = 8658.6  Scale est. = 883.65    n = 1800</code></pre>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
   <span class="va">model_3</span>,
   all.terms <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -344,7 +476,7 @@
 <div id="model_4-savg_wind_speed" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model_4-savg_wind_speed" class="anchor"></a>Model_4 s(avg_wind_speed)</h3>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_4</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_wind_speed</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span>,
       data <span class="op">=</span> <span class="va">dat</span>,
@@ -372,7 +504,7 @@
 ## 
 ## R-sq.(adj) =  0.693   Deviance explained = 69.6%
 ## -REML = 8025.1  Scale est. = 409.95    n = 1800</code></pre>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
   <span class="va">model_4</span>,
   residuals <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -386,7 +518,7 @@
 <div id="model_5-savg_rh" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model_5-savg_rh" class="anchor"></a>Model_5 s(avg_rh)</h3>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_5</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_rh</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span>,
       data <span class="op">=</span> <span class="va">dat</span>,
@@ -414,7 +546,7 @@
 ## 
 ## R-sq.(adj) =  0.694   Deviance explained = 69.7%
 ## -REML = 8059.5  Scale est. = 409.08    n = 1800</code></pre>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_5</span>,
      residuals <span class="op">=</span> <span class="cn">TRUE</span>,
      pages <span class="op">=</span> <span class="fl">1</span>,
@@ -426,7 +558,7 @@
 <div id="model_6-savg-_temp" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model_6-savg-_temp" class="anchor"></a>Model_6 s(avg _temp)</h3>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_6</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_temp</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span>,
       data <span class="op">=</span> <span class="va">dat</span>,
@@ -454,7 +586,7 @@
 ## 
 ## R-sq.(adj) =  0.693   Deviance explained = 69.5%
 ## -REML = 7993.9  Scale est. = 410.08    n = 1800</code></pre>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
   <span class="va">model_6</span>,
   residuals <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -468,7 +600,7 @@
 <div id="model_6-1-savg-_temp-by-location" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model_6-1-savg-_temp-by-location" class="anchor"></a>Model_6.1 s(avg _temp, by = location)</h3>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_6.1</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_temp</span>, by <span class="op">=</span> <span class="va">location</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span>,
       data <span class="op">=</span> <span class="va">dat</span>,
@@ -497,7 +629,7 @@
 ## 
 ## R-sq.(adj) =  0.694   Deviance explained = 69.6%
 ## -REML = 7993.1  Scale est. = 409.34    n = 1800</code></pre>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
   <span class="va">model_6.1</span>,
   residuals <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -511,7 +643,7 @@
 <div id="model_7-location" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model_7-location" class="anchor"></a>Model_7 location</h3>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_7</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">incidence</span> <span class="op">~</span> <span class="va">location</span>,
       data <span class="op">=</span> <span class="va">dat</span>,
@@ -535,7 +667,7 @@
 ## 
 ## R-sq.(adj) =  0.00379   Deviance explained = 0.434%
 ## -REML = 9025.3  Scale est. = 1331.1    n = 1800</code></pre>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
   <span class="va">model_7</span>,
   residuals <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -554,7 +686,7 @@
 <div id="model_8-all-variables" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model_8-all-variables" class="anchor"></a>Model_8 (All variables)</h3>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_8</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span>
     <span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">total_rain</span>, k <span class="op">=</span> <span class="fl">16</span><span class="op">)</span> <span class="op">+</span>
@@ -562,6 +694,7 @@
       <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_wind_speed</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span> <span class="op">+</span>
       <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_rh</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span> <span class="op">+</span>
       <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_temp</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span> <span class="op">+</span>
+      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">wind_direction</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span> <span class="op">+</span>
       <span class="va">location</span> <span class="op">+</span>
       <span class="va">assessment_number</span> <span class="op">+</span>
       <span class="va">direc_loc</span>,
@@ -576,51 +709,51 @@
 ## 
 ## Formula:
 ## incidence ~ s(total_rain, k = 16) + s(distance, k = 4) + s(avg_wind_speed, 
-##     k = 18) + s(avg_rh, k = 18) + s(avg_temp, k = 18) + location + 
-##     assessment_number + direc_loc
+##     k = 18) + s(avg_rh, k = 18) + s(avg_temp, k = 18) + s(wind_direction, 
+##     k = 18) + location + assessment_number + direc_loc
 ## 
 ## Parametric coefficients:
-##                                Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                    21.51093    6.94148   3.099  0.00197 ** 
-## locationTosari                 -7.28480    8.90499  -0.818  0.41343    
-## assessment_number              -0.07815    1.10438  -0.071  0.94359    
-## direc_locBilla Billa_NA        26.79034    6.71232   3.991 6.84e-05 ***
-## direc_locBilla Billa_North     -0.03499    2.09472  -0.017  0.98668    
-## direc_locBilla Billa_NorthEast -1.87407    2.09472  -0.895  0.37109    
-## direc_locBilla Billa_NorthWest -1.70319    2.09472  -0.813  0.41628    
-## direc_locBilla Billa_South     -3.55843    2.09472  -1.699  0.08954 .  
-## direc_locBilla Billa_SouthEast -4.99762    2.09472  -2.386  0.01715 *  
-## direc_locBilla Billa_SouthWest -2.96581    2.09472  -1.416  0.15700    
-## direc_locBilla Billa_West      -0.62089    2.09472  -0.296  0.76695    
-## direc_locTosari_East           12.05864    2.34197   5.149 2.91e-07 ***
-## direc_locTosari_NA             49.71240    6.87381   7.232 7.05e-13 ***
-## direc_locTosari_North           3.31796    2.34197   1.417  0.15673    
-## direc_locTosari_NorthEast      18.16437    2.34197   7.756 1.47e-14 ***
-## direc_locTosari_NorthWest      -3.28803    2.34197  -1.404  0.16051    
-## direc_locTosari_South          -4.32432    2.34197  -1.846  0.06499 .  
-## direc_locTosari_SouthEast       0.00000    0.00000      NA       NA    
-## direc_locTosari_SouthWest      -3.34241    2.34197  -1.427  0.15370    
-## direc_locTosari_West           -3.91910    2.34197  -1.673  0.09442 .  
+##                                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                     22.32170    7.64443   2.920 0.003545 ** 
+## locationTosari                  42.70768   11.14394   3.832 0.000131 ***
+## assessment_number               -0.26314    1.31955  -0.199 0.841960    
+## direc_locBilla Billa_NA         26.79045    6.71250   3.991 6.85e-05 ***
+## direc_locBilla Billa_North      -0.03499    2.09500  -0.017 0.986677    
+## direc_locBilla Billa_NorthEast  -1.87407    2.09500  -0.895 0.371153    
+## direc_locBilla Billa_NorthWest  -1.70319    2.09500  -0.813 0.416341    
+## direc_locBilla Billa_South      -3.55843    2.09500  -1.699 0.089582 .  
+## direc_locBilla Billa_SouthEast  -4.99762    2.09500  -2.386 0.017161 *  
+## direc_locBilla Billa_SouthWest  -2.96581    2.09500  -1.416 0.157050    
+## direc_locBilla Billa_West       -0.62089    2.09500  -0.296 0.766983    
+## direc_locTosari_East           -37.65387    6.87402  -5.478 4.93e-08 ***
+## direc_locTosari_NA               0.00000    0.00000      NA       NA    
+## direc_locTosari_North          -46.39455    6.87402  -6.749 2.01e-11 ***
+## direc_locTosari_NorthEast      -31.54814    6.87402  -4.589 4.76e-06 ***
+## direc_locTosari_NorthWest      -53.00054    6.87402  -7.710 2.08e-14 ***
+## direc_locTosari_South          -54.03683    6.87402  -7.861 6.57e-15 ***
+## direc_locTosari_SouthEast      -49.71251    6.87402  -7.232 7.06e-13 ***
+## direc_locTosari_SouthWest      -53.05491    6.87402  -7.718 1.96e-14 ***
+## direc_locTosari_West           -53.63160    6.87402  -7.802 1.03e-14 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Approximate significance of smooth terms:
 ##                     edf Ref.df      F p-value    
-## s(total_rain)     2.030  2.138  2.768  0.0314 *  
-## s(distance)       1.928  1.995 32.592  &lt;2e-16 ***
-## s(avg_wind_speed) 1.003  1.005  2.920  0.0873 .  
-## s(avg_rh)         2.255  2.485  1.386  0.1973    
-## s(avg_temp)       7.811  8.555 30.928  &lt;2e-16 ***
+## s(total_rain)     2.002  2.073  2.667  0.0391 *  
+## s(distance)       1.928  1.995 32.584  &lt;2e-16 ***
+## s(avg_wind_speed) 1.001  1.001  2.753  0.0972 .  
+## s(avg_rh)         2.220  2.429  1.368  0.2038    
+## s(avg_temp)       7.461  8.078 26.781  &lt;2e-16 ***
+## s(wind_direction) 1.002  1.003  0.074  0.7862    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Rank: 88/89
+## Rank: 105/106
 ## R-sq.(adj) =  0.803   Deviance explained = 80.7%
-## -REML = 7544.3  Scale est. = 263.27    n = 1800</code></pre>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+## -REML = 7542.9  Scale est. = 263.34    n = 1800</code></pre>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
   <span class="va">model_8</span>,
-  all.terms <span class="op">=</span> <span class="cn">TRUE</span>,
   pages <span class="op">=</span> <span class="fl">1</span>,
   shade <span class="op">=</span> <span class="cn">TRUE</span>,
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -632,7 +765,7 @@
 <h3 class="hasAnchor">
 <a href="#model_9-fit-different-smooths-for-each-term-by-location" class="anchor"></a>Model_9 (Fit different smooths for each term by location)</h3>
 <p>Same as <code>model_8</code> but different smooths have been considered for each term BY LOCATION</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_9</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span>
     <span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">total_rain</span>, k <span class="op">=</span> <span class="fl">16</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
@@ -640,6 +773,7 @@
       <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_wind_speed</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
       <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_temp</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
       <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_rh</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
+      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">wind_direction</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
       <span class="va">assessment_number</span> <span class="op">+</span>
       <span class="va">location</span> <span class="op">+</span>
       <span class="va">direc_loc</span>,
@@ -656,55 +790,57 @@
 ## incidence ~ s(total_rain, k = 16, by = location) + s(distance, 
 ##     k = 4, by = location) + s(avg_wind_speed, k = 18, by = location) + 
 ##     s(avg_temp, k = 18, by = location) + s(avg_rh, k = 18, by = location) + 
-##     assessment_number + location + direc_loc
+##     s(wind_direction, k = 18, by = location) + assessment_number + 
+##     location + direc_loc
 ## 
 ## Parametric coefficients:
 ##                                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                     23.87951   19.68772   1.213  0.22533    
-## assessment_number                0.01882    2.00906   0.009  0.99253    
-## locationTosari                 -29.67809   63.82349  -0.465  0.64199    
-## direc_locBilla Billa_NA         38.04027    3.17199  11.993  &lt; 2e-16 ***
-## direc_locBilla Billa_North      -0.03499    2.05813  -0.017  0.98644    
-## direc_locBilla Billa_NorthEast  -1.87407    2.05813  -0.911  0.36265    
-## direc_locBilla Billa_NorthWest  -1.70319    2.05813  -0.828  0.40804    
-## direc_locBilla Billa_South      -3.55843    2.05813  -1.729  0.08399 .  
-## direc_locBilla Billa_SouthEast  -4.99762    2.05813  -2.428  0.01527 *  
-## direc_locBilla Billa_SouthWest  -2.96581    2.05813  -1.441  0.14976    
-## direc_locBilla Billa_West       -0.62089    2.05813  -0.302  0.76293    
-## direc_locTosari_East            15.97774    2.30106   6.944 5.35e-12 ***
-## direc_locTosari_NA              39.81465   13.13429   3.031  0.00247 ** 
-## direc_locTosari_North            7.23706    2.30106   3.145  0.00169 ** 
-## direc_locTosari_NorthEast       22.08346    2.30106   9.597  &lt; 2e-16 ***
-## direc_locTosari_NorthWest        0.63106    2.30106   0.274  0.78392    
-## direc_locTosari_South           -0.40523    2.30106  -0.176  0.86023    
-## direc_locTosari_SouthEast        3.91910    2.30106   1.703  0.08871 .  
-## direc_locTosari_SouthWest        0.57669    2.30106   0.251  0.80214    
-## direc_locTosari_West             0.00000    0.00000      NA       NA    
+## (Intercept)                     49.05050   17.09310   2.870  0.00416 ** 
+## assessment_number               -0.91643    1.44301  -0.635  0.52546    
+## locationTosari                 -35.83871   17.12081  -2.093  0.03647 *  
+## direc_locBilla Billa_NA         38.04013    3.17234  11.991  &lt; 2e-16 ***
+## direc_locBilla Billa_North      -0.03499    2.05816  -0.017  0.98644    
+## direc_locBilla Billa_NorthEast  -1.87407    2.05816  -0.911  0.36265    
+## direc_locBilla Billa_NorthWest  -1.70319    2.05816  -0.828  0.40805    
+## direc_locBilla Billa_South      -3.55843    2.05816  -1.729  0.08400 .  
+## direc_locBilla Billa_SouthEast  -4.99762    2.05816  -2.428  0.01527 *  
+## direc_locBilla Billa_SouthWest  -2.96581    2.05816  -1.441  0.14976    
+## direc_locBilla Billa_West       -0.62089    2.05816  -0.302  0.76294    
+## direc_locTosari_East            15.40105    2.30109   6.693 2.93e-11 ***
+## direc_locTosari_NA              39.23797   13.13431   2.987  0.00285 ** 
+## direc_locTosari_North            6.66037    2.30109   2.894  0.00385 ** 
+## direc_locTosari_NorthEast       21.50677    2.30109   9.346  &lt; 2e-16 ***
+## direc_locTosari_NorthWest        0.05438    2.30109   0.024  0.98115    
+## direc_locTosari_South           -0.98191    2.30109  -0.427  0.66964    
+## direc_locTosari_SouthEast        3.34241    2.30109   1.453  0.14653    
+## direc_locTosari_SouthWest        0.00000    0.00000      NA       NA    
+## direc_locTosari_West            -0.57669    2.30109  -0.251  0.80214    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Approximate significance of smooth terms:
-##                                         edf Ref.df       F  p-value    
-## s(total_rain):locationBilla Billa     1.001  1.001   0.033   0.8557    
-## s(total_rain):locationTosari          1.002  1.003 231.379  &lt; 2e-16 ***
-## s(distance):locationBilla Billa       1.000  1.000   5.369   0.0206 *  
-## s(distance):locationTosari            1.965  1.999  46.326  &lt; 2e-16 ***
-## s(avg_wind_speed):locationBilla Billa 1.480  1.516   0.486   0.5476    
-## s(avg_wind_speed):locationTosari      3.256  3.382   3.633   0.0128 *  
-## s(avg_temp):locationBilla Billa       4.426  4.517   5.974 2.64e-05 ***
-## s(avg_temp):locationTosari            1.000  1.000  64.132  &lt; 2e-16 ***
-## s(avg_rh):locationBilla Billa         1.000  1.000   0.392   0.5317    
-## s(avg_rh):locationTosari              1.482  1.543   2.991   0.0315 *  
+##                                         edf Ref.df      F  p-value    
+## s(total_rain):locationBilla Billa     3.886  4.023 11.335  &lt; 2e-16 ***
+## s(total_rain):locationTosari          2.108  2.160  5.584  0.00163 ** 
+## s(distance):locationBilla Billa       1.000  1.001  5.365  0.02062 *  
+## s(distance):locationTosari            1.965  1.999 46.325  &lt; 2e-16 ***
+## s(avg_wind_speed):locationBilla Billa 1.001  1.001  7.741  0.00541 ** 
+## s(avg_wind_speed):locationTosari      1.628  1.747  1.129  0.42354    
+## s(avg_temp):locationBilla Billa       1.007  1.008 24.732 1.28e-06 ***
+## s(avg_temp):locationTosari            1.000  1.000  2.755  0.09703 .  
+## s(avg_rh):locationBilla Billa         1.000  1.000  8.649  0.00333 ** 
+## s(avg_rh):locationTosari              1.002  1.002  0.107  0.74438    
+## s(wind_direction):locationBilla Billa 1.000  1.000 45.549  &lt; 2e-16 ***
+## s(wind_direction):locationTosari      1.001  1.001  2.259  0.13343    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Rank: 157/158
+## Rank: 191/192
 ## R-sq.(adj) =   0.81   Deviance explained = 81.4%
-## -REML = 7502.9  Scale est. = 254.15    n = 1800</code></pre>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+## -REML = 7492.8  Scale est. = 254.16    n = 1800</code></pre>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
   <span class="va">model_9</span>,
-  all.terms <span class="op">=</span> <span class="cn">TRUE</span>,
   pages <span class="op">=</span> <span class="fl">1</span>,
   shade <span class="op">=</span> <span class="cn">TRUE</span>,
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -712,28 +848,26 @@
 <span class="op">)</span></code></pre></div>
 <p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_9-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
-<div id="comments-on-model_8-and-model_9" class="section level3">
+<div id="comments-on-model_9" class="section level3">
 <h3 class="hasAnchor">
-<a href="#comments-on-model_8-and-model_9" class="anchor"></a>Comments on model_8 and model_9</h3>
-<p>Fitting different smooths for each term by location in <code>model_9</code>improved the adjusted R^2 and percent deviance explained values. Noam Ross encourages this practice in his own words,</p>
+<a href="#comments-on-model_9" class="anchor"></a>Comments on model_9</h3>
+<p>Fitting different smooths for each term by location in <code>model_9</code> improved the adjusted R^2 and percent deviance explained values. Noam Ross encourages this practice in his own words,</p>
 <blockquote>
-<p>“By specifying the ‘by’ argument to the s() function, we can tell R to calculate a different smooth for each unique category. Usually, when we have smooth-factor interactions, we want to also include a varying intercept, in case the different categories are different in overall means in addition to shape of their smooths. Here, you see adding this varying intercept improves the estimate of the smooth.”</p>
+<p>“We can also specify a GAM formula that will fit different smooths for different categorical variables. We call this a factor-smooth interaction. By specifying the ‘by’ argument to the s() function, we can tell R to calculate a different smooth for each unique category. Usually, when we have smooth-factor interactions, we want to also include a varying intercept, in case the different categories are different in overall means in addition to shape of their smooths. Here, you see adding this varying intercept improves the estimate of the smooth. Usually, when we have smooth-factor interactions, we want to also include a varying intercept, in case the different categories are different in overall means in addition to shape of their smooths”</p>
 </blockquote>
 </div>
-<div id="model_10-remove-by-argument-from-avg_rh-and-avg_wind_speed" class="section level3">
+<div id="model_10" class="section level3">
 <h3 class="hasAnchor">
-<a href="#model_10-remove-by-argument-from-avg_rh-and-avg_wind_speed" class="anchor"></a>Model_10 (Remove by argument from avg_rh and avg_wind_speed)</h3>
-<p>Remove <code>by</code> argument from <code>avg_rh</code> and <code>avg_wind_speed</code> as they are only weakly significant for Tosari only.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<a href="#model_10" class="anchor"></a>Model_10</h3>
+<p>Same as <code>model_8</code> but relative humidity, wind speed and wind direction removed, as they were not significant.</p>
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_10</span> <span class="op">&lt;-</span>
   <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span>
-    <span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">total_rain</span>, k <span class="op">=</span> <span class="fl">16</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">distance</span>, k <span class="op">=</span> <span class="fl">4</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
+    <span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">total_rain</span>, k <span class="op">=</span> <span class="fl">16</span><span class="op">)</span> <span class="op">+</span>
+      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">distance</span>, k <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">+</span>
       <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_wind_speed</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_temp</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_rh</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span> <span class="op">+</span>
+      <span class="va">location</span> <span class="op">+</span>
       <span class="va">assessment_number</span> <span class="op">+</span>
-      <span class="va">location</span> <span class="op">+</span> 
       <span class="va">direc_loc</span>,
     data <span class="op">=</span> <span class="va">dat</span>,
     method <span class="op">=</span> <span class="st">"REML"</span>
@@ -745,573 +879,54 @@
 ## Link function: identity 
 ## 
 ## Formula:
-## incidence ~ s(total_rain, k = 16, by = location) + s(distance, 
-##     k = 4, by = location) + s(avg_wind_speed, k = 18) + s(avg_temp, 
-##     k = 18, by = location) + s(avg_rh, k = 18) + assessment_number + 
-##     location + direc_loc
+## incidence ~ s(total_rain, k = 16) + s(distance, k = 4) + s(avg_wind_speed, 
+##     k = 18) + location + assessment_number + direc_loc
 ## 
 ## Parametric coefficients:
-##                                Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                    10.19418    6.91442   1.474  0.14057    
-## assessment_number               0.80848    1.08405   0.746  0.45589    
-## locationTosari                 -3.95894    6.15431  -0.643  0.52013    
-## direc_locBilla Billa_NA        38.04033    3.17106  11.996  &lt; 2e-16 ***
-## direc_locBilla Billa_North     -0.03499    2.05761  -0.017  0.98643    
-## direc_locBilla Billa_NorthEast -1.87407    2.05761  -0.911  0.36253    
-## direc_locBilla Billa_NorthWest -1.70319    2.05761  -0.828  0.40792    
-## direc_locBilla Billa_South     -3.55843    2.05761  -1.729  0.08391 .  
-## direc_locBilla Billa_SouthEast -4.99762    2.05761  -2.429  0.01525 *  
-## direc_locBilla Billa_SouthWest -2.96581    2.05761  -1.441  0.14965    
-## direc_locBilla Billa_West      -0.62089    2.05761  -0.302  0.76288    
-## direc_locTosari_East           15.40105    2.30048   6.695 2.89e-11 ***
-## direc_locTosari_NA             39.23775   13.13408   2.987  0.00285 ** 
-## direc_locTosari_North           6.66037    2.30048   2.895  0.00384 ** 
-## direc_locTosari_NorthEast      21.50677    2.30048   9.349  &lt; 2e-16 ***
-## direc_locTosari_NorthWest       0.05438    2.30048   0.024  0.98114    
-## direc_locTosari_South          -0.98191    2.30048  -0.427  0.66956    
-## direc_locTosari_SouthEast       3.34241    2.30048   1.453  0.14642    
-## direc_locTosari_SouthWest       0.00000    0.00000      NA       NA    
-## direc_locTosari_West           -0.57669    2.30048  -0.251  0.80209    
+##                                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                      60.72721   17.10564   3.550 0.000395 ***
+## locationTosari                    0.00000    0.00000      NA       NA    
+## assessment_number                 1.80518    1.31875   1.369 0.171218    
+## direc_locBilla Billa_NA          26.79070    6.71292   3.991 6.85e-05 ***
+## direc_locBilla Billa_North       -0.03499    2.09565  -0.017 0.986681    
+## direc_locBilla Billa_NorthEast   -1.87407    2.09565  -0.894 0.371301    
+## direc_locBilla Billa_NorthWest   -1.70319    2.09565  -0.813 0.416485    
+## direc_locBilla Billa_South       -3.55843    2.09565  -1.698 0.089682 .  
+## direc_locBilla Billa_SouthEast   -4.99762    2.09565  -2.385 0.017195 *  
+## direc_locBilla Billa_SouthWest   -2.96581    2.09565  -1.415 0.157179    
+## direc_locBilla Billa_West        -0.62089    2.09565  -0.296 0.767053    
+## direc_locTosari_East           -104.88575   28.87319  -3.633 0.000289 ***
+## direc_locTosari_NA              -67.23163   29.58768  -2.272 0.023189 *  
+## direc_locTosari_North          -113.62643   28.87319  -3.935 8.63e-05 ***
+## direc_locTosari_NorthEast       -98.78002   28.87319  -3.421 0.000638 ***
+## direc_locTosari_NorthWest      -120.23242   28.87319  -4.164 3.28e-05 ***
+## direc_locTosari_South          -121.26871   28.87319  -4.200 2.80e-05 ***
+## direc_locTosari_SouthEast      -116.94439   28.87319  -4.050 5.34e-05 ***
+## direc_locTosari_SouthWest      -120.28680   28.87319  -4.166 3.25e-05 ***
+## direc_locTosari_West           -120.86348   28.87319  -4.186 2.98e-05 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## Approximate significance of smooth terms:
-##                                     edf Ref.df       F p-value    
-## s(total_rain):locationBilla Billa 1.000  1.000   0.906  0.3413    
-## s(total_rain):locationTosari      3.438  3.773 282.039  &lt;2e-16 ***
-## s(distance):locationBilla Billa   1.000  1.000   5.373  0.0206 *  
-## s(distance):locationTosari        1.965  1.999  46.348  &lt;2e-16 ***
-## s(avg_wind_speed)                 1.001  1.001   0.489  0.4846    
-## s(avg_temp):locationBilla Billa   5.603  6.147  26.984  &lt;2e-16 ***
-## s(avg_temp):locationTosari        1.002  1.003   0.337  0.5630    
-## s(avg_rh)                         1.002  1.003   0.808  0.3692    
+##                      edf Ref.df     F p-value    
+## s(total_rain)      3.432  3.526 22.07  &lt;2e-16 ***
+## s(distance)        1.928  1.995 32.57  &lt;2e-16 ***
+## s(avg_wind_speed) 11.277 11.437 76.70  &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Rank: 123/124
-## R-sq.(adj) =   0.81   Deviance explained = 81.3%
-## -REML =   7506  Scale est. = 254.03    n = 1800</code></pre>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+## Rank: 54/55
+## R-sq.(adj) =  0.803   Deviance explained = 80.7%
+## -REML = 7573.6  Scale est. = 263.5     n = 1800</code></pre>
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
   <span class="va">model_10</span>,
-  all.terms <span class="op">=</span> <span class="cn">TRUE</span>,
   pages <span class="op">=</span> <span class="fl">1</span>,
   shade <span class="op">=</span> <span class="cn">TRUE</span>,
   seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
   shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_10</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
 <span class="op">)</span></code></pre></div>
 <p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_10-1.png" width="672" style="display: block; margin: auto;"></p>
-</div>
-<div id="model_11-interaction-between-total_rain-and-avg_wind_speed" class="section level3">
-<h3 class="hasAnchor">
-<a href="#model_11-interaction-between-total_rain-and-avg_wind_speed" class="anchor"></a>Model_11 (Interaction between total_rain and avg_wind_speed)</h3>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">model_11</span> <span class="op">&lt;-</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span>
-    <span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">total_rain</span>, <span class="va">avg_wind_speed</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">distance</span>, k <span class="op">=</span> <span class="fl">4</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span>  <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_temp</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_rh</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span> <span class="op">+</span>
-      <span class="va">assessment_number</span> <span class="op">+</span>
-      <span class="va">location</span> <span class="op">+</span>
-      <span class="va">direc_loc</span>,
-    data <span class="op">=</span> <span class="va">dat</span>,
-    method <span class="op">=</span> <span class="st">"REML"</span>
-  <span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_11</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Family: gaussian 
-## Link function: identity 
-## 
-## Formula:
-## incidence ~ s(total_rain, avg_wind_speed, k = 18, by = location) + 
-##     s(distance, k = 4, by = location) + s(avg_temp, k = 18, by = location) + 
-##     s(avg_rh, k = 18) + assessment_number + location + direc_loc
-## 
-## Parametric coefficients:
-##                                Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                    11.22801    8.44070   1.330  0.18362    
-## assessment_number               0.59818    1.24450   0.481  0.63082    
-## locationTosari                  0.00000    0.00000      NA       NA    
-## direc_locBilla Billa_NA        38.03938    3.17360  11.986  &lt; 2e-16 ***
-## direc_locBilla Billa_North     -0.03499    2.05789  -0.017  0.98644    
-## direc_locBilla Billa_NorthEast -1.87407    2.05789  -0.911  0.36259    
-## direc_locBilla Billa_NorthWest -1.70319    2.05789  -0.828  0.40799    
-## direc_locBilla Billa_South     -3.55843    2.05789  -1.729  0.08395 .  
-## direc_locBilla Billa_SouthEast -4.99762    2.05789  -2.429  0.01526 *  
-## direc_locBilla Billa_SouthWest -2.96581    2.05789  -1.441  0.14971    
-## direc_locBilla Billa_West      -0.62089    2.05789  -0.302  0.76291    
-## direc_locTosari_East           11.29817    6.66889   1.694  0.09041 .  
-## direc_locTosari_NA             35.13498   14.09731   2.492  0.01278 *  
-## direc_locTosari_North           2.55749    6.66889   0.383  0.70140    
-## direc_locTosari_NorthEast      17.40390    6.66889   2.610  0.00914 ** 
-## direc_locTosari_NorthWest      -4.04850    6.66889  -0.607  0.54388    
-## direc_locTosari_South          -5.08479    6.66889  -0.762  0.44588    
-## direc_locTosari_SouthEast      -0.76047    6.66889  -0.114  0.90923    
-## direc_locTosari_SouthWest      -4.10288    6.66889  -0.615  0.53848    
-## direc_locTosari_West           -4.67956    6.66889  -0.702  0.48296    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Approximate significance of smooth terms:
-##                                                    edf Ref.df       F p-value
-## s(total_rain,avg_wind_speed):locationBilla Billa 2.003  2.004   0.168  0.8454
-## s(total_rain,avg_wind_speed):locationTosari      4.693  4.941 202.992  &lt;2e-16
-## s(distance):locationBilla Billa                  1.002  1.003   5.349  0.0207
-## s(distance):locationTosari                       1.965  1.999  46.337  &lt;2e-16
-## s(avg_temp):locationBilla Billa                  5.181  5.512  25.048  &lt;2e-16
-## s(avg_temp):locationTosari                       1.001  1.002   0.162  0.6890
-## s(avg_rh)                                        1.003  1.005   0.854  0.3566
-##                                                     
-## s(total_rain,avg_wind_speed):locationBilla Billa    
-## s(total_rain,avg_wind_speed):locationTosari      ***
-## s(distance):locationBilla Billa                  *  
-## s(distance):locationTosari                       ***
-## s(avg_temp):locationBilla Billa                  ***
-## s(avg_temp):locationTosari                          
-## s(avg_rh)                                           
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Rank: 110/111
-## R-sq.(adj) =   0.81   Deviance explained = 81.4%
-## -REML =   7504  Scale est. = 254.09    n = 1800</code></pre>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_11</span>, scheme <span class="op">=</span> <span class="fl">1</span>, pages <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_11-1.png" width="672" style="display: block; margin: auto;"></p>
-</div>
-<div id="comments-on-model_11" class="section level3">
-<h3 class="hasAnchor">
-<a href="#comments-on-model_11" class="anchor"></a>Comments on model_11</h3>
-<p>The effect of <code>avg_wind_speed</code> is not significant at its own in model_10, but significant in interaction with <code>total_rain</code> for Tosari only</p>
-</div>
-<div id="visualize-the-interaction-between-avg_wind_speed-and-total_rain" class="section level3">
-<h3 class="hasAnchor">
-<a href="#visualize-the-interaction-between-avg_wind_speed-and-total_rain" class="anchor"></a>Visualize the interaction between avg_wind_speed and total_rain</h3>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/vis.gam.html">vis.gam</a></span><span class="op">(</span>
-  x <span class="op">=</span> <span class="va">model_11</span>,
-  view <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"total_rain"</span>, <span class="st">"avg_wind_speed"</span><span class="op">)</span>,
-  plot.type <span class="op">=</span> <span class="st">"persp"</span>,
-  theta <span class="op">=</span> <span class="fl">135</span>
-<span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/visualise-interaction-1.png" width="672" style="display: block; margin: auto;"></p>
-</div>
-<div id="add-confidence-interval-to-the-interaction-visualisationpredictions" class="section level3">
-<h3 class="hasAnchor">
-<a href="#add-confidence-interval-to-the-interaction-visualisationpredictions" class="anchor"></a>Add confidence interval to the interaction visualisation/predictions</h3>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/vis.gam.html">vis.gam</a></span><span class="op">(</span>
-  x <span class="op">=</span> <span class="va">model_11</span>,
-  view <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"total_rain"</span>, <span class="st">"avg_wind_speed"</span><span class="op">)</span>,
-  plot.type <span class="op">=</span> <span class="st">"persp"</span>,
-  se <span class="op">=</span> <span class="fl">2</span>,
-  theta <span class="op">=</span> <span class="fl">135</span>
-<span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/add-CI-to-the-visualisation-1.png" width="672" style="display: block; margin: auto;"> The plot indicates the number of standard errors (2 in this case) away from the average prediction to plot high and low prediction surfaces</p>
-</div>
-<div id="model_12-try-tensor-interactions-instead-of-smooth-interactions" class="section level3">
-<h3 class="hasAnchor">
-<a href="#model_12-try-tensor-interactions-instead-of-smooth-interactions" class="anchor"></a>Model_12 Try tensor interactions instead of smooth interactions</h3>
-<p>Tensor smooths let us model interactions that operate on different scales. Tensor interaction takes longer to run the model, and requires more data.</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">model_12</span> <span class="op">&lt;-</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span>
-    <span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">total_rain</span>, <span class="va">avg_wind_speed</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">distance</span>, k <span class="op">=</span> <span class="fl">4</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span>  <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_temp</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_rh</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span> <span class="op">+</span>
-      <span class="va">assessment_number</span> <span class="op">+</span>
-      <span class="va">location</span> <span class="op">+</span>
-      <span class="va">direc_loc</span>,
-    data <span class="op">=</span> <span class="va">dat</span>,
-    method <span class="op">=</span> <span class="st">"REML"</span>
-  <span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_12</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Family: gaussian 
-## Link function: identity 
-## 
-## Formula:
-## incidence ~ s(total_rain, avg_wind_speed, k = 18, by = location) + 
-##     s(distance, k = 4, by = location) + s(avg_temp, k = 18, by = location) + 
-##     s(avg_rh, k = 18) + assessment_number + location + direc_loc
-## 
-## Parametric coefficients:
-##                                Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                    11.22801    8.44070   1.330  0.18362    
-## assessment_number               0.59818    1.24450   0.481  0.63082    
-## locationTosari                  0.00000    0.00000      NA       NA    
-## direc_locBilla Billa_NA        38.03938    3.17360  11.986  &lt; 2e-16 ***
-## direc_locBilla Billa_North     -0.03499    2.05789  -0.017  0.98644    
-## direc_locBilla Billa_NorthEast -1.87407    2.05789  -0.911  0.36259    
-## direc_locBilla Billa_NorthWest -1.70319    2.05789  -0.828  0.40799    
-## direc_locBilla Billa_South     -3.55843    2.05789  -1.729  0.08395 .  
-## direc_locBilla Billa_SouthEast -4.99762    2.05789  -2.429  0.01526 *  
-## direc_locBilla Billa_SouthWest -2.96581    2.05789  -1.441  0.14971    
-## direc_locBilla Billa_West      -0.62089    2.05789  -0.302  0.76291    
-## direc_locTosari_East           11.29817    6.66889   1.694  0.09041 .  
-## direc_locTosari_NA             35.13498   14.09731   2.492  0.01278 *  
-## direc_locTosari_North           2.55749    6.66889   0.383  0.70140    
-## direc_locTosari_NorthEast      17.40390    6.66889   2.610  0.00914 ** 
-## direc_locTosari_NorthWest      -4.04850    6.66889  -0.607  0.54388    
-## direc_locTosari_South          -5.08479    6.66889  -0.762  0.44588    
-## direc_locTosari_SouthEast      -0.76047    6.66889  -0.114  0.90923    
-## direc_locTosari_SouthWest      -4.10288    6.66889  -0.615  0.53848    
-## direc_locTosari_West           -4.67956    6.66889  -0.702  0.48296    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Approximate significance of smooth terms:
-##                                                    edf Ref.df       F p-value
-## s(total_rain,avg_wind_speed):locationBilla Billa 2.003  2.004   0.168  0.8454
-## s(total_rain,avg_wind_speed):locationTosari      4.693  4.941 202.992  &lt;2e-16
-## s(distance):locationBilla Billa                  1.002  1.003   5.349  0.0207
-## s(distance):locationTosari                       1.965  1.999  46.337  &lt;2e-16
-## s(avg_temp):locationBilla Billa                  5.181  5.512  25.048  &lt;2e-16
-## s(avg_temp):locationTosari                       1.001  1.002   0.162  0.6890
-## s(avg_rh)                                        1.003  1.005   0.854  0.3566
-##                                                     
-## s(total_rain,avg_wind_speed):locationBilla Billa    
-## s(total_rain,avg_wind_speed):locationTosari      ***
-## s(distance):locationBilla Billa                  *  
-## s(distance):locationTosari                       ***
-## s(avg_temp):locationBilla Billa                  ***
-## s(avg_temp):locationTosari                          
-## s(avg_rh)                                           
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Rank: 110/111
-## R-sq.(adj) =   0.81   Deviance explained = 81.4%
-## -REML =   7504  Scale est. = 254.09    n = 1800</code></pre>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">model_12</span>, scheme <span class="op">=</span> <span class="fl">1</span>, pages <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_12-1.png" width="672" style="display: block; margin: auto;"></p>
-</div>
-<div id="model_13" class="section level3">
-<h3 class="hasAnchor">
-<a href="#model_13" class="anchor"></a>Model_13</h3>
-<p>Same as <code>model_10</code> but relative humidity removed.</p>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">model_13</span> <span class="op">&lt;-</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span>
-    <span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">total_rain</span>, k <span class="op">=</span> <span class="fl">16</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">distance</span>, k <span class="op">=</span> <span class="fl">4</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_temp</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_wind_speed</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span> <span class="op">+</span>
-      <span class="va">assessment_number</span> <span class="op">+</span>
-      <span class="va">location</span> <span class="op">+</span> 
-      <span class="va">direc_loc</span>,
-      data <span class="op">=</span> <span class="va">dat</span>,
-    method <span class="op">=</span> <span class="st">"REML"</span>
-  <span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_13</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Family: gaussian 
-## Link function: identity 
-## 
-## Formula:
-## incidence ~ s(total_rain, k = 16, by = location) + s(distance, 
-##     k = 4, by = location) + s(avg_temp, k = 18, by = location) + 
-##     s(avg_wind_speed, k = 18) + assessment_number + location + 
-##     direc_loc
-## 
-## Parametric coefficients:
-##                                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                    -41.44525   14.85023  -2.791 0.005313 ** 
-## assessment_number                9.13265    1.62278   5.628 2.12e-08 ***
-## locationTosari                  16.26187   16.87546   0.964 0.335358    
-## direc_locBilla Billa_NA         38.04010    3.17244  11.991  &lt; 2e-16 ***
-## direc_locBilla Billa_North      -0.03499    2.05817  -0.017 0.986439    
-## direc_locBilla Billa_NorthEast  -1.87407    2.05817  -0.911 0.362658    
-## direc_locBilla Billa_NorthWest  -1.70319    2.05817  -0.828 0.408053    
-## direc_locBilla Billa_South      -3.55843    2.05817  -1.729 0.083997 .  
-## direc_locBilla Billa_SouthEast  -4.99762    2.05817  -2.428 0.015274 *  
-## direc_locBilla Billa_SouthWest  -2.96581    2.05817  -1.441 0.149765    
-## direc_locBilla Billa_West       -0.62089    2.05817  -0.302 0.762938    
-## direc_locTosari_East            16.38296    2.30111   7.120 1.57e-12 ***
-## direc_locTosari_NA              40.21989   13.13431   3.062 0.002230 ** 
-## direc_locTosari_North            7.64228    2.30111   3.321 0.000915 ***
-## direc_locTosari_NorthEast       22.48869    2.30111   9.773  &lt; 2e-16 ***
-## direc_locTosari_NorthWest        1.03629    2.30111   0.450 0.652518    
-## direc_locTosari_South            0.00000    0.00000      NA       NA    
-## direc_locTosari_SouthEast        4.32432    2.30111   1.879 0.060377 .  
-## direc_locTosari_SouthWest        0.98191    2.30111   0.427 0.669640    
-## direc_locTosari_West             0.40523    2.30111   0.176 0.860235    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Approximate significance of smooth terms:
-##                                     edf Ref.df       F  p-value    
-## s(total_rain):locationBilla Billa 1.003  1.003   0.770   0.3808    
-## s(total_rain):locationTosari      1.000  1.000 133.768  &lt; 2e-16 ***
-## s(distance):locationBilla Billa   1.000  1.001   5.365   0.0206 *  
-## s(distance):locationTosari        1.965  1.999  46.324  &lt; 2e-16 ***
-## s(avg_temp):locationBilla Billa   2.792  2.899   2.189   0.1377    
-## s(avg_temp):locationTosari        1.009  1.011  58.740  &lt; 2e-16 ***
-## s(avg_wind_speed)                 8.664  9.002   5.167 5.07e-07 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Rank: 106/107
-## R-sq.(adj) =   0.81   Deviance explained = 81.4%
-## -REML =   7517  Scale est. = 254.16    n = 1800</code></pre>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
-  <span class="va">model_13</span>,
-  pages <span class="op">=</span> <span class="fl">1</span>,
-  shade <span class="op">=</span> <span class="cn">TRUE</span>,
-  seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
-  shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_13</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
-<span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_13-1.png" width="672" style="display: block; margin: auto;"></p>
-</div>
-<div id="model_14" class="section level3">
-<h3 class="hasAnchor">
-<a href="#model_14" class="anchor"></a>Model_14</h3>
-<p>Same as <code>model_13</code> but considering the interaction between total rain and wind speed.</p>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">model_14</span> <span class="op">&lt;-</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span>
-    <span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">total_rain</span>, <span class="va">avg_wind_speed</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">distance</span>, k <span class="op">=</span> <span class="fl">4</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_temp</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="va">assessment_number</span> <span class="op">+</span>
-      <span class="va">location</span> <span class="op">+</span>
-      <span class="va">direc_loc</span>,
-    data <span class="op">=</span> <span class="va">dat</span>,
-    method <span class="op">=</span> <span class="st">"REML"</span>
-  <span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_14</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Family: gaussian 
-## Link function: identity 
-## 
-## Formula:
-## incidence ~ s(total_rain, avg_wind_speed, k = 18, by = location) + 
-##     s(distance, k = 4, by = location) + s(avg_temp, k = 18, by = location) + 
-##     assessment_number + location + direc_loc
-## 
-## Parametric coefficients:
-##                                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                     24.59770   29.71854   0.828  0.40796    
-## assessment_number                1.19570    1.04337   1.146  0.25195    
-## locationTosari                  16.83229   31.50177   0.534  0.59318    
-## direc_locBilla Billa_NA         38.03945    3.17375  11.986  &lt; 2e-16 ***
-## direc_locBilla Billa_North      -0.03499    2.05808  -0.017  0.98644    
-## direc_locBilla Billa_NorthEast  -1.87407    2.05808  -0.911  0.36264    
-## direc_locBilla Billa_NorthWest  -1.70319    2.05808  -0.828  0.40803    
-## direc_locBilla Billa_South      -3.55843    2.05808  -1.729  0.08398 .  
-## direc_locBilla Billa_SouthEast  -4.99762    2.05808  -2.428  0.01527 *  
-## direc_locBilla Billa_SouthWest  -2.96581    2.05808  -1.441  0.14975    
-## direc_locBilla Billa_West       -0.62089    2.05808  -0.302  0.76293    
-## direc_locTosari_East           -23.83694   13.13360  -1.815  0.06970 .  
-## direc_locTosari_NA               0.00000    0.00000      NA       NA    
-## direc_locTosari_North          -32.57762   13.13360  -2.480  0.01321 *  
-## direc_locTosari_NorthEast      -17.73121   13.13360  -1.350  0.17717    
-## direc_locTosari_NorthWest      -39.18361   13.13360  -2.983  0.00289 ** 
-## direc_locTosari_South          -40.21990   13.13360  -3.062  0.00223 ** 
-## direc_locTosari_SouthEast      -35.89558   13.13360  -2.733  0.00634 ** 
-## direc_locTosari_SouthWest      -39.23799   13.13360  -2.988  0.00285 ** 
-## direc_locTosari_West           -39.81467   13.13360  -3.032  0.00247 ** 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Approximate significance of smooth terms:
-##                                                    edf Ref.df       F p-value
-## s(total_rain,avg_wind_speed):locationBilla Billa 7.855  7.981 203.787  &lt;2e-16
-## s(total_rain,avg_wind_speed):locationTosari      4.738  4.953 268.585  &lt;2e-16
-## s(distance):locationBilla Billa                  1.002  1.003   5.349  0.0207
-## s(distance):locationTosari                       1.965  1.999  46.328  &lt;2e-16
-## s(avg_temp):locationBilla Billa                  1.000  1.000   0.102  0.7496
-## s(avg_temp):locationTosari                       1.001  1.001   0.585  0.4456
-##                                                     
-## s(total_rain,avg_wind_speed):locationBilla Billa ***
-## s(total_rain,avg_wind_speed):locationTosari      ***
-## s(distance):locationBilla Billa                  *  
-## s(distance):locationTosari                       ***
-## s(avg_temp):locationBilla Billa                     
-## s(avg_temp):locationTosari                          
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Rank: 93/94
-## R-sq.(adj) =   0.81   Deviance explained = 81.4%
-## -REML = 7512.1  Scale est. = 254.14    n = 1800</code></pre>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
-  <span class="va">model_14</span>,
-  pages <span class="op">=</span> <span class="fl">1</span>,
-  shade <span class="op">=</span> <span class="cn">TRUE</span>,
-  seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
-  shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_14</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
-<span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_14-1.png" width="672" style="display: block; margin: auto;"></p>
-</div>
-<div id="model_15" class="section level3">
-<h3 class="hasAnchor">
-<a href="#model_15" class="anchor"></a>Model_15</h3>
-<p>Same as <code>model_13</code> but without wind speed.</p>
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">model_15</span> <span class="op">&lt;-</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span>
-    <span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">total_rain</span>, k <span class="op">=</span> <span class="fl">16</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">distance</span>, k <span class="op">=</span> <span class="fl">4</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_temp</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="va">assessment_number</span> <span class="op">+</span>
-      <span class="va">location</span> <span class="op">+</span> <span class="va">direc_loc</span>,
-    data <span class="op">=</span> <span class="va">dat</span>,
-    method <span class="op">=</span> <span class="st">"REML"</span>
-  <span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_15</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Family: gaussian 
-## Link function: identity 
-## 
-## Formula:
-## incidence ~ s(total_rain, k = 16, by = location) + s(distance, 
-##     k = 4, by = location) + s(avg_temp, k = 18, by = location) + 
-##     assessment_number + location + direc_loc
-## 
-## Parametric coefficients:
-##                                Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                     3.97249    5.21760   0.761  0.44654    
-## assessment_number               2.01680    0.71049   2.839  0.00458 ** 
-## locationTosari                 -3.62075    3.24067  -1.117  0.26402    
-## direc_locBilla Billa_NA        38.04020    3.17171  11.994  &lt; 2e-16 ***
-## direc_locBilla Billa_North     -0.03499    2.05786  -0.017  0.98644    
-## direc_locBilla Billa_NorthEast -1.87407    2.05786  -0.911  0.36258    
-## direc_locBilla Billa_NorthWest -1.70319    2.05786  -0.828  0.40798    
-## direc_locBilla Billa_South     -3.55843    2.05786  -1.729  0.08395 .  
-## direc_locBilla Billa_SouthEast -4.99762    2.05786  -2.429  0.01526 *  
-## direc_locBilla Billa_SouthWest -2.96581    2.05786  -1.441  0.14970    
-## direc_locBilla Billa_West      -0.62089    2.05786  -0.302  0.76290    
-## direc_locTosari_East           15.97774    2.30075   6.945 5.32e-12 ***
-## direc_locTosari_NA             39.81454   13.13416   3.031  0.00247 ** 
-## direc_locTosari_North           7.23706    2.30075   3.146  0.00169 ** 
-## direc_locTosari_NorthEast      22.08346    2.30075   9.598  &lt; 2e-16 ***
-## direc_locTosari_NorthWest       0.63106    2.30075   0.274  0.78390    
-## direc_locTosari_South          -0.40523    2.30075  -0.176  0.86021    
-## direc_locTosari_SouthEast       3.91910    2.30075   1.703  0.08867 .  
-## direc_locTosari_SouthWest       0.57669    2.30075   0.251  0.80211    
-## direc_locTosari_West            0.00000    0.00000      NA       NA    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Approximate significance of smooth terms:
-##                                     edf Ref.df       F p-value    
-## s(total_rain):locationBilla Billa 1.350  1.516   0.270  0.6027    
-## s(total_rain):locationTosari      3.497  3.841 262.965  &lt;2e-16 ***
-## s(distance):locationBilla Billa   1.000  1.001   5.369  0.0206 *  
-## s(distance):locationTosari        1.965  1.999  46.338  &lt;2e-16 ***
-## s(avg_temp):locationBilla Billa   5.735  6.280 150.640  &lt;2e-16 ***
-## s(avg_temp):locationTosari        1.052  1.091   1.241  0.2878    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Rank: 89/90
-## R-sq.(adj) =   0.81   Deviance explained = 81.3%
-## -REML = 7510.4  Scale est. = 254.09    n = 1800</code></pre>
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
-  <span class="va">model_15</span>,
-  all.terms <span class="op">=</span> <span class="cn">TRUE</span>,
-  pages <span class="op">=</span> <span class="fl">1</span>,
-  shade <span class="op">=</span> <span class="cn">TRUE</span>,
-  seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
-  shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_15</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
-<span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_15-1.png" width="672" style="display: block; margin: auto;"></p>
-</div>
-<div id="model_16" class="section level3">
-<h3 class="hasAnchor">
-<a href="#model_16" class="anchor"></a>Model_16</h3>
-<p>Add the effect <code>avg_rh</code> to <code>model_15</code> if a better fit can be achieved</p>
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">model_16</span> <span class="op">&lt;-</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span>
-    <span class="va">incidence</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">total_rain</span>, k <span class="op">=</span> <span class="fl">16</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">distance</span>, k <span class="op">=</span> <span class="fl">4</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_temp</span>, k <span class="op">=</span> <span class="fl">18</span>, by <span class="op">=</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">avg_rh</span>, k <span class="op">=</span> <span class="fl">18</span><span class="op">)</span> <span class="op">+</span>
-      <span class="va">assessment_number</span> <span class="op">+</span>
-      <span class="va">location</span> <span class="op">+</span>
-     <span class="va">direc_loc</span>,
-    data <span class="op">=</span> <span class="va">dat</span>,
-    method <span class="op">=</span> <span class="st">"REML"</span>
-  <span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_16</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Family: gaussian 
-## Link function: identity 
-## 
-## Formula:
-## incidence ~ s(total_rain, k = 16, by = location) + s(distance, 
-##     k = 4, by = location) + s(avg_temp, k = 18, by = location) + 
-##     s(avg_rh, k = 18) + assessment_number + location + direc_loc
-## 
-## Parametric coefficients:
-##                                Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                     7.45091    5.88619   1.266 0.205741    
-## assessment_number               1.01397    1.04820   0.967 0.333508    
-## locationTosari                 -1.49542    3.68806  -0.405 0.685177    
-## direc_locBilla Billa_NA        38.04023    3.17118  11.996  &lt; 2e-16 ***
-## direc_locBilla Billa_North     -0.03499    2.05756  -0.017 0.986435    
-## direc_locBilla Billa_NorthEast -1.87407    2.05756  -0.911 0.362514    
-## direc_locBilla Billa_NorthWest -1.70319    2.05756  -0.828 0.407913    
-## direc_locBilla Billa_South     -3.55843    2.05756  -1.729 0.083905 .  
-## direc_locBilla Billa_SouthEast -4.99762    2.05756  -2.429 0.015244 *  
-## direc_locBilla Billa_SouthWest -2.96581    2.05756  -1.441 0.149643    
-## direc_locBilla Billa_West      -0.62089    2.05756  -0.302 0.762869    
-## direc_locTosari_East           16.38296    2.30042   7.122 1.55e-12 ***
-## direc_locTosari_NA             40.21964   13.13405   3.062 0.002230 ** 
-## direc_locTosari_North           7.64228    2.30042   3.322 0.000912 ***
-## direc_locTosari_NorthEast      22.48869    2.30042   9.776  &lt; 2e-16 ***
-## direc_locTosari_NorthWest       1.03629    2.30042   0.450 0.652420    
-## direc_locTosari_South           0.00000    0.00000      NA       NA    
-## direc_locTosari_SouthEast       4.32432    2.30042   1.880 0.060300 .  
-## direc_locTosari_SouthWest       0.98191    2.30042   0.427 0.669547    
-## direc_locTosari_West            0.40523    2.30042   0.176 0.860194    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Approximate significance of smooth terms:
-##                                     edf Ref.df       F p-value    
-## s(total_rain):locationBilla Billa 1.002  1.003   0.871  0.3502    
-## s(total_rain):locationTosari      3.443  3.779 324.700  &lt;2e-16 ***
-## s(distance):locationBilla Billa   1.000  1.000   5.371  0.0206 *  
-## s(distance):locationTosari        1.965  1.999  46.350  &lt;2e-16 ***
-## s(avg_temp):locationBilla Billa   5.702  6.274  29.741  &lt;2e-16 ***
-## s(avg_temp):locationTosari        1.013  1.022   0.154  0.7116    
-## s(avg_rh)                         1.002  1.003   1.293  0.2556    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Rank: 106/107
-## R-sq.(adj) =   0.81   Deviance explained = 81.3%
-## -REML =   7508  Scale est. = 254.01    n = 1800</code></pre>
-<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
-  <span class="va">model_16</span>,
-  all.terms <span class="op">=</span> <span class="cn">TRUE</span>,
-  pages <span class="op">=</span> <span class="fl">1</span>,
-  shade <span class="op">=</span> <span class="cn">TRUE</span>,
-  seWithMean <span class="op">=</span> <span class="cn">TRUE</span>,
-  shift <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">model_16</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
-<span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/fit-model_16-1.png" width="672" style="display: block; margin: auto;"></p>
-</div>
-<div id="comments-on-model_16" class="section level3">
-<h3 class="hasAnchor">
-<a href="#comments-on-model_16" class="anchor"></a>Comments on model_16</h3>
-<p>The effect of <code>avg_rh</code> is not significant but adding it to the model resulted in a better fit, so <code>avg_rh</code> has been included in the final model.</p>
 </div>
 </div>
 <div id="compare-the-models" class="section level2">
@@ -1320,7 +935,7 @@
 <div id="aic-bic" class="section level3">
 <h3 class="hasAnchor">
 <a href="#aic-bic" class="anchor"></a>AIC, BIC</h3>
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
   model_1 <span class="op">=</span> <span class="va">model_1</span>,
   model_2 <span class="op">=</span> <span class="va">model_2</span>,
@@ -1332,42 +947,30 @@
   model_7 <span class="op">=</span> <span class="va">model_7</span>,
   model_8 <span class="op">=</span> <span class="va">model_8</span>,
   model_9 <span class="op">=</span> <span class="va">model_9</span>,
-  model_10 <span class="op">=</span> <span class="va">model_10</span>,
-  model_11 <span class="op">=</span> <span class="va">model_11</span>,
-  model_12 <span class="op">=</span> <span class="va">model_12</span>,
-  model_13 <span class="op">=</span> <span class="va">model_13</span>,
-  model_14 <span class="op">=</span> <span class="va">model_14</span>,
-  model_15 <span class="op">=</span> <span class="va">model_15</span>,
-  model_16 <span class="op">=</span> <span class="va">model_16</span>
+  model_10 <span class="op">=</span> <span class="va">model_10</span>
  <span class="op">)</span>
 <span class="fu">map_df</span><span class="op">(</span><span class="va">models</span>, <span class="va">glance</span>, .id <span class="op">=</span> <span class="st">"model"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">AIC</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 17 x 8
+<pre><code>## # A tibble: 11 x 8
 ##    model        df logLik    AIC    BIC deviance df.residual  nobs
 ##    &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;       &lt;dbl&gt; &lt;int&gt;
-##  1 model_16  34.1  -7521. 15112. 15307.  448554.       1766.  1800
-##  2 model_15  33.6  -7521. 15114. 15310.  448818.       1766.  1800
-##  3 model_10  35.0  -7520. 15114. 15316.  448353.       1765.  1800
-##  4 model_11  35.8  -7520. 15114. 15318.  448260.       1764.  1800
-##  5 model_12  35.8  -7520. 15114. 15318.  448260.       1764.  1800
-##  6 model_13  36.4  -7520. 15115. 15322.  448236.       1764.  1800
-##  7 model_14  36.6  -7520. 15115. 15324.  448164.       1763.  1800
-##  8 model_9   36.6  -7520. 15115. 15324.  448171.       1763.  1800
-##  9 model_8   34.0  -7553. 15178. 15377.  464929.       1766.  1800
-## 10 model_6.1 15.0  -7960. 15953. 16044.  730695.       1785.  1800
-## 11 model_5   18.0  -7958. 15953. 16058.  728998.       1782.  1800
-## 12 model_6   13.9  -7962. 15955. 16040.  732449.       1786.  1800
-## 13 model_4   16.8  -7960. 15956. 16055.  731007.       1783.  1800
-## 14 model_2   15.4  -7967. 15967. 16057.  736538.       1785.  1800
-## 15 model_3    2.   -8659. 17323. 17340. 1588802.       1798   1800
-## 16 model_1    3.94 -8950. 17910. 17938. 2196139.       1796.  1800
-## 17 model_7    2.00 -9027. 18061. 18077. 2393383.       1798   1800</code></pre>
+##  1 model_9   36.6  -7520. 15115. 15324.  448189.       1763.  1800
+##  2 model_8   34.6  -7553. 15178. 15379.  464898.       1765.  1800
+##  3 model_10  35.6  -7553. 15179. 15383.  464917.       1764.  1800
+##  4 model_6.1 15.0  -7960. 15953. 16044.  730695.       1785.  1800
+##  5 model_5   18.0  -7958. 15953. 16058.  728998.       1782.  1800
+##  6 model_6   13.9  -7962. 15955. 16040.  732449.       1786.  1800
+##  7 model_4   16.8  -7960. 15956. 16055.  731007.       1783.  1800
+##  8 model_2   15.4  -7967. 15967. 16057.  736538.       1785.  1800
+##  9 model_3    2.   -8659. 17323. 17340. 1588802.       1798   1800
+## 10 model_1    3.94 -8950. 17910. 17938. 2196139.       1796.  1800
+## 11 model_7    2.00 -9027. 18061. 18077. 2393383.       1798   1800</code></pre>
 </div>
 <div id="r2" class="section level3">
 <h3 class="hasAnchor">
 <a href="#r2" class="anchor"></a>R<sup>2</sup>
 </h3>
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">enframe</span><span class="op">(</span>
   <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
     model_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_1</span><span class="op">)</span><span class="op">$</span><span class="va">r.sq</span>,
@@ -1380,41 +983,29 @@
     model_7 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_7</span><span class="op">)</span><span class="op">$</span><span class="va">r.sq</span>,
     model_8 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_8</span><span class="op">)</span><span class="op">$</span><span class="va">r.sq</span>,
     model_9 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_9</span><span class="op">)</span><span class="op">$</span><span class="va">r.sq</span>,
-    model_10 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_10</span><span class="op">)</span><span class="op">$</span><span class="va">r.sq</span>,
-    model_11 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_11</span><span class="op">)</span><span class="op">$</span><span class="va">r.sq</span>,
-    model_12 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_12</span><span class="op">)</span><span class="op">$</span><span class="va">r.sq</span>,
-    model_13 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_13</span><span class="op">)</span><span class="op">$</span><span class="va">r.sq</span>,
-    model_14 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_14</span><span class="op">)</span><span class="op">$</span><span class="va">r.sq</span>,
-    model_15 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_15</span><span class="op">)</span><span class="op">$</span><span class="va">r.sq</span>,
-    model_16 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_16</span><span class="op">)</span><span class="op">$</span><span class="va">r.sq</span>
+    model_10 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_10</span><span class="op">)</span><span class="op">$</span><span class="va">r.sq</span>
   <span class="op">)</span>
 <span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 17 x 2
+<pre><code>## # A tibble: 11 x 2
 ##    name        value
 ##    &lt;chr&gt;       &lt;dbl&gt;
-##  1 model_16  0.810  
-##  2 model_10  0.810  
-##  3 model_15  0.810  
-##  4 model_11  0.810  
-##  5 model_12  0.810  
-##  6 model_14  0.810  
-##  7 model_9   0.810  
-##  8 model_13  0.810  
-##  9 model_8   0.803  
-## 10 model_5   0.694  
-## 11 model_6.1 0.694  
-## 12 model_4   0.693  
-## 13 model_6   0.693  
-## 14 model_2   0.691  
-## 15 model_3   0.339  
-## 16 model_1   0.0849 
-## 17 model_7   0.00379</code></pre>
+##  1 model_9   0.810  
+##  2 model_8   0.803  
+##  3 model_10  0.803  
+##  4 model_5   0.694  
+##  5 model_6.1 0.694  
+##  6 model_4   0.693  
+##  7 model_6   0.693  
+##  8 model_2   0.691  
+##  9 model_3   0.339  
+## 10 model_1   0.0849 
+## 11 model_7   0.00379</code></pre>
 </div>
 <div id="anova" class="section level3">
 <h3 class="hasAnchor">
 <a href="#anova" class="anchor"></a>ANOVA</h3>
-<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span>
   <span class="va">model_1</span>,
   <span class="va">model_2</span>,
@@ -1426,73 +1017,115 @@
   <span class="va">model_7</span>,
   <span class="va">model_8</span>,
   <span class="va">model_9</span>,
-  <span class="va">model_10</span>,
-  <span class="va">model_11</span>,
-  <span class="va">model_12</span>,
-  <span class="va">model_13</span>, 
-  <span class="va">model_14</span>,
-  <span class="va">model_15</span>,
-  <span class="va">model_</span>
+  <span class="va">model_10</span>
  <span class="op">)</span></code></pre></div>
-<pre><code>## Error in anova.gam(model_1, model_2, model_3, model_4, model_5, model_6, : object 'model_' not found</code></pre>
+<pre><code>## Analysis of Deviance Table
+## 
+## Model  1: incidence ~ s(distance, k = 4)
+## Model  2: incidence ~ s(total_rain, k = 16)
+## Model  3: incidence ~ assessment_number
+## Model  4: incidence ~ s(avg_wind_speed, k = 18)
+## Model  5: incidence ~ s(avg_rh, k = 18)
+## Model  6: incidence ~ s(avg_temp, k = 18)
+## Model  7: incidence ~ s(avg_temp, by = location, k = 18)
+## Model  8: incidence ~ location
+## Model  9: incidence ~ s(total_rain, k = 16) + s(distance, k = 4) + s(avg_wind_speed, 
+##     k = 18) + s(avg_rh, k = 18) + s(avg_temp, k = 18) + s(wind_direction, 
+##     k = 18) + location + assessment_number + direc_loc
+## Model 10: incidence ~ s(total_rain, k = 16, by = location) + s(distance, 
+##     k = 4, by = location) + s(avg_wind_speed, k = 18, by = location) + 
+##     s(avg_temp, k = 18, by = location) + s(avg_rh, k = 18, by = location) + 
+##     s(wind_direction, k = 18, by = location) + assessment_number + 
+##     location + direc_loc
+## Model 11: incidence ~ s(total_rain, k = 16) + s(distance, k = 4) + s(avg_wind_speed, 
+##     k = 18) + location + assessment_number + direc_loc
+##    Resid. Df Resid. Dev        Df Deviance
+## 1     1795.9    2196139                   
+## 2     1784.1     736538  11.83242  1459601
+## 3     1798.0    1588802 -13.89117  -852264
+## 4     1782.9     731007  15.12409   857795
+## 5     1782.0     728998   0.90043     2009
+## 6     1784.0     732449  -2.06305    -3451
+## 7     1783.7     730695   0.36208     1754
+## 8     1798.0    2393383 -14.32355 -1662688
+## 9     1763.6     464898  34.39794  1928485
+## 10    1762.7     448189   0.88981    16709
+## 11    1763.7     464917  -1.00937   -16728</code></pre>
 </div>
 </div>
-<div id="perform-checks-on-the-best-fitting-model_16" class="section level2">
+<div id="perform-checks-on-the-best-fitting-model_9" class="section level2">
 <h2 class="hasAnchor">
-<a href="#perform-checks-on-the-best-fitting-model_16" class="anchor"></a>Perform checks on the best fitting <code>model_16</code>
+<a href="#perform-checks-on-the-best-fitting-model_9" class="anchor"></a>Perform checks on the best fitting <code>model_9</code>
 </h2>
 <div id="gam-check-and-concurvity" class="section level3">
 <h3 class="hasAnchor">
 <a href="#gam-check-and-concurvity" class="anchor"></a>gam.check and concurvity</h3>
-<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.check.html">gam.check</a></span><span class="op">(</span><span class="va">model_16</span><span class="op">)</span></code></pre></div>
-<p><img src="Spatiotemporal_development_GAMs_files/figure-html/check-model_16-1.png" width="672" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.check.html">gam.check</a></span><span class="op">(</span><span class="va">model_9</span><span class="op">)</span></code></pre></div>
+<p><img src="Spatiotemporal_development_GAMs_files/figure-html/check-model_9-1.png" width="672" style="display: block; margin: auto;"></p>
 <pre><code>## 
 ## Method: REML   Optimizer: outer newton
-## full convergence after 11 iterations.
-## Gradient range [-0.001914579,0.004457845]
-## (score 7508.032 &amp; scale 254.0128).
-## Hessian positive definite, eigenvalue range [9.299123e-05,886.5037].
-## Model rank =  106 / 107 
+## full convergence after 25 iterations.
+## Gradient range [-0.001626647,0.002281697]
+## (score 7492.787 &amp; scale 254.1614).
+## eigenvalue range [-0.0005516927,884.0008].
+## Model rank =  191 / 192 
 ## 
 ## Basis dimension (k) checking results. Low p-value (k-index&lt;1) may
 ## indicate that k is too low, especially if edf is close to k'.
 ## 
-##                                      k'   edf k-index p-value    
-## s(total_rain):locationBilla Billa 15.00  1.00    0.71  &lt;2e-16 ***
-## s(total_rain):locationTosari      15.00  3.44    0.71  &lt;2e-16 ***
-## s(distance):locationBilla Billa    3.00  1.00    0.45  &lt;2e-16 ***
-## s(distance):locationTosari         3.00  1.97    0.45  &lt;2e-16 ***
-## s(avg_temp):locationBilla Billa   17.00  5.70    0.72  &lt;2e-16 ***
-## s(avg_temp):locationTosari        17.00  1.01    0.72  &lt;2e-16 ***
-## s(avg_rh)                         17.00  1.00    0.71  &lt;2e-16 ***
+##                                          k'   edf k-index p-value    
+## s(total_rain):locationBilla Billa     15.00  3.89    0.71  &lt;2e-16 ***
+## s(total_rain):locationTosari          15.00  2.11    0.71  &lt;2e-16 ***
+## s(distance):locationBilla Billa        3.00  1.00    0.45  &lt;2e-16 ***
+## s(distance):locationTosari             3.00  1.97    0.45  &lt;2e-16 ***
+## s(avg_wind_speed):locationBilla Billa 17.00  1.00    0.71  &lt;2e-16 ***
+## s(avg_wind_speed):locationTosari      17.00  1.63    0.71  &lt;2e-16 ***
+## s(avg_temp):locationBilla Billa       17.00  1.01    0.72  &lt;2e-16 ***
+## s(avg_temp):locationTosari            17.00  1.00    0.72  &lt;2e-16 ***
+## s(avg_rh):locationBilla Billa         17.00  1.00    0.71  &lt;2e-16 ***
+## s(avg_rh):locationTosari              17.00  1.00    0.71  &lt;2e-16 ***
+## s(wind_direction):locationBilla Billa 17.00  1.00    0.71  &lt;2e-16 ***
+## s(wind_direction):locationTosari      17.00  1.00    0.71  &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 <div id="comments-on-the-model-check" class="section level3">
 <h3 class="hasAnchor">
 <a href="#comments-on-the-model-check" class="anchor"></a>Comments on the model check</h3>
-<p>The model fit could have been much better if we had enough basis function for <code>total_rain</code>, <code>distance</code> and <code>avg_temp</code> and <code>avg_rh</code> (shown by significant result in the diagnostic function).</p>
-<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/concurvity.html">concurvity</a></span><span class="op">(</span><span class="va">model_15</span>, full<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p>The model has been fully converged, which indicates that there is no issue of too many variables for not enough data. However, the model fit could have been much better if we had enough basis function for predictors showing significant result in the diagnostic function, the low p value means residuals are not randomly distributed).</p>
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/concurvity.html">concurvity</a></span><span class="op">(</span><span class="va">model_9</span>, full<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <pre><code>##          para s(total_rain):locationBilla Billa s(total_rain):locationTosari
-## worst       1                          1.146525                 2.839383e+30
-## observed    1                          1.000000                 2.922429e+00
-## estimate    1                          1.000000                 1.000000e+00
+## worst       1                          1.186368                     1.364428
+## observed    1                          1.000000                     1.000000
+## estimate    1                          1.000000                     1.000000
 ##          s(distance):locationBilla Billa s(distance):locationTosari
 ## worst                          1.0000000                  1.0000000
-## observed                       0.2210998                  0.3684495
-## estimate                       0.2280612                  0.2012842
+## observed                       0.2252989                  0.3690643
+## estimate                       0.2326567                  0.2027466
+##          s(avg_wind_speed):locationBilla Billa s(avg_wind_speed):locationTosari
+## worst                                 1.687242                         1.492719
+## observed                              1.000000                         1.000000
+## estimate                              1.000000                         1.000000
 ##          s(avg_temp):locationBilla Billa s(avg_temp):locationTosari
-## worst                           1.127943               7.104991e+29
-## observed                        1.000000               9.783470e-01
-## estimate                        1.000000               1.000000e+00</code></pre>
+## worst                           1.180916                   1.430179
+## observed                        1.000000                   1.000000
+## estimate                        1.000000                   1.000000
+##          s(avg_rh):locationBilla Billa s(avg_rh):locationTosari
+## worst                         1.226327                 2.456714
+## observed                      1.000000                 1.000000
+## estimate                      1.000000                 1.000000
+##          s(wind_direction):locationBilla Billa s(wind_direction):locationTosari
+## worst                                 1.092539                         1.159971
+## observed                              1.000000                         1.000000
+## estimate                              1.000000                         1.000000</code></pre>
 </div>
 </div>
 <div id="final-thoughts" class="section level2">
 <h2 class="hasAnchor">
 <a href="#final-thoughts" class="anchor"></a>Final thoughts</h2>
-<p>The <code>model_16</code> seems to be the best fit model based on lower AIC/BIC values and high adjusted R<sup>2</sup> value.</p>
+<p>The <code>model_9</code> seems to be the best fit model and adequately describes the spatiotemporal development of Ascochyta blight of chickpea</p>
 </div>
   </div>
 
@@ -1507,7 +1140,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Ihanul Khaliq, Adam H. Sparks, Grains Research and Development Corporation, Western Australia Agriculture Authority.</p>
+  <p>Developed by Ihanul Khaliq, Grains Research and Development Corporation.</p>
 </div>
 
 <div class="pkgdown">

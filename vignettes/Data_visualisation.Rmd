@@ -7,6 +7,7 @@ vignette: >
   %\VignetteIndexEntry{Visualise spatiotemporal spread data}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
+  %\usepackage{extrafont}
   %\VignetteDepends{cowplot}
   %\VignetteDepends{clifro}
   %\VignetteDepends{ggplot2}
@@ -16,8 +17,9 @@ vignette: >
   %\VignetteDepends{lubridate}
   %\VignetteDepends{viridis}
   %\VignetteDepends{showtext}
-  %\VignetteDepends{readr}
   %\VignetteDepends{here}
+  %\VignetteDepends{patchwork}
+  %\VignetteDepends{classInt}
 ---
 
 ```{r setup, include=FALSE}
@@ -72,6 +74,11 @@ library("viridis")
 library("showtext")
 library("readr")
 library("here")
+library("patchwork")
+library("classInt")
+library("extrafont")
+
+extrafont::loadfonts()
 ```
 
 
@@ -334,7 +341,7 @@ wind_speed_dat <-
 wind_dat <- left_join(wind_speed_dat, wind_direc_dat)
 ```
 
-### Plot wind rose
+### Plot windrose over chickpea growing season
 
 ```{r fig-3,  message=FALSE, warning=FALSE}
 fig_3 <-
@@ -373,3 +380,148 @@ fig_3
 dev.off()
 ```
 
+
+```{r windrose-over-season}
+wind_dt <-
+   wind_dat %>%
+   mutate(
+      assessment_number=
+         case_when(
+            date <= "2020-07-02" & location == "Billa Billa" ~ 1,
+            date > "2020-07-02" &
+               date <= "2020-07-16" & location == "Billa Billa" ~ 2,
+            date > "2020-07-16" &
+               date <= "2020-07-30" & location == "Billa Billa" ~ 3,
+            date > "2020-07-30" &
+               date <= "2020-08-13" & location == "Billa Billa" ~ 4,
+            date > "2020-08-13" &
+               date <= "2020-08-26" & location == "Billa Billa" ~ 5,
+            date > "2020-08-26" &
+               date <= "2020-09-10" & location == "Billa Billa" ~ 6,
+            date > "2020-09-10" &
+               date <= "2020-09-24" & location == "Billa Billa" ~ 7,
+            date > "2020-09-24" &
+               date <= "2020-10-08" & location == "Billa Billa" ~ 8,
+            date > "2020-10-08" &
+               date <= "2020-10-22" & location == "Billa Billa" ~ 9,
+            date > "2020-10-22" &
+               date <= "2020-10-27" & location == "Billa Billa" ~ 10,
+            date <= "2020-07-30" & location == "Tosari" ~ 1,
+            date > "2020-07-30" &
+               date <= "2020-08-14" & location == "Tosari" ~ 2,
+            date > "2020-08-14" &
+               date <= "2020-08-27" & location == "Tosari" ~ 3,
+            date > "2020-08-27" &
+               date <= "2020-09-10" & location == "Tosari" ~ 4,
+            date > "2020-09-10" &
+               date <= "2020-09-25" & location == "Tosari" ~ 5,
+            date > "2020-09-25" &
+               date <= "2020-10-09" & location == "Tosari" ~ 6,
+            date > "2020-10-09" &
+               date <= "2020-10-23" & location == "Tosari" ~ 7,
+            date > "2020-10-23" &
+               date <= "2020-11-05" & location == "Tosari" ~ 8
+         )
+   ) %>%
+   mutate(assessment_number  = as.factor(assessment_number))
+
+
+Billa_Billa_wind_dt <- filter(wind_dt, location == "Billa Billa")
+Tosari_wind_dt <- filter(wind_dt, location == "Tosari") %>% 
+  droplevels()
+```
+
+### Plot windros by assessment number
+
+```{r windrose-by-assessment-number, message=FALSE, warning=FALSE}
+# create breaks for the windroses 
+breaks <- classIntervals(wind_dat$wind_speed, n = 4, style = "jenks")
+
+# Billa Billa windrose
+fig_3.1 <-
+  with(
+   Billa_Billa_wind_dt,
+    windrose(
+      wind_speed,
+      wind_direction_degrees,
+      facet = assessment_number,
+      n_col = 5,
+      legend_title = "Wind speed (m/s)",
+      speed_cuts = c(0, 1.4, 2.8, 4.2, 5.6, 7)
+    )
+  )
+
+fig_3.1 <-
+   fig_3.1 +
+   scale_fill_viridis_d(name = "Wind Speed (m/s)",
+                        direction = -1,
+                        option = "cividis") +
+   scale_y_continuous(name = "Proportion (%)",
+                      labels = c(0, 10, 20, 30, 40, 50, 60)) +
+   xlab("") +
+   theme_pubclean(base_family = "Arial Unicode MS") +
+   theme(
+      axis.ticks.length = unit(0, "mm"),
+      axis.line = element_blank(),
+      panel.spacing.x = unit(0, "lines"),
+      panel.spacing.y = unit(0, "lines"),
+      plot.margin = margin(0, 0, 0, 0, "cm")
+   )
+
+# Tosari windrose
+fig_3.2 <-
+  with(
+   Tosari_wind_dt,
+    windrose(
+      wind_speed,
+      wind_direction_degrees,
+      facet = assessment_number,
+      n_col = 5,
+      legend_title = "Wind speed (m/s)",
+      speed_cuts = c(0, 1.4, 2.8, 4.2, 5.6, 7)
+    )
+  )
+
+fig_3.2 <-
+   fig_3.2 +
+   scale_fill_viridis_d(name = "Wind Speed (m/s)",
+                        direction = -1,
+                        option = "cividis") +
+   scale_y_continuous(name = "Proportion (%)",
+                      labels = c(0, 10, 20, 30, 40, 50)) +
+   xlab("") +
+   theme_pubclean(base_family = "Arial Unicode MS") +
+   theme(
+      legend.position = "none",
+      axis.ticks.length = unit(0, "mm"),
+      axis.line = element_blank(),
+      panel.spacing.x = unit(0, "lines"),
+      panel.spacing.y = unit(0, "lines"),
+      plot.margin = margin(0, 0, 0, 0, "cm")
+   )
+
+fig_3 <-
+  fig_3.1 / fig_3.2
+
+fig_3 <-
+   fig_3 +
+   plot_annotation(tag_levels = "A") &
+   theme(plot.tag = element_text())
+
+print(fig_3)
+
+ggsave(
+   here("man", "figures/Fig3.png"),
+   width = 9,
+   height = 9,
+   units = "in",
+   dpi = 600
+)
+
+cairo_ps(
+   here("man", "figures/Fig3.eps"),
+   family = "Arial Unicode MS"
+)
+fig_3
+dev.off()
+```

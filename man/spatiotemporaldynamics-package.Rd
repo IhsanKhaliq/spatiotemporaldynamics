@@ -15,16 +15,10 @@ Research compendium documenting data visualisation and generalised
 \author{
 \strong{Maintainer}: Ihanul Khaliq \email{Ihsan.Khaliq@usq.edu.au}
 
-Authors:
-\itemize{
-  \item Adam H. Sparks \email{Adam.Sparks@dpird.wa.gov.au} (\href{https://orcid.org/0000-0002-0061-8359}{ORCID}) [conceptor]
-}
-
 Other contributors:
 \itemize{
   \item Grains Research and Development Corporation (Provided support through funding GRDC Project
            USQ1903-003RTX) [funder, copyright holder]
-  \item Western Australia Agriculture Authority (Provided support through Adam Sparks' time.) [funder, copyright holder]
   \item University of Southern Queensland [copyright holder]
 }
 

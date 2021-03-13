@@ -25,7 +25,6 @@ knitr::opts_chunk$set(
   fig.align = "center"
 )
 ```
-
 ## Load libraries 
 
 ```{r libraries, message=FALSE, echo=TRUE, warning=FALSE}
@@ -35,38 +34,52 @@ library("broom")
 library("ggpubr")
 library("tidyverse")
 library("lubridate")
+library("spatiotemporaldynamics")
 library("SDMTools")
 ```
 
 ## Import data
 
-```{r import-data}
+### Disease spread data
+
+Import disease data.
+
+```{r import-disease-data}
 ### import spatiotemporal spread data
 dat <-
-   read_excel(
-      system.file("extdata", "SpatioTemporalSpreadData.xlsx",
-                  package = "spatiotemporaldynamics"),
-      sheet = 1
-   )
-View(dat)
-### import daily average wind direction data
-dt <- 
+  read_excel(
+    system.file("extdata", "SpatioTemporalSpreadData.xlsx",
+                package = "spatiotemporaldynamics"),
+    sheet = 1,
+    na = "NA"
+  )
+
+summary(dat)
+```
+
+### Daily average wind direction data
+
+```{r import-wind_data}
+wind <- 
   read_excel(
       system.file("extdata", "DailyWindDirectionData.xlsx",
                   package = "spatiotemporaldynamics"),
       sheet = 1
    )
-```
 
+summary(wind)
+```
 
 ## Convert text to degrees
 
-Wind direction for the Billa Billa site is the character format. Convert it to degress for calculations
+Wind direction for the Billa Billa site is the character format recorded as the text value of the wind direction.
+We need to convert it to degrees for calculations and then calculate the fortnightly average wind direction for use in the GAMs.
 
 ```{r convert-text-to-degrees}
-dt %>%
-  mutate(
-    wind_direc = case_when(
+wind <-
+  wind %>%
+  mutate(wind_degrees = as.numeric(
+    case_when(
       daily_avg_wind_direction == "N" ~ "0",
       daily_avg_wind_direction == "NbE" ~ "11.25",
       daily_avg_wind_direction == "NNE" ~ "22.5",
@@ -101,75 +114,32 @@ dt %>%
       daily_avg_wind_direction == "NbW" ~ "348.8",
       TRUE ~   daily_avg_wind_direction
     )
-  ) %>%
-  mutate(wind_direc = as.numeric(wind_direc)) %>%
-  group_by(assessment_number, location) %>%
-  summarise(circular.averaging(wind_direc)) %>%
-  rename(wind_direc = 'circular.averaging(wind_direc)')
-
+  )) %>%
+  group_by(location, assessment_number) %>%
+  summarise(wind_direction = circular.averaging(wind_degrees))
 ```
 
+## Join the data sources
 
-## Copy `wind_direc` column to the spatiotemporal spread data
+Left-join the wind and disease data for analysis in the GAMs.
 
 ```{r}
-dat <- dat %>%
-  mutate(
-    wind_direc = case_when(
-      location == "Billa Billa" & assessment_number == 1 ~ 88.5,
-      location == "Billa Billa" &
-        assessment_number == 2 ~  110,
-      location == "Billa Billa" &
-        assessment_number == 3 ~  239,
-      location == "Billa Billa" &
-        assessment_number == 4 ~  84.5,
-      location == "Billa Billa" &
-        assessment_number == 5 ~  207,
-      location == "Billa Billa" &
-        assessment_number == 6 ~  45.9,
-      location == "Billa Billa" &
-        assessment_number == 7 ~  63.5,
-      location == "Billa Billa" &
-        assessment_number == 8 ~  56.5,
-      location == "Billa Billa" &
-        assessment_number == 9 ~  77.3,
-      location == "Billa Billa" &
-        assessment_number == 10 ~  359,
-      location == "Tosari" &
-        assessment_number == 1 ~  195,
-      location == "Tosari" &
-        assessment_number == 2 ~  176,
-      location == "Tosari" &
-        assessment_number == 3 ~  241,
-      location == "Tosari" &
-        assessment_number == 4 ~  131,
-      location == "Tosari" &
-        assessment_number == 5 ~  137,
-      location == "Tosari" &
-        assessment_number == 6 ~  125,
-      location == "Tosari" &
-        assessment_number == 7 ~  119,
-      location == "Tosari" &
-        assessment_number == 8 ~  165
-    )
-  ) %>%
-  mutate(wind_direc = as.numeric(wind_direc))
-
+dat <- left_join(dat, wind, by = c("location", "assessment_number"))
 ```
+
+### Combine quadrat direction and location column to determine whether quadrats located in particular direction has significantly faster disease progress rates
+
+
+```{r unite-location-quadrat-direction}
+dat <-
+  unite(dat, direc_loc, c(location, direction), remove = FALSE) 
+```
+
 
 ## Examine data
 
 ```{r examine-data}
 str(dat)
-```
-
-### Combine direction & location columns
-
-This provides information on whether the rate of disease progress was significantly faster in quadrats located in a particular direction.
-
-```{r combine-location-and-direction-column}
-dat<-
-  unite(dat, direc_loc, c(location, direction), remove = FALSE) 
 ```
 
 ## Prepare data to fit GAMs
@@ -189,7 +159,7 @@ sapply(dat, class)
 
 ## Fit univariate GAMs
 
-Use `set.seed()` for reproducibility purposes
+Use `set.seed()` for reproducibility purposes.
 
 ```{r set-seed, echo=TRUE}
 set.seed(42)
@@ -214,6 +184,7 @@ plot(
   shift = coef(model_1)[1]
 )
 ```
+
 
 ### Model_2 s(total_rain)
 
@@ -370,6 +341,7 @@ model_8 <-
       s(avg_wind_speed, k = 18) +
       s(avg_rh, k = 18) +
       s(avg_temp, k = 18) +
+      s(wind_direction, k = 18) +
       location +
       assessment_number +
       direc_loc,
@@ -381,7 +353,6 @@ summary(model_8)
 
 plot(
   model_8,
-  all.terms = TRUE,
   pages = 1,
   shade = TRUE,
   seWithMean = TRUE,
@@ -401,6 +372,7 @@ model_9 <-
       s(avg_wind_speed, k = 18, by = location) +
       s(avg_temp, k = 18, by = location) +
       s(avg_rh, k = 18, by = location) +
+      s(wind_direction, k = 18, by = location) +
       assessment_number +
       location +
       direc_loc,
@@ -412,7 +384,6 @@ summary(model_9)
 
 plot(
   model_9,
-  all.terms = TRUE,
   pages = 1,
   shade = TRUE,
   seWithMean = TRUE,
@@ -420,27 +391,26 @@ plot(
 )
 ```
 
-### Comments on model_8 and model_9
+### Comments on model_9
 
-Fitting different smooths for each term by location in `model_9`improved the adjusted R^2 and percent deviance explained values.
+Fitting different smooths for each term by location in `model_9` improved the adjusted R^2 and percent deviance explained values.
 Noam Ross encourages this practice in his own words,
 
-> "By specifying the 'by' argument to the s() function, we can tell R to calculate a different smooth for each unique category. Usually, when we have smooth-factor interactions, we want to also include a varying intercept, in case the different categories are different in overall means in addition to shape of their smooths. Here, you see adding this varying intercept improves the estimate of the smooth."
+> "We can also specify a GAM formula that will fit different smooths for different categorical variables. We call this a factor-smooth interaction. By specifying the 'by' argument to the s() function, we can tell R to calculate a different smooth for each unique category. Usually, when we have smooth-factor interactions, we want to also include a varying intercept, in case the different categories are different in overall means in addition to shape of their smooths. Here, you see adding this varying intercept improves the estimate of the smooth. Usually, when we have smooth-factor interactions, we want to also include a varying intercept, in case the different categories are different in overall means in addition to shape of their smooths"
 
-### Model_10 (Remove by argument from avg_rh and avg_wind_speed)
 
-Remove `by` argument from `avg_rh` and `avg_wind_speed` as they are only weakly significant for Tosari only.
+### Model_10
+
+Same as `model_8` but relative humidity, wind speed and wind direction removed, as they were not significant.
 
 ```{r fit-model_10}
 model_10 <-
   gam(
-    incidence ~ s(total_rain, k = 16, by = location) +
-      s(distance, k = 4, by = location) +
+    incidence ~ s(total_rain, k = 16) +
+      s(distance, k = 4) +
       s(avg_wind_speed, k = 18) +
-      s(avg_temp, k = 18, by = location) +
-      s(avg_rh, k = 18) +
+      location +
       assessment_number +
-      location + 
       direc_loc,
     data = dat,
     method = "REML"
@@ -450,207 +420,12 @@ summary(model_10)
 
 plot(
   model_10,
-  all.terms = TRUE,
   pages = 1,
   shade = TRUE,
   seWithMean = TRUE,
   shift = coef(model_10)[1]
 )
 ```
-
-
-### Model_11 (Interaction between total_rain and avg_wind_speed)
-
-```{r fit-model_11}
-model_11 <-
-  gam(
-    incidence ~ s(total_rain, avg_wind_speed, k = 18, by = location) +
-      s(distance, k = 4, by = location)  +
-      s(avg_temp, k = 18, by = location) +
-      s(avg_rh, k = 18) +
-      assessment_number +
-      location +
-      direc_loc,
-    data = dat,
-    method = "REML"
-  )
-
-summary(model_11)
-plot(model_11, scheme = 1, pages = 1)
-```
-
-### Comments on model_11
-
-The effect of `avg_wind_speed` is not significant at its own in model_10, but significant in interaction with `total_rain` for Tosari only
-
-### Visualize the interaction between avg_wind_speed and total_rain
-
-```{r visualise-interaction}
-vis.gam(
-  x = model_11,
-  view = c("total_rain", "avg_wind_speed"),
-  plot.type = "persp",
-  theta = 135
-)
-```
-
-### Add confidence interval to the interaction visualisation/predictions
-
-```{r add-CI-to-the-visualisation}
-vis.gam(
-  x = model_11,
-  view = c("total_rain", "avg_wind_speed"),
-  plot.type = "persp",
-  se = 2,
-  theta = 135
-)
-```
-The plot indicates the number of standard errors (2 in this case) away from the average prediction to plot high and low prediction surfaces 
-
-
-### Model_12 Try tensor interactions instead of smooth interactions
-
-Tensor smooths let us model interactions that operate on different scales.
-Tensor interaction takes longer to run the model, and requires more data. 
-
-```{r fit-model_12}
-model_12 <-
-  gam(
-    incidence ~ s(total_rain, avg_wind_speed, k = 18, by = location) +
-      s(distance, k = 4, by = location)  +
-      s(avg_temp, k = 18, by = location) +
-      s(avg_rh, k = 18) +
-      assessment_number +
-      location +
-      direc_loc,
-    data = dat,
-    method = "REML"
-  )
-
-summary(model_12)
-plot(model_12, scheme = 1, pages = 1)
-```
-
-### Model_13
-
-Same as `model_10` but relative humidity removed.
-
-```{r fit-model_13}
-model_13 <-
-  gam(
-    incidence ~ s(total_rain, k = 16, by = location) +
-      s(distance, k = 4, by = location) +
-      s(avg_temp, k = 18, by = location) +
-      s(avg_wind_speed, k = 18) +
-      assessment_number +
-      location + 
-      direc_loc,
-      data = dat,
-    method = "REML"
-  )
-
-summary(model_13)
-
-plot(
-  model_13,
-  pages = 1,
-  shade = TRUE,
-  seWithMean = TRUE,
-  shift = coef(model_13)[1]
-)
-```
-
-### Model_14
-
-Same as `model_13` but considering the interaction between total rain and wind speed.
-
-```{r fit-model_14}
-model_14 <-
-  gam(
-    incidence ~ s(total_rain, avg_wind_speed, k = 18, by = location) +
-      s(distance, k = 4, by = location) +
-      s(avg_temp, k = 18, by = location) +
-      assessment_number +
-      location +
-      direc_loc,
-    data = dat,
-    method = "REML"
-  )
-
-summary(model_14)
-
-plot(
-  model_14,
-  pages = 1,
-  shade = TRUE,
-  seWithMean = TRUE,
-  shift = coef(model_14)[1]
-)
-```
-
-### Model_15 
-
-Same as `model_13` but without wind speed.
-
-```{r fit-model_15}
-model_15 <-
-  gam(
-    incidence ~ s(total_rain, k = 16, by = location) +
-      s(distance, k = 4, by = location) +
-      s(avg_temp, k = 18, by = location) +
-      assessment_number +
-      location + direc_loc,
-    data = dat,
-    method = "REML"
-  )
-
-summary(model_15)
-
-plot(
-  model_15,
-  all.terms = TRUE,
-  pages = 1,
-  shade = TRUE,
-  seWithMean = TRUE,
-  shift = coef(model_15)[1]
-)
-```
-
-### Model_16
-
-Add the effect `avg_rh` to `model_15` if a better fit can be achieved
-
-```{r fit-model_16}
-model_16 <-
-  gam(
-    incidence ~ s(total_rain, k = 16, by = location) +
-      s(distance, k = 4, by = location) +
-      s(avg_temp, k = 18, by = location) +
-      s(avg_rh, k = 18) +
-      assessment_number +
-      location +
-     direc_loc,
-    data = dat,
-    method = "REML"
-  )
-
-summary(model_16)
-
-plot(
-  model_16,
-  all.terms = TRUE,
-  pages = 1,
-  shade = TRUE,
-  seWithMean = TRUE,
-  shift = coef(model_16)[1]
-)
-
-```
-
-### Comments on model_16
-
-The effect of `avg_rh` is not significant but adding it to the model resulted in a better fit, so `avg_rh` has been included in the final model. 
-
 
 ## Compare the models
 
@@ -668,13 +443,7 @@ models <- list(
   model_7 = model_7,
   model_8 = model_8,
   model_9 = model_9,
-  model_10 = model_10,
-  model_11 = model_11,
-  model_12 = model_12,
-  model_13 = model_13,
-  model_14 = model_14,
-  model_15 = model_15,
-  model_16 = model_16
+  model_10 = model_10
  )
 map_df(models, glance, .id = "model") %>%
   arrange(AIC)
@@ -695,13 +464,7 @@ enframe(
     model_7 = summary(model_7)$r.sq,
     model_8 = summary(model_8)$r.sq,
     model_9 = summary(model_9)$r.sq,
-    model_10 = summary(model_10)$r.sq,
-    model_11 = summary(model_11)$r.sq,
-    model_12 = summary(model_12)$r.sq,
-    model_13 = summary(model_13)$r.sq,
-    model_14 = summary(model_14)$r.sq,
-    model_15 = summary(model_15)$r.sq,
-    model_16 = summary(model_16)$r.sq
+    model_10 = summary(model_10)$r.sq
   )
 ) %>%
   arrange(desc(value))
@@ -721,38 +484,33 @@ anova(
   model_7,
   model_8,
   model_9,
-  model_10,
-  model_11,
-  model_12,
-  model_13, 
-  model_14,
-  model_15,
-  model_
+  model_10
  )
 ```
 
-## Perform checks on the best fitting `model_16`
+## Perform checks on the best fitting `model_9`
 
 ### gam.check and concurvity
 
-```{r check-model_16}
-gam.check(model_16)
+```{r check-model_9}
+gam.check(model_9)
 ```
 
 
 ### Comments on the model check
 
-The model fit could have been much better if we had enough basis function for `total_rain`, `distance` and `avg_temp` and `avg_rh` (shown by significant result in the diagnostic function).
+The model has been fully converged, which indicates that there is no issue of too many variables for not enough data.
+However, the model fit could have been much better if we had enough basis function for predictors showing significant result in the diagnostic function, the low p value means residuals are not randomly distributed).
 
 
-```{r concurvity-15}
-concurvity(model_15, full=TRUE)
+```{r concurvity-10}
+concurvity(model_9, full=TRUE)
 ```
 
 
 ## Final thoughts
 
-The `model_16` seems to be the best fit model based on lower AIC/BIC values and high adjusted R^2^ value.
+The `model_9` seems to be the best fit model and adequately describes the spatiotemporal development of Ascochyta blight of chickpea 
 
 
 
