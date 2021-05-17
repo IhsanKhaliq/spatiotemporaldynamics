@@ -131,23 +131,33 @@ dat$assessment_date <- as.Date(dat$assessment_date)
 sapply(dat, class)
 ```
 
-## Visualise data distribution 
+## Visualise data distribution by distance and location
 
 ### Density plot
 
 ```{r density-plot}
-ggplot(dat, aes(incidence)) +
+ggplot(dat, aes(infected_plants)) +
    geom_density() +
    facet_grid(distance ~ location, labeller = label_both) +
    theme_pubclean(base_family = "Arial Unicode MS")
 ```
+
+### Visualise data as a whole
+
+```{r}
+ggplot(dat, aes(x = infected_plants)) +
+  geom_density(fill= "steelblue", alpha = 0.7) +
+  geom_rug(alpha = 0.4) +
+  xlab("Infected plants count")
+```
+
 
 ### Line plot with median and max/min values
 
 ```{r fig-1}
 fig_1 <- ggplot(
    data = dat,
-   mapping = aes(x = assessment_date, y = incidence)
+   mapping = aes(x = assessment_number, y = infected_plants)
 ) +
    geom_pointrange(
       stat = "summary",
@@ -161,8 +171,8 @@ fig_1 <- ggplot(
       aes(group = location)
    ) +
    facet_grid(distance ~ location) +
-   xlab("Assessment Date") +
-   ylab("Disease Incidence") +
+   xlab("Assessment number") +
+   ylab("Infected plants") +
    theme_pubclean(base_family = "Arial Unicode MS")
 
 fig_1

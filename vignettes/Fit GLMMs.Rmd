@@ -1,0 +1,267 @@
+---
+title: "Fit GLMMs to Ascocyta blight spatiotemporal development data"
+author: "Ihsan"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+knitr::opts_chunk$set(progress = TRUE, verbose = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.width = 7,
+  fig.height = 7,
+  fig.align = "center"
+)
+```
+
+
+### Load libraries 
+
+```{r load-libraries, message=FALSE, echo=TRUE, warning=FALSE}
+library("readxl")
+library("tidyverse")
+library("lubridate")
+library("spatiotemporaldynamics")
+library("SDMTools")
+library("glmmTMB")
+library("DHARMa")
+library("gridExtra")
+library("ggpubr")
+library("here")
+library("ggeffects")
+```
+
+### Import disease data
+
+```{r import-diseaes-data}
+### import spatiotemporal spread data
+dat <-
+  read_excel(
+    system.file("extdata", "SpatioTemporalSpreadData_N.xlsx",
+                package = "spatiotemporaldynamics"),
+    sheet = 1
+  )
+
+summary(dat)
+```
+
+### Import daily average wind direction data
+
+```{r import-wind-direction-data}
+wind <- 
+  read_excel(
+      system.file("extdata", "DailyWindDirectionData.xlsx",
+                  package = "spatiotemporaldynamics"),
+      sheet = 1
+   )
+
+summary(wind)
+```
+
+### Convert text to degrees
+
+Wind direction for the Billa Billa site is the character format recorded as the text value of the wind direction.
+We need to convert it to degrees for calculations and then calculate the fortnightly average wind direction for use in the GLMMs.
+
+```{r convert-text-to-degrees}
+wind <-
+  wind %>%
+  mutate(wind_degrees = as.numeric(
+    case_when(
+      daily_avg_wind_direction == "N" ~ "0",
+      daily_avg_wind_direction == "NbE" ~ "11.25",
+      daily_avg_wind_direction == "NNE" ~ "22.5",
+      daily_avg_wind_direction == "NEbN" ~ "33.75",
+      daily_avg_wind_direction == "NE" ~ "45",
+      daily_avg_wind_direction == "NEbE" ~ "56.25",
+      daily_avg_wind_direction == "ENE" ~ "67.5",
+      daily_avg_wind_direction == "EbN" ~ "73.5",
+      daily_avg_wind_direction == "E" ~ "90",
+      daily_avg_wind_direction == "EbS" ~ "101.2",
+      daily_avg_wind_direction == "ESE" ~ "112.5",
+      daily_avg_wind_direction == "SEbE" ~ "123.8",
+      daily_avg_wind_direction == "SE" ~ "135.1",
+      daily_avg_wind_direction == "SEbS" ~ "146.3",
+      daily_avg_wind_direction == "SSE" ~ "157.6",
+      daily_avg_wind_direction == "SbE" ~ "168.8",
+      daily_avg_wind_direction == "S" ~ "180",
+      daily_avg_wind_direction == "SbW" ~ "191.2",
+      daily_avg_wind_direction == "SSW" ~ "202.5",
+      daily_avg_wind_direction == "SWbS" ~ "213.8",
+      daily_avg_wind_direction == "SW" ~ "225",
+      daily_avg_wind_direction == "SWbW" ~ "236.2",
+      daily_avg_wind_direction == "WSW" ~ "247.5",
+      daily_avg_wind_direction == "WbS" ~ "258.8",
+      daily_avg_wind_direction == "W" ~ "270",
+      daily_avg_wind_direction == "WbN" ~ "281.2",
+      daily_avg_wind_direction == "WNW" ~ "292.5",
+      daily_avg_wind_direction == "NWbW" ~ "303.8",
+      daily_avg_wind_direction == "NW" ~ "315",
+      daily_avg_wind_direction == "NWbN" ~ "326.2",
+      daily_avg_wind_direction == "NNW" ~ "337.5",
+      daily_avg_wind_direction == "NbW" ~ "348.8",
+      TRUE ~   daily_avg_wind_direction
+    )
+  )) %>%
+  group_by(location, assessment_number) %>%
+  summarise(wind_direction = circular.averaging(wind_degrees))
+```
+### Join the wind direction and disease spread data 
+
+Left-join the wind and disease data for analysis in the GLMMs.
+
+```{r join-data}
+dat <- left_join(dat, wind, by = c("location", "assessment_number"))
+```
+
+### Combine quadrat direction and location columns 
+
+This is required to determine whether quadrats located in particular direction around the primary infection foci has a significantly faster disease progress rates, which in turn will inform us about directional disease spread by wind direction
+
+```{r combine-location-and-quadrat-direction-columns}
+dat <-
+  unite(dat, quadrat_direc, c(location, direction), remove = FALSE) 
+```
+
+
+### Examine data
+
+```{r examine-data}
+str(dat)
+```
+
+### Convert data to correct classes
+
+```{r class-coversion}
+cols_1 <- c("location", "quadrat", "direction", "quadrat_direc")
+dat[cols_1] <- lapply(dat[cols_1], factor)
+cols_2 <- c("infected_plants", "total_plants")
+dat[cols_2] <- lapply(dat[cols_2], as.integer)
+dat$assessment_number <- as.factor(dat$assessment_number)
+```
+
+
+### Re-check class
+
+```{r class-re-check}
+sapply(dat, class)
+```
+
+### Set seed number for reproducibility purposes
+
+```{r set-seed-number}
+set.seed(42)
+```
+
+## Fit models
+
+### Mod1 (GLMMs for Tosari & Billa Billa)
+
+Use glmms to include different assessment dates/assessment numbers as random effects since they were not independent. That is, disease assessment conducted at a later assessment date was dependent on the amount of disease present in the former assessment date. 
+Density plots show the data is over-dispersed. It should be noted that over-dispersion is due to excess zeros, especially at the beginning, which in turn is attributed to low level of inoculum/rain. That is, excess zeros explains biological phenomena, and we don't want to control for over-dispersion. Rather we are interested in making inferences about over-dispersion as a component of ecological process. The use of quasipoisson family, which fits an extra parameter that allows variance is greater than mean, allows to make such inferences
+
+```{r fit-mod-1}
+mod1 <-
+   glmmTMB(
+      infected_plants ~ total_rain + avg_rh + avg_temp + avg_wind_speed + distance  + location +  (1 |assessment_number) + offset(log(total_plants)),
+      family = nbinom1,
+      data = dat
+   )
+                                                                  
+summary(mod1)
+```
+
+The predictor `quadrat_direc` had to be dropped from the model because the model failed to converge. There is not enough data for the mixed model to include all predictors. 
+
+### Mod2 (Interaction b/w wind speed & direction)
+
+Relative humidity has a negative effect, which doesn't make any biological sense. Try interaction between wind direction and relative humidity 
+
+```{r fit-mod-2, message=FALSE}
+mod2 <-
+   glmmTMB(
+      infected_plants ~ total_rain + avg_rh + wind_direction + avg_rh * wind_direction  + avg_wind_speed + avg_temp + distance + location +
+         (1 |  assessment_number) +  offset(log(total_plants)),
+      family = nbinom1,
+      data = dat
+   )
+summary(mod2)
+```
+
+It can be seen that significant negative effect of relative humidity has been removed with a significant negative interaction between wind speed and wind direction
+
+### Mod3 (Remove wind speed)
+
+Remove wind speed due to its very p-large value
+
+```{r fit-mod-3}
+mod3 <-
+   glmmTMB(
+      infected_plants ~ total_rain + wind_direction + avg_rh * wind_direction +  avg_temp + distance + location + (1 | assessment_number) +  offset(log(total_plants)),
+      family = nbinom1,
+      data = dat
+   )
+
+summary(mod3)
+```
+
+## Compare models
+
+### ANOVA
+```{r compare-models}
+anova(mod1, mod2, mod3)
+```
+
+Mod3 explains significant variations. 
+
+## Model diagnostics
+
+Plot best fit model `mod3` 
+
+```{r tosari-billa-billa}
+simulateResiduals(mod3, plot = T, quantreg=T)
+```
+
+The qq-plot is nearly linear, suggesting that the overall distribution is OK. 
+
+## Marginal effects plots
+
+Remove offset to make prediction for the current number of plants. Retaining them result in very low y-axis values
+
+```{r both-locations, message=FALSE}
+both_mod3 <-
+   glmmTMB(
+      infected_plants ~ total_rain + wind_direction + avg_rh * wind_direction +  avg_temp + distance + location + (1 | assessment_number),
+      family = nbinom1,
+      data = dat
+   )
+summary(both_mod3)
+```
+
+Make plot for single predictors and later combine them - ggeffects package facet plots by color, which are hard to interpret
+
+```{r plot-predictions}
+f1 <- plot(ggpredict(both_mod3 , "total_rain"))
+f2 <- plot(ggpredict(both_mod3 , c("avg_rh", "wind_direction")))
+f3 <- plot(ggpredict(both_mod3 , "avg_temp"))
+f4 <- plot(ggpredict(both_mod3, "distance"))
+f5 <- plot(ggpredict(both_mod3, "wind_direction"))
+fig_5 <- grid.arrange(f1, f2, f3, f4, f5)
+fig_5
+
+ggsave(
+   here("man", "figures/fig_5.png"),
+   plot = fig_5,
+   width = 9,
+   height = 9,
+   units = "in",
+   dpi = 600
+)
+
+fig_5
+
+dev.off()
+```
+
