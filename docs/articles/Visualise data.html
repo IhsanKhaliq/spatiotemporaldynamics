@@ -87,9 +87,9 @@
 
     
     
-<div id="load-libraries" class="section level2">
-<h2 class="hasAnchor">
-<a href="#load-libraries" class="anchor"></a>Load libraries</h2>
+<div id="load-libraries" class="section level3">
+<h3 class="hasAnchor">
+<a href="#load-libraries" class="anchor"></a>Load libraries</h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://readxl.tidyverse.org">"readxl"</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://wilkelab.org/cowplot/">"cowplot"</a></span><span class="op">)</span>
@@ -109,28 +109,46 @@
 
 <span class="fu">extrafont</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/extrafont/man/loadfonts.html">loadfonts</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="import-data" class="section level2">
-<h2 class="hasAnchor">
-<a href="#import-data" class="anchor"></a>Import data</h2>
+<div id="import-data" class="section level3">
+<h3 class="hasAnchor">
+<a href="#import-data" class="anchor"></a>Import data</h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">dat</span> <span class="op">&lt;-</span>
    <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html">read_excel</a></span><span class="op">(</span>
-      <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"SpatioTemporalSpreadData.xlsx"</span>,
+      <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"SpatioTemporalSpreadData_N.xlsx"</span>,
                   package <span class="op">=</span> <span class="st">"spatiotemporaldynamics"</span><span class="op">)</span>,
       sheet <span class="op">=</span> <span class="fl">1</span>
    <span class="op">)</span></code></pre></div>
-<pre><code>## Error: `path` does not exist: ''</code></pre>
 </div>
-<div id="examine-data" class="section level2">
-<h2 class="hasAnchor">
-<a href="#examine-data" class="anchor"></a>Examine data</h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div id="examine-data" class="section level3">
+<h3 class="hasAnchor">
+<a href="#examine-data" class="anchor"></a>Examine data</h3>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></code></pre></div>
-<pre><code>## Error in str(dat): object 'dat' not found</code></pre>
+<pre><code>## tibble [1,800 × 18] (S3: tbl_df/tbl/data.frame)
+##  $ location         : chr [1:1800] "Billa Billa" "Billa Billa" "Billa Billa" "Billa Billa" ...
+##  $ assessment_date  : POSIXct[1:1800], format: "2020-07-02" "2020-07-02" ...
+##  $ assessment_number: num [1:1800] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ plot_number      : num [1:1800] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ distance         : num [1:1800] 0 9 9 9 9 9 9 9 9 6 ...
+##  $ quadrat          : chr [1:1800] "F" "N9" "NE9" "E9" ...
+##  $ direction        : chr [1:1800] "All" "North" "NorthEast" "East" ...
+##  $ infected_plants  : num [1:1800] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ total_plants     : num [1:1800] 36 48 27 57 53 41 39 31 36 54 ...
+##  $ incidence        : num [1:1800] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ min_temp         : num [1:1800] 3.99 3.99 3.99 3.99 3.99 ...
+##  $ max_temp         : num [1:1800] 20 20 20 20 20 ...
+##  $ avg_temp         : num [1:1800] 12 12 12 12 12 ...
+##  $ avg_wind_speed   : num [1:1800] 1.52 1.52 1.52 1.52 1.52 ...
+##  $ total_rain       : num [1:1800] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ min_rh           : num [1:1800] 35.2 35.2 35.2 35.2 35.2 ...
+##  $ max_rh           : num [1:1800] 82.7 82.7 82.7 82.7 82.7 ...
+##  $ avg_rh           : num [1:1800] 58.9 58.9 58.9 58.9 58.9 ...</code></pre>
+</div>
 <div id="convert-variables-to-their-correct-classes" class="section level3">
 <h3 class="hasAnchor">
 <a href="#convert-variables-to-their-correct-classes" class="anchor"></a>Convert variables to their correct classes</h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cols_1</span> <span class="op">&lt;-</span>
    <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
       <span class="st">"location"</span>,
@@ -147,23 +165,27 @@
       <span class="st">"assessment_number"</span>,
       <span class="st">"total_rain"</span>
    <span class="op">)</span>
-<span class="va">dat</span><span class="op">[</span><span class="va">cols_1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span><span class="va">cols_1</span><span class="op">]</span>, <span class="va">factor</span><span class="op">)</span></code></pre></div>
-<pre><code>## Error in lapply(dat[cols_1], factor): object 'dat' not found</code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">cols_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"infected_plants"</span>, <span class="st">"total_plants"</span><span class="op">)</span>
-<span class="va">dat</span><span class="op">[</span><span class="va">cols_2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span><span class="va">cols_2</span><span class="op">]</span>, <span class="va">as.integer</span><span class="op">)</span></code></pre></div>
-<pre><code>## Error in lapply(dat[cols_2], as.integer): object 'dat' not found</code></pre>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dat</span><span class="op">$</span><span class="va">assessment_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">assessment_date</span><span class="op">)</span></code></pre></div>
-<pre><code>## Error in as.Date(dat$assessment_date): object 'dat' not found</code></pre>
+<span class="va">dat</span><span class="op">[</span><span class="va">cols_1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span><span class="va">cols_1</span><span class="op">]</span>, <span class="va">factor</span><span class="op">)</span>
+
+<span class="va">cols_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"infected_plants"</span>, <span class="st">"total_plants"</span><span class="op">)</span>
+<span class="va">dat</span><span class="op">[</span><span class="va">cols_2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span><span class="va">cols_2</span><span class="op">]</span>, <span class="va">as.integer</span><span class="op">)</span>
+<span class="va">dat</span><span class="op">$</span><span class="va">assessment_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">assessment_date</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="re-check-class" class="section level3">
 <h3 class="hasAnchor">
 <a href="#re-check-class" class="anchor"></a>Re-check class</h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">class</span><span class="op">)</span></code></pre></div>
-<pre><code>## Error in lapply(X = X, FUN = FUN, ...): object 'dat' not found</code></pre>
-</div>
+<pre><code>##          location   assessment_date assessment_number       plot_number 
+##          "factor"            "Date"          "factor"          "factor" 
+##          distance           quadrat         direction   infected_plants 
+##          "factor"          "factor"       "character"         "integer" 
+##      total_plants         incidence          min_temp          max_temp 
+##         "integer"         "numeric"          "factor"          "factor" 
+##          avg_temp    avg_wind_speed        total_rain            min_rh 
+##          "factor"          "factor"          "factor"          "factor" 
+##            max_rh            avg_rh 
+##          "factor"          "factor"</code></pre>
 </div>
 <div id="visualise-data-distribution-by-distance-and-location" class="section level2">
 <h2 class="hasAnchor">
@@ -171,27 +193,27 @@
 <div id="density-plot" class="section level3">
 <h3 class="hasAnchor">
 <a href="#density-plot" class="anchor"></a>Density plot</h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">dat</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">infected_plants</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span><span class="op">(</span><span class="va">distance</span> <span class="op">~</span> <span class="va">location</span>, labeller <span class="op">=</span> <span class="va">label_both</span><span class="op">)</span> <span class="op">+</span>
    <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/theme_pubr.html">theme_pubclean</a></span><span class="op">(</span>base_family <span class="op">=</span> <span class="st">"Arial Unicode MS"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Error in ggplot(dat, aes(infected_plants)): object 'dat' not found</code></pre>
+<p><img src="Visualise%20data_files/figure-html/density-plot-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="visualise-data-as-a-whole" class="section level3">
 <h3 class="hasAnchor">
 <a href="#visualise-data-as-a-whole" class="anchor"></a>Visualise data as a whole</h3>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">dat</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">infected_plants</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span><span class="op">(</span>fill<span class="op">=</span> <span class="st">"steelblue"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_rug.html">geom_rug</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Infected plants count"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Error in ggplot(dat, aes(x = infected_plants)): object 'dat' not found</code></pre>
+<p><img src="Visualise%20data_files/figure-html/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
 <div id="line-plot-with-median-and-maxmin-values" class="section level3">
 <h3 class="hasAnchor">
 <a href="#line-plot-with-median-and-maxmin-values" class="anchor"></a>Line plot with median and max/min values</h3>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fig_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>
    data <span class="op">=</span> <span class="va">dat</span>,
    mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">assessment_number</span>, y <span class="op">=</span> <span class="va">infected_plants</span><span class="op">)</span>
@@ -210,29 +232,29 @@
    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span><span class="op">(</span><span class="va">distance</span> <span class="op">~</span> <span class="va">location</span><span class="op">)</span> <span class="op">+</span>
    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Assessment number"</span><span class="op">)</span> <span class="op">+</span>
    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Infected plants"</span><span class="op">)</span> <span class="op">+</span>
-   <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/theme_pubr.html">theme_pubclean</a></span><span class="op">(</span>base_family <span class="op">=</span> <span class="st">"Arial Unicode MS"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Error in ggplot(data = dat, mapping = aes(x = assessment_number, y = infected_plants)): object 'dat' not found</code></pre>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fig_1</span></code></pre></div>
-<pre><code>## Error in eval(expr, envir, enclos): object 'fig_1' not found</code></pre>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+   <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/theme_pubr.html">theme_pubclean</a></span><span class="op">(</span>base_family <span class="op">=</span> <span class="st">"Arial Unicode MS"</span><span class="op">)</span>
+
+<span class="va">fig_1</span></code></pre></div>
+<p><img src="Visualise%20data_files/figure-html/fig-1-1.png" width="672" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span>
    <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"figures/Fig1.png"</span><span class="op">)</span>,
    width <span class="op">=</span> <span class="fl">9</span>,
    height <span class="op">=</span> <span class="fl">9</span>,
    units <span class="op">=</span> <span class="st">"in"</span>,
    dpi <span class="op">=</span> <span class="fl">600</span>
-<span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/grDevices/cairo.html">cairo_ps</a></span><span class="op">(</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"figures/Fig1.eps"</span><span class="op">)</span>,
+<span class="op">)</span></code></pre></div>
+<pre><code>## Error in grDevices::dev.off(): QuartzBitmap_Output - unable to open file '/private/var/folders/n9/6nt8tx1d48x1rh_0td75glzm0000gn/T/Rtmpb5foDJ/man/figures/Fig1.png'</code></pre>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/grDevices/cairo.html">cairo_ps</a></span><span class="op">(</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"figures/Fig1.eps"</span><span class="op">)</span>,
          family <span class="op">=</span> <span class="st">"Arial Unicode MS"</span><span class="op">)</span></code></pre></div>
 <pre><code>## Warning in cairo_ps(here("man", "figures/Fig1.eps"), family = "Arial Unicode
 ## MS"): cairo error 'error while writing to output stream'</code></pre>
 <pre><code>## Error in cairo_ps(here("man", "figures/Fig1.eps"), family = "Arial Unicode MS"): unable to start device 'cairo_ps'</code></pre>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fig_1</span></code></pre></div>
-<pre><code>## Error in eval(expr, envir, enclos): object 'fig_1' not found</code></pre>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<p><img src="Visualise%20data_files/figure-html/fig-1-2.png" width="672" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## null device 
 ##           1</code></pre>
@@ -240,7 +262,7 @@
 <div id="scatter-plot-with-smoothed-fit-lines" class="section level3">
 <h3 class="hasAnchor">
 <a href="#scatter-plot-with-smoothed-fit-lines" class="anchor"></a>Scatter plot with smoothed fit lines</h3>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">dat</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">assessment_date</span>, <span class="va">incidence</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html">geom_smooth</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
@@ -248,100 +270,9 @@
    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Assessment Date"</span><span class="op">)</span> <span class="op">+</span>
    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Disease Incidence"</span><span class="op">)</span> <span class="op">+</span>
    <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/theme_pubr.html">theme_pubclean</a></span><span class="op">(</span>base_family <span class="op">=</span> <span class="st">"Arial Unicode MS"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Error in ggplot(dat, aes(assessment_date, incidence)): object 'dat' not found</code></pre>
+<pre><code>## `geom_smooth()` using method = 'loess' and formula 'y ~ x'</code></pre>
+<p><img src="Visualise%20data_files/figure-html/scatter-plot-1.png" width="672" style="display: block; margin: auto;"></p>
 </div>
-</div>
-<div id="heat-map-of-disease-incidence-in-quadrats" class="section level2">
-<h2 class="hasAnchor">
-<a href="#heat-map-of-disease-incidence-in-quadrats" class="anchor"></a>Heat map of disease incidence in quadrats</h2>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dat</span> <span class="op">&lt;-</span>
-   <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html">read_excel</a></span><span class="op">(</span>
-      <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"SpatioTemporalSpreadData.xlsx"</span>,
-                  package <span class="op">=</span> <span class="st">"spatiotemporaldynamics"</span><span class="op">)</span>,
-      sheet <span class="op">=</span> <span class="fl">1</span>
-   <span class="op">)</span></code></pre></div>
-<pre><code>## Error: `path` does not exist: ''</code></pre>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dat</span> <span class="op">&lt;-</span>
-  <span class="va">dat</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
-    x <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span><span class="op">(</span>
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"North"</span> <span class="op">~</span> <span class="fl">0</span>,
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"East"</span> <span class="op">~</span> <span class="va">distance</span>,
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"South"</span> <span class="op">~</span> <span class="fl">0</span>,
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"West"</span> <span class="op">~</span> <span class="va">distance</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span>,
-      
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"NorthEast"</span> <span class="op">~</span> <span class="va">distance</span>,
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"NorthWest"</span> <span class="op">~</span> <span class="va">distance</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span>,
-      
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"SouthEast"</span> <span class="op">~</span> <span class="va">distance</span>,
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"SouthWest"</span> <span class="op">~</span> <span class="va">distance</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span>,
-      <span class="cn">TRUE</span> <span class="op">~</span> <span class="fl">0</span>
-    <span class="op">)</span>
-  <span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
-    y <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span><span class="op">(</span>
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"North"</span> <span class="op">~</span> <span class="va">distance</span>,
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"East"</span> <span class="op">~</span> <span class="fl">0</span>,
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"South"</span> <span class="op">~</span> <span class="va">distance</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span>,
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"West"</span> <span class="op">~</span> <span class="fl">0</span>,
-      
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"NorthEast"</span> <span class="op">~</span> <span class="va">distance</span>,
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"NorthWest"</span> <span class="op">~</span> <span class="va">distance</span>,
-      
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"SouthEast"</span> <span class="op">~</span> <span class="va">distance</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span>,
-      <span class="va">direction</span> <span class="op">==</span> <span class="st">"SouthWest"</span> <span class="op">~</span> <span class="va">distance</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span>,
-      <span class="cn">TRUE</span> <span class="op">~</span> <span class="fl">0</span>
-    <span class="op">)</span>
-  <span class="op">)</span></code></pre></div>
-<pre><code>## Error in mutate(., x = case_when(direction == "North" ~ 0, direction == : object 'dat' not found</code></pre>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fig_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">dat</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html">geom_tile</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">incidence</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_fill_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"cividis"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="va">location</span> <span class="op">~</span> <span class="va">assessment_number</span>, nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"metres"</span>,
-       y <span class="op">=</span> <span class="st">"metres"</span>,
-       fill <span class="op">=</span> <span class="st">"Incidence (%)"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/theme_pubr.html">theme_pubclean</a></span><span class="op">(</span>base_family <span class="op">=</span> <span class="st">"Arial Unicode MS"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>plot.margin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="st">"lines"</span><span class="op">)</span>,
-        legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html">coord_cartesian</a></span><span class="op">(</span>clip <span class="op">=</span> <span class="st">"off"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Error in ggplot(dat, aes(x = x, y = y)): object 'dat' not found</code></pre>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fig_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://wilkelab.org/cowplot/reference/ggdraw.html">ggdraw</a></span><span class="op">(</span><span class="va">fig_2</span><span class="op">)</span> <span class="op">+</span>
-   <span class="fu"><a href="https://wilkelab.org/cowplot/reference/draw_label.html">draw_label</a></span><span class="op">(</span><span class="st">"North \u2191"</span>,
-              x <span class="op">=</span> <span class="fl">0.55</span>,
-              y <span class="op">=</span> <span class="fl">0.95</span>,
-              fontfamily <span class="op">=</span> <span class="st">"Arial Unicode MS"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Error in ggdraw(fig_2): object 'fig_2' not found</code></pre>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fig_2</span></code></pre></div>
-<pre><code>## Error in eval(expr, envir, enclos): object 'fig_2' not found</code></pre>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span>
-   <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"figures/Fig2.png"</span><span class="op">)</span>,
-   plot <span class="op">=</span> <span class="va">fig_2</span>,
-   width <span class="op">=</span> <span class="fl">9</span>,
-   height <span class="op">=</span> <span class="fl">9</span>,
-   units <span class="op">=</span> <span class="st">"in"</span>,
-   dpi <span class="op">=</span> <span class="fl">600</span>
-<span class="op">)</span></code></pre></div>
-<pre><code>## Error in grid.draw(plot): object 'fig_2' not found</code></pre>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/grDevices/cairo.html">cairo_ps</a></span><span class="op">(</span>
-   <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"figures/Fig2.eps"</span><span class="op">)</span>,
-   family <span class="op">=</span> <span class="st">"Arial Unicode MS"</span>
-<span class="op">)</span></code></pre></div>
-<pre><code>## Error in cairo_ps(here("man", "figures/Fig2.eps"), family = "Arial Unicode MS"): unable to start device 'cairo_ps'</code></pre>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fig_2</span></code></pre></div>
-<pre><code>## Error in eval(expr, envir, enclos): object 'fig_2' not found</code></pre>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## null device 
-##           1</code></pre>
 </div>
 <div id="wind-rose" class="section level2">
 <h2 class="hasAnchor">
@@ -349,7 +280,7 @@
 <div id="import-wind-direction-data-and-covert-wind-direction-from-text-to-degrees" class="section level3">
 <h3 class="hasAnchor">
 <a href="#import-wind-direction-data-and-covert-wind-direction-from-text-to-degrees" class="anchor"></a>Import wind direction data and covert wind direction from text to degrees</h3>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">wind_direc_dat</span> <span class="op">&lt;-</span>
    <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span>
       <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"WindDirectionData.csv"</span>,
@@ -405,7 +336,7 @@
 <div id="join-wind-speed-and-wind-direction-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#join-wind-speed-and-wind-direction-data" class="anchor"></a>Join wind speed and wind direction data</h3>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Import wind speed data</span>
 <span class="va">wind_speed_dat</span> <span class="op">&lt;-</span>
    <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span>
@@ -419,7 +350,7 @@
 ##   location = col_character(),
 ##   wind_speed = col_double()
 ## )</code></pre>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">### Join wind speed and wind direction data</span>
 <span class="va">wind_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">wind_speed_dat</span>, <span class="va">wind_direc_dat</span><span class="op">)</span></code></pre></div>
 <pre><code>## Joining, by = c("date", "location")</code></pre>
@@ -427,7 +358,7 @@
 <div id="plot-windrose-over-chickpea-growing-season" class="section level3">
 <h3 class="hasAnchor">
 <a href="#plot-windrose-over-chickpea-growing-season" class="anchor"></a>Plot windrose over chickpea growing season</h3>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fig_3</span> <span class="op">&lt;-</span>
    <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span>
       <span class="va">wind_dat</span>,
@@ -448,7 +379,7 @@
 
 <span class="va">fig_3</span></code></pre></div>
 <p><img src="Visualise%20data_files/figure-html/fig-3-1.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span>
    <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"figures/Fig3.png"</span><span class="op">)</span>,
    width <span class="op">=</span> <span class="fl">9</span>,
@@ -456,22 +387,28 @@
    units <span class="op">=</span> <span class="st">"in"</span>,
    dpi <span class="op">=</span> <span class="fl">600</span>
 <span class="op">)</span></code></pre></div>
-<pre><code>## Error in grDevices::dev.off(): QuartzBitmap_Output - unable to open file '/private/var/folders/n9/6nt8tx1d48x1rh_0td75glzm0000gn/T/RtmpOOQa2z/man/figures/Fig3.png'</code></pre>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<pre><code>## Error in grDevices::dev.off(): QuartzBitmap_Output - unable to open file '/private/var/folders/n9/6nt8tx1d48x1rh_0td75glzm0000gn/T/Rtmpb5foDJ/man/figures/Fig3.png'</code></pre>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/grDevices/cairo.html">cairo_ps</a></span><span class="op">(</span>
    <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"figures/Fig3.eps"</span><span class="op">)</span>,
    family <span class="op">=</span> <span class="st">"Arial Unicode MS"</span>
 <span class="op">)</span></code></pre></div>
 <pre><code>## Error in cairo_ps(here("man", "figures/Fig3.eps"), family = "Arial Unicode MS"): unable to start device 'cairo_ps'</code></pre>
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fig_3</span></code></pre></div>
 <p><img src="Visualise%20data_files/figure-html/fig-3-2.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## null device 
 ##           1</code></pre>
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">wind_dt</span> <span class="op">&lt;-</span>
+</div>
+</div>
+<div id="plot-windrose-by-assessment-number" class="section level2">
+<h2 class="hasAnchor">
+<a href="#plot-windrose-by-assessment-number" class="anchor"></a>plot windrose by assessment number</h2>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># data munging</span>
+<span class="va">wind_dt</span> <span class="op">&lt;-</span>
    <span class="va">wind_dat</span> <span class="op">%&gt;%</span>
    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
       assessment_number<span class="op">=</span>
@@ -518,11 +455,10 @@
 <span class="va">Billa_Billa_wind_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">wind_dt</span>, <span class="va">location</span> <span class="op">==</span> <span class="st">"Billa Billa"</span><span class="op">)</span>
 <span class="va">Tosari_wind_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">wind_dt</span>, <span class="va">location</span> <span class="op">==</span> <span class="st">"Tosari"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html">droplevels</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-</div>
-<div id="plot-windros-by-assessment-number" class="section level3">
+<div id="plot-windros" class="section level3">
 <h3 class="hasAnchor">
-<a href="#plot-windros-by-assessment-number" class="anchor"></a>Plot windros by assessment number</h3>
-<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
+<a href="#plot-windros" class="anchor"></a>Plot windros</h3>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># create breaks for the windroses </span>
 <span class="va">breaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/classInt/reference/classIntervals.html">classIntervals</a></span><span class="op">(</span><span class="va">wind_dat</span><span class="op">$</span><span class="va">wind_speed</span>, n <span class="op">=</span> <span class="fl">4</span>, style <span class="op">=</span> <span class="st">"jenks"</span><span class="op">)</span>
 
@@ -599,7 +535,7 @@
 
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">fig_3</span><span class="op">)</span></code></pre></div>
 <p><img src="Visualise%20data_files/figure-html/windrose-by-assessment-number-1.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span>
    <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"figures/Fig3.png"</span><span class="op">)</span>,
    width <span class="op">=</span> <span class="fl">9</span>,
@@ -607,17 +543,17 @@
    units <span class="op">=</span> <span class="st">"in"</span>,
    dpi <span class="op">=</span> <span class="fl">600</span>
 <span class="op">)</span></code></pre></div>
-<pre><code>## Error in grDevices::dev.off(): QuartzBitmap_Output - unable to open file '/private/var/folders/n9/6nt8tx1d48x1rh_0td75glzm0000gn/T/RtmpOOQa2z/man/figures/Fig3.png'</code></pre>
-<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
+<pre><code>## Error in grDevices::dev.off(): QuartzBitmap_Output - unable to open file '/private/var/folders/n9/6nt8tx1d48x1rh_0td75glzm0000gn/T/Rtmpb5foDJ/man/figures/Fig3.png'</code></pre>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/grDevices/cairo.html">cairo_ps</a></span><span class="op">(</span>
    <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"figures/Fig3.eps"</span><span class="op">)</span>,
    family <span class="op">=</span> <span class="st">"Arial Unicode MS"</span>
 <span class="op">)</span></code></pre></div>
 <pre><code>## Error in cairo_ps(here("man", "figures/Fig3.eps"), family = "Arial Unicode MS"): unable to start device 'cairo_ps'</code></pre>
-<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fig_3</span></code></pre></div>
 <p><img src="Visualise%20data_files/figure-html/windrose-by-assessment-number-2.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## null device 
 ##           1</code></pre>

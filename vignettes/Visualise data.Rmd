@@ -59,7 +59,7 @@ if (.Platform$OS.type == "windows") {
 }
 ```
 
-## Load libraries 
+### Load libraries 
 
 ```{r libraries, message=FALSE, echo=TRUE, warning=FALSE}
 library("readxl")
@@ -82,18 +82,18 @@ extrafont::loadfonts()
 ```
 
 
-## Import data
+### Import data
 
 ```{r import-data}
 dat <-
    read_excel(
-      system.file("extdata", "SpatioTemporalSpreadData.xlsx",
+      system.file("extdata", "SpatioTemporalSpreadData_N.xlsx",
                   package = "spatiotemporaldynamics"),
       sheet = 1
    )
 ```
 
-## Examine data
+### Examine data
 
 ```{r examine-data}
 str(dat)
@@ -205,88 +205,7 @@ ggplot(dat, aes(assessment_date, incidence)) +
    theme_pubclean(base_family = "Arial Unicode MS")
 ```
 
-## Heat map of disease incidence in quadrats
-
-```{r fig-2, warning=FALSE}
-dat <-
-   read_excel(
-      system.file("extdata", "SpatioTemporalSpreadData.xlsx",
-                  package = "spatiotemporaldynamics"),
-      sheet = 1
-   )
-
-dat <-
-  dat %>%
-  mutate(
-    x = case_when(
-      direction == "North" ~ 0,
-      direction == "East" ~ distance,
-      direction == "South" ~ 0,
-      direction == "West" ~ distance * -1,
-      
-      direction == "NorthEast" ~ distance,
-      direction == "NorthWest" ~ distance * -1,
-      
-      direction == "SouthEast" ~ distance,
-      direction == "SouthWest" ~ distance * -1,
-      TRUE ~ 0
-    )
-  ) %>%
-  mutate(
-    y = case_when(
-      direction == "North" ~ distance,
-      direction == "East" ~ 0,
-      direction == "South" ~ distance * -1,
-      direction == "West" ~ 0,
-      
-      direction == "NorthEast" ~ distance,
-      direction == "NorthWest" ~ distance,
-      
-      direction == "SouthEast" ~ distance * -1,
-      direction == "SouthWest" ~ distance * -1,
-      TRUE ~ 0
-    )
-  )
-
-fig_2 <- ggplot(dat, aes(x = x, y = y)) +
-  geom_tile(aes(fill = incidence)) +
-  scale_fill_viridis_c(option = "cividis") +
-  facet_wrap(location ~ assessment_number, nrow = 3) +
-  labs(x = "metres",
-       y = "metres",
-       fill = "Incidence (%)") +
-  theme_pubclean(base_family = "Arial Unicode MS") +
-  theme(plot.margin = unit(c(3, 0, 0, 0), "lines"),
-        legend.position = "bottom") +
-  coord_cartesian(clip = "off")
-
-fig_2 <- ggdraw(fig_2) +
-   draw_label("North \u2191",
-              x = 0.55,
-              y = 0.95,
-              fontfamily = "Arial Unicode MS")
-fig_2
-
-ggsave(
-   here("man", "figures/Fig2.png"),
-   plot = fig_2,
-   width = 9,
-   height = 9,
-   units = "in",
-   dpi = 600
-)
-
-cairo_ps(
-   here("man", "figures/Fig2.eps"),
-   family = "Arial Unicode MS"
-)
-fig_2
-dev.off()
-```
-
-
 ## Wind rose
-
 
 ### Import wind direction data and covert wind direction from text to degrees
 
@@ -390,8 +309,11 @@ fig_3
 dev.off()
 ```
 
+## plot windrose by assessment number
+
 
 ```{r windrose-over-season}
+# data munging
 wind_dt <-
    wind_dat %>%
    mutate(
@@ -441,7 +363,7 @@ Tosari_wind_dt <- filter(wind_dt, location == "Tosari") %>%
   droplevels()
 ```
 
-### Plot windros by assessment number
+### Plot windros 
 
 ```{r windrose-by-assessment-number, message=FALSE, warning=FALSE}
 # create breaks for the windroses 
