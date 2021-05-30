@@ -65,7 +65,7 @@ summary(wind)
 Wind direction for the Billa Billa site is the character format recorded as the text value of the wind direction.
 We need to convert it to degrees for calculations and then calculate the fortnightly average wind direction for use in the GLMMs.
 
-```{r convert-text-to-degrees}
+```{r convert-text-to-degrees, message=FALSE}
 wind <-
   wind %>%
   mutate(wind_degrees = as.numeric(
@@ -157,7 +157,7 @@ set.seed(42)
 
 ## Fit models
 
-### Mod1 (GLMMs for Tosari & Billa Billa)
+### Mod1 
 
 Use glmms to include different assessment dates/assessment numbers as random effects since they were not independent. That is, disease assessment conducted at a later assessment date was dependent on the amount of disease present in the former assessment date. 
 Density plots show the data is over-dispersed. It should be noted that over-dispersion is due to excess zeros, especially at the beginning, which in turn is attributed to low level of inoculum/rain. That is, excess zeros explains biological phenomena, and we don't want to control for over-dispersion. Rather we are interested in making inferences about over-dispersion as a component of ecological process. The use of quasipoisson family, which fits an extra parameter that allows variance is greater than mean, allows to make such inferences
@@ -177,7 +177,7 @@ The predictor `quadrat_direc` had to be dropped from the model because the model
 
 ### Mod2 (Interaction b/w wind speed & direction)
 
-Relative humidity has a negative effect, which doesn't make any biological sense. Try interaction between wind direction and relative humidity 
+Estimate for Tosari is negative and relative humidity has a negative effect, which doesn't make any biological sense. This means that an important predictor is missing. Try interaction between wind direction and relative humidity 
 
 ```{r fit-mod-2, message=FALSE}
 mod2 <-
@@ -196,7 +196,7 @@ It can be seen that significant negative effect of relative humidity has been re
 
 Remove wind speed due to its very p-large value
 
-```{r fit-mod-3}
+```{r fit-mod-3, message=FALSE}
 mod3 <-
    glmmTMB(
       infected_plants ~ total_rain + wind_direction + avg_rh * wind_direction +  avg_temp + distance + location + (1 | assessment_number) +  offset(log(total_plants)),
@@ -220,11 +220,11 @@ Mod3 explains significant variations.
 
 Plot best fit model `mod3` 
 
-```{r tosari-billa-billa}
+```{r tosari-billa-billa, message=FALSE}
 simulateResiduals(mod3, plot = T, quantreg=T)
 ```
 
-The qq-plot is nearly linear, suggesting that the overall distribution is OK. 
+The qq-plot is nearly linear, suggesting that the overall distribution is OK. KS test is significant because of the large number of observations. 
 
 ## Marginal effects plots
 

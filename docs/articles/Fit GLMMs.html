@@ -78,7 +78,7 @@
       <h1 data-toc-skip>Fit GLMMs to Ascocyta blight spatiotemporal development data</h1>
                         <h4 class="author">Ihsan</h4>
             
-            <h4 class="date">2021-05-17</h4>
+            <h4 class="date">2021-05-30</h4>
       
       
       <div class="hidden name"><code>Fit GLMMs.Rmd</code></div>
@@ -225,27 +225,26 @@
   <span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">location</span>, <span class="va">assessment_number</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">summarise</span><span class="op">(</span>wind_direction <span class="op">=</span> <span class="fu"><a href="../reference/circular.averaging.html">circular.averaging</a></span><span class="op">(</span><span class="va">wind_degrees</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## `summarise()` has grouped output by 'location'. You can override using the `.groups` argument.</code></pre>
 </div>
 <div id="join-the-wind-direction-and-disease-spread-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#join-the-wind-direction-and-disease-spread-data" class="anchor"></a>Join the wind direction and disease spread data</h3>
 <p>Left-join the wind and disease data for analysis in the GLMMs.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu">left_join</span><span class="op">(</span><span class="va">dat</span>, <span class="va">wind</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"location"</span>, <span class="st">"assessment_number"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="combine-quadrat-direction-and-location-columns" class="section level3">
 <h3 class="hasAnchor">
 <a href="#combine-quadrat-direction-and-location-columns" class="anchor"></a>Combine quadrat direction and location columns</h3>
 <p>This is required to determine whether quadrats located in particular direction around the primary infection foci has a significantly faster disease progress rates, which in turn will inform us about directional disease spread by wind direction</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">dat</span> <span class="op">&lt;-</span>
   <span class="fu">unite</span><span class="op">(</span><span class="va">dat</span>, <span class="va">quadrat_direc</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">location</span>, <span class="va">direction</span><span class="op">)</span>, remove <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </code></pre></div>
 </div>
 <div id="examine-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#examine-data" class="anchor"></a>Examine data</h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></code></pre></div>
 <pre><code>## tibble [1,800 × 20] (S3: tbl_df/tbl/data.frame)
 ##  $ quadrat_direc    : chr [1:1800] "Billa Billa_All" "Billa Billa_North" "Billa Billa_NorthEast" "Billa Billa_East" ...
@@ -272,7 +271,7 @@
 <div id="convert-data-to-correct-classes" class="section level3">
 <h3 class="hasAnchor">
 <a href="#convert-data-to-correct-classes" class="anchor"></a>Convert data to correct classes</h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cols_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"location"</span>, <span class="st">"quadrat"</span>, <span class="st">"direction"</span>, <span class="st">"quadrat_direc"</span><span class="op">)</span>
 <span class="va">dat</span><span class="op">[</span><span class="va">cols_1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span><span class="va">cols_1</span><span class="op">]</span>, <span class="va">factor</span><span class="op">)</span>
 <span class="va">cols_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"infected_plants"</span>, <span class="st">"total_plants"</span><span class="op">)</span>
@@ -282,7 +281,7 @@
 <div id="re-check-class" class="section level3">
 <h3 class="hasAnchor">
 <a href="#re-check-class" class="anchor"></a>Re-check class</h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">class</span><span class="op">)</span></code></pre></div>
 <pre><code>## $quadrat_direc
 ## [1] "factor"
@@ -347,17 +346,17 @@
 <div id="set-seed-number-for-reproducibility-purposes" class="section level3">
 <h3 class="hasAnchor">
 <a href="#set-seed-number-for-reproducibility-purposes" class="anchor"></a>Set seed number for reproducibility purposes</h3>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="fit-models" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fit-models" class="anchor"></a>Fit models</h2>
-<div id="mod1-glmms-for-tosari-billa-billa" class="section level3">
+<div id="mod1" class="section level3">
 <h3 class="hasAnchor">
-<a href="#mod1-glmms-for-tosari-billa-billa" class="anchor"></a>Mod1 (GLMMs for Tosari &amp; Billa Billa)</h3>
+<a href="#mod1" class="anchor"></a>Mod1</h3>
 <p>Use glmms to include different assessment dates/assessment numbers as random effects since they were not independent. That is, disease assessment conducted at a later assessment date was dependent on the amount of disease present in the former assessment date. Density plots show the data is over-dispersed. It should be noted that over-dispersion is due to excess zeros, especially at the beginning, which in turn is attributed to low level of inoculum/rain. That is, excess zeros explains biological phenomena, and we don’t want to control for over-dispersion. Rather we are interested in making inferences about over-dispersion as a component of ecological process. The use of quasipoisson family, which fits an extra parameter that allows variance is greater than mean, allows to make such inferences</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mod1</span> <span class="op">&lt;-</span>
    <span class="fu"><a href="https://rdrr.io/pkg/glmmTMB/man/glmmTMB.html">glmmTMB</a></span><span class="op">(</span>
       <span class="va">infected_plants</span> <span class="op">~</span> <span class="va">total_rain</span> <span class="op">+</span> <span class="va">avg_rh</span> <span class="op">+</span> <span class="va">avg_temp</span> <span class="op">+</span> <span class="va">avg_wind_speed</span> <span class="op">+</span> <span class="va">distance</span>  <span class="op">+</span> <span class="va">location</span> <span class="op">+</span>  <span class="op">(</span><span class="fl">1</span> <span class="op">|</span><span class="va">assessment_number</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">total_plants</span><span class="op">)</span><span class="op">)</span>,
@@ -400,8 +399,8 @@
 <div id="mod2-interaction-bw-wind-speed-direction" class="section level3">
 <h3 class="hasAnchor">
 <a href="#mod2-interaction-bw-wind-speed-direction" class="anchor"></a>Mod2 (Interaction b/w wind speed &amp; direction)</h3>
-<p>Relative humidity has a negative effect, which doesn’t make any biological sense. Try interaction between wind direction and relative humidity</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<p>Estimate for Tosari is negative and relative humidity has a negative effect, which doesn’t make any biological sense. This means that an important predictor is missing. Try interaction between wind direction and relative humidity</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mod2</span> <span class="op">&lt;-</span>
    <span class="fu"><a href="https://rdrr.io/pkg/glmmTMB/man/glmmTMB.html">glmmTMB</a></span><span class="op">(</span>
       <span class="va">infected_plants</span> <span class="op">~</span> <span class="va">total_rain</span> <span class="op">+</span> <span class="va">avg_rh</span> <span class="op">+</span> <span class="va">wind_direction</span> <span class="op">+</span> <span class="va">avg_rh</span> <span class="op">*</span> <span class="va">wind_direction</span>  <span class="op">+</span> <span class="va">avg_wind_speed</span> <span class="op">+</span> <span class="va">avg_temp</span> <span class="op">+</span> <span class="va">distance</span> <span class="op">+</span> <span class="va">location</span> <span class="op">+</span>
@@ -417,7 +416,7 @@
 
 ## Warning in (function (start, objective, gradient = NULL, hessian = NULL, : NA/
 ## NaN function evaluation</code></pre>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">)</span></code></pre></div>
 <pre><code>##  Family: nbinom1  ( log )
 ## Formula:          
@@ -457,7 +456,7 @@
 <h3 class="hasAnchor">
 <a href="#mod3-remove-wind-speed" class="anchor"></a>Mod3 (Remove wind speed)</h3>
 <p>Remove wind speed due to its very p-large value</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mod3</span> <span class="op">&lt;-</span>
    <span class="fu"><a href="https://rdrr.io/pkg/glmmTMB/man/glmmTMB.html">glmmTMB</a></span><span class="op">(</span>
       <span class="va">infected_plants</span> <span class="op">~</span> <span class="va">total_rain</span> <span class="op">+</span> <span class="va">wind_direction</span> <span class="op">+</span> <span class="va">avg_rh</span> <span class="op">*</span> <span class="va">wind_direction</span> <span class="op">+</span>  <span class="va">avg_temp</span> <span class="op">+</span> <span class="va">distance</span> <span class="op">+</span> <span class="va">location</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">assessment_number</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://rdrr.io/r/stats/offset.html">offset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">total_plants</span><span class="op">)</span><span class="op">)</span>,
@@ -472,7 +471,7 @@
 
 ## Warning in (function (start, objective, gradient = NULL, hessian = NULL, : NA/
 ## NaN function evaluation</code></pre>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod3</span><span class="op">)</span></code></pre></div>
 <pre><code>##  Family: nbinom1  ( log )
 ## Formula:          
@@ -513,7 +512,7 @@
 <div id="anova" class="section level3">
 <h3 class="hasAnchor">
 <a href="#anova" class="anchor"></a>ANOVA</h3>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">mod1</span>, <span class="va">mod2</span>, <span class="va">mod3</span><span class="op">)</span></code></pre></div>
 <pre><code>## Data: dat
 ## Models:
@@ -538,19 +537,19 @@
 <h2 class="hasAnchor">
 <a href="#model-diagnostics" class="anchor"></a>Model diagnostics</h2>
 <p>Plot best fit model <code>mod3</code></p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/DHARMa/man/simulateResiduals.html">simulateResiduals</a></span><span class="op">(</span><span class="va">mod3</span>, plot <span class="op">=</span> <span class="cn">T</span>, quantreg<span class="op">=</span><span class="cn">T</span><span class="op">)</span></code></pre></div>
 <p><img src="Fit%20GLMMs_files/figure-html/tosari-billa-billa-1.png" width="672" style="display: block; margin: auto;"></p>
 <pre><code>## Object of Class DHARMa with simulated residuals based on 250 simulations with refit = FALSE . See ?DHARMa::simulateResiduals for help. 
 ##  
 ## Scaled residual values: 0.07218306 0.6503369 0.8940689 0.1368317 0.758629 0.2132113 0.7425183 0.1585707 0.1243184 0.2005616 0.1686062 0.8710129 0.07444707 0.364408 0.2818884 0.2019707 0.6495531 0.3774864 0.3617681 0.6932231 ...</code></pre>
-<p>The qq-plot is nearly linear, suggesting that the overall distribution is OK.</p>
+<p>The qq-plot is nearly linear, suggesting that the overall distribution is OK. KS test is significant because of the large number of observations.</p>
 </div>
 <div id="marginal-effects-plots" class="section level2">
 <h2 class="hasAnchor">
 <a href="#marginal-effects-plots" class="anchor"></a>Marginal effects plots</h2>
 <p>Remove offset to make prediction for the current number of plants. Retaining them result in very low y-axis values</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">both_mod3</span> <span class="op">&lt;-</span>
    <span class="fu"><a href="https://rdrr.io/pkg/glmmTMB/man/glmmTMB.html">glmmTMB</a></span><span class="op">(</span>
       <span class="va">infected_plants</span> <span class="op">~</span> <span class="va">total_rain</span> <span class="op">+</span> <span class="va">wind_direction</span> <span class="op">+</span> <span class="va">avg_rh</span> <span class="op">*</span> <span class="va">wind_direction</span> <span class="op">+</span>  <span class="va">avg_temp</span> <span class="op">+</span> <span class="va">distance</span> <span class="op">+</span> <span class="va">location</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">assessment_number</span><span class="op">)</span>,
@@ -565,7 +564,7 @@
 
 ## Warning in (function (start, objective, gradient = NULL, hessian = NULL, : NA/
 ## NaN function evaluation</code></pre>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">both_mod3</span><span class="op">)</span></code></pre></div>
 <pre><code>##  Family: nbinom1  ( log )
 ## Formula:          
@@ -598,7 +597,7 @@
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p>Make plot for single predictors and later combine them - ggeffects package facet plots by color, which are hard to interpret</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">f1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/ggpredict.html">ggpredict</a></span><span class="op">(</span><span class="va">both_mod3</span> , <span class="st">"total_rain"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">f2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/ggpredict.html">ggpredict</a></span><span class="op">(</span><span class="va">both_mod3</span> , <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"avg_rh"</span>, <span class="st">"wind_direction"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="va">f3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/ggpredict.html">ggpredict</a></span><span class="op">(</span><span class="va">both_mod3</span> , <span class="st">"avg_temp"</span><span class="op">)</span><span class="op">)</span>
@@ -606,7 +605,7 @@
 <span class="va">f5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/ggpredict.html">ggpredict</a></span><span class="op">(</span><span class="va">both_mod3</span>, <span class="st">"wind_direction"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">fig_5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html">grid.arrange</a></span><span class="op">(</span><span class="va">f1</span>, <span class="va">f2</span>, <span class="va">f3</span>, <span class="va">f4</span>, <span class="va">f5</span><span class="op">)</span></code></pre></div>
 <p><img src="Fit%20GLMMs_files/figure-html/plot-predictions-1.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fig_5</span></code></pre></div>
 <pre><code>## TableGrob (3 x 2) "arrange": 5 grobs
 ##   z     cells    name           grob
@@ -615,7 +614,7 @@
 ## 3 3 (2-2,1-1) arrange gtable[layout]
 ## 4 4 (2-2,2-2) arrange gtable[layout]
 ## 5 5 (3-3,1-1) arrange gtable[layout]</code></pre>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">ggsave</span><span class="op">(</span>
    <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"figures/fig_5.png"</span><span class="op">)</span>,
    plot <span class="op">=</span> <span class="va">fig_5</span>,
@@ -624,8 +623,8 @@
    units <span class="op">=</span> <span class="st">"in"</span>,
    dpi <span class="op">=</span> <span class="fl">600</span>
 <span class="op">)</span></code></pre></div>
-<pre><code>## Error in grDevices::dev.off(): QuartzBitmap_Output - unable to open file '/private/var/folders/n9/6nt8tx1d48x1rh_0td75glzm0000gn/T/Rtmpb5foDJ/man/figures/fig_5.png'</code></pre>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<pre><code>## Error in grDevices::dev.off(): QuartzBitmap_Output - unable to open file '/private/var/folders/n9/6nt8tx1d48x1rh_0td75glzm0000gn/T/RtmpZXBYDi/man/figures/fig_5.png'</code></pre>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fig_5</span></code></pre></div>
 <pre><code>## TableGrob (3 x 2) "arrange": 5 grobs
 ##   z     cells    name           grob
@@ -634,7 +633,7 @@
 ## 3 3 (2-2,1-1) arrange gtable[layout]
 ## 4 4 (2-2,2-2) arrange gtable[layout]
 ## 5 5 (3-3,1-1) arrange gtable[layout]</code></pre>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## null device 
 ##           1</code></pre>
