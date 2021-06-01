@@ -216,15 +216,6 @@ anova(mod1, mod2, mod3)
 
 Mod3 explains significant variations. 
 
-## Model diagnostics
-
-Plot best fit model `mod3` 
-
-```{r tosari-billa-billa, message=FALSE}
-simulateResiduals(mod3, plot = T, quantreg=T)
-```
-
-The qq-plot is nearly linear, suggesting that the overall distribution is OK. KS test is significant because of the large number of observations. 
 
 ## Marginal effects plots
 
@@ -264,4 +255,38 @@ fig_5
 
 dev.off()
 ```
+
+
+## Model diagnostics
+
+### Check residuals significance 
+
+```{r tosari-billa-billa, message=FALSE}
+simulateResiduals(mod3, plot = T, quantreg=T)
+```
+
+
+### Check overall performance
+
+```{r over-all-performance}
+performance::check_model(mod3, panel = FALSE)
+```
+
+There is moderate collinearity between relative humidity and wind direction, but since both are not directly related, both predictors have been included in the model. Here is the [reference](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1600-0587.2012.07348.x) 
+
+### Check heteroscedasticity 
+
+```{r check-heteroscedasticity}
+performance::check_heteroscedasticity(mod3)
+```
+
+No heteroscedasticity detected
+
+### Check for zero-inflation 
+
+```{r check-zero-inflation }
+testZeroInflation(mod3)
+```
+
+No zero-inflation detected
 

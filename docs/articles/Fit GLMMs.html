@@ -78,7 +78,7 @@
       <h1 data-toc-skip>Fit GLMMs to Ascocyta blight spatiotemporal development data</h1>
                         <h4 class="author">Ihsan</h4>
             
-            <h4 class="date">2021-05-30</h4>
+            <h4 class="date">2021-06-02</h4>
       
       
       <div class="hidden name"><code>Fit GLMMs.Rmd</code></div>
@@ -533,23 +533,11 @@
 <p>Mod3 explains significant variations.</p>
 </div>
 </div>
-<div id="model-diagnostics" class="section level2">
-<h2 class="hasAnchor">
-<a href="#model-diagnostics" class="anchor"></a>Model diagnostics</h2>
-<p>Plot best fit model <code>mod3</code></p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/DHARMa/man/simulateResiduals.html">simulateResiduals</a></span><span class="op">(</span><span class="va">mod3</span>, plot <span class="op">=</span> <span class="cn">T</span>, quantreg<span class="op">=</span><span class="cn">T</span><span class="op">)</span></code></pre></div>
-<p><img src="Fit%20GLMMs_files/figure-html/tosari-billa-billa-1.png" width="672" style="display: block; margin: auto;"></p>
-<pre><code>## Object of Class DHARMa with simulated residuals based on 250 simulations with refit = FALSE . See ?DHARMa::simulateResiduals for help. 
-##  
-## Scaled residual values: 0.07218306 0.6503369 0.8940689 0.1368317 0.758629 0.2132113 0.7425183 0.1585707 0.1243184 0.2005616 0.1686062 0.8710129 0.07444707 0.364408 0.2818884 0.2019707 0.6495531 0.3774864 0.3617681 0.6932231 ...</code></pre>
-<p>The qq-plot is nearly linear, suggesting that the overall distribution is OK. KS test is significant because of the large number of observations.</p>
-</div>
 <div id="marginal-effects-plots" class="section level2">
 <h2 class="hasAnchor">
 <a href="#marginal-effects-plots" class="anchor"></a>Marginal effects plots</h2>
 <p>Remove offset to make prediction for the current number of plants. Retaining them result in very low y-axis values</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">both_mod3</span> <span class="op">&lt;-</span>
    <span class="fu"><a href="https://rdrr.io/pkg/glmmTMB/man/glmmTMB.html">glmmTMB</a></span><span class="op">(</span>
       <span class="va">infected_plants</span> <span class="op">~</span> <span class="va">total_rain</span> <span class="op">+</span> <span class="va">wind_direction</span> <span class="op">+</span> <span class="va">avg_rh</span> <span class="op">*</span> <span class="va">wind_direction</span> <span class="op">+</span>  <span class="va">avg_temp</span> <span class="op">+</span> <span class="va">distance</span> <span class="op">+</span> <span class="va">location</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">assessment_number</span><span class="op">)</span>,
@@ -564,7 +552,7 @@
 
 ## Warning in (function (start, objective, gradient = NULL, hessian = NULL, : NA/
 ## NaN function evaluation</code></pre>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">both_mod3</span><span class="op">)</span></code></pre></div>
 <pre><code>##  Family: nbinom1  ( log )
 ## Formula:          
@@ -597,7 +585,7 @@
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p>Make plot for single predictors and later combine them - ggeffects package facet plots by color, which are hard to interpret</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">f1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/ggpredict.html">ggpredict</a></span><span class="op">(</span><span class="va">both_mod3</span> , <span class="st">"total_rain"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">f2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/ggpredict.html">ggpredict</a></span><span class="op">(</span><span class="va">both_mod3</span> , <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"avg_rh"</span>, <span class="st">"wind_direction"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="va">f3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/ggpredict.html">ggpredict</a></span><span class="op">(</span><span class="va">both_mod3</span> , <span class="st">"avg_temp"</span><span class="op">)</span><span class="op">)</span>
@@ -605,7 +593,7 @@
 <span class="va">f5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://strengejacke.github.io/ggeffects/reference/ggpredict.html">ggpredict</a></span><span class="op">(</span><span class="va">both_mod3</span>, <span class="st">"wind_direction"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">fig_5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html">grid.arrange</a></span><span class="op">(</span><span class="va">f1</span>, <span class="va">f2</span>, <span class="va">f3</span>, <span class="va">f4</span>, <span class="va">f5</span><span class="op">)</span></code></pre></div>
 <p><img src="Fit%20GLMMs_files/figure-html/plot-predictions-1.png" width="672" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fig_5</span></code></pre></div>
 <pre><code>## TableGrob (3 x 2) "arrange": 5 grobs
 ##   z     cells    name           grob
@@ -614,7 +602,7 @@
 ## 3 3 (2-2,1-1) arrange gtable[layout]
 ## 4 4 (2-2,2-2) arrange gtable[layout]
 ## 5 5 (3-3,1-1) arrange gtable[layout]</code></pre>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">ggsave</span><span class="op">(</span>
    <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"man"</span>, <span class="st">"figures/fig_5.png"</span><span class="op">)</span>,
    plot <span class="op">=</span> <span class="va">fig_5</span>,
@@ -623,8 +611,8 @@
    units <span class="op">=</span> <span class="st">"in"</span>,
    dpi <span class="op">=</span> <span class="fl">600</span>
 <span class="op">)</span></code></pre></div>
-<pre><code>## Error in grDevices::dev.off(): QuartzBitmap_Output - unable to open file '/private/var/folders/n9/6nt8tx1d48x1rh_0td75glzm0000gn/T/RtmpZXBYDi/man/figures/fig_5.png'</code></pre>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<pre><code>## Error in grDevices::dev.off(): QuartzBitmap_Output - unable to open file '/private/var/folders/n9/6nt8tx1d48x1rh_0td75glzm0000gn/T/Rtmp0Bggci/man/figures/fig_5.png'</code></pre>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fig_5</span></code></pre></div>
 <pre><code>## TableGrob (3 x 2) "arrange": 5 grobs
 ##   z     cells    name           grob
@@ -633,10 +621,57 @@
 ## 3 3 (2-2,1-1) arrange gtable[layout]
 ## 4 4 (2-2,2-2) arrange gtable[layout]
 ## 5 5 (3-3,1-1) arrange gtable[layout]</code></pre>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html">dev.off</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## null device 
 ##           1</code></pre>
+</div>
+<div id="model-diagnostics" class="section level2">
+<h2 class="hasAnchor">
+<a href="#model-diagnostics" class="anchor"></a>Model diagnostics</h2>
+<div id="check-residuals-significance" class="section level3">
+<h3 class="hasAnchor">
+<a href="#check-residuals-significance" class="anchor"></a>Check residuals significance</h3>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/DHARMa/man/simulateResiduals.html">simulateResiduals</a></span><span class="op">(</span><span class="va">mod3</span>, plot <span class="op">=</span> <span class="cn">T</span>, quantreg<span class="op">=</span><span class="cn">T</span><span class="op">)</span></code></pre></div>
+<p><img src="Fit%20GLMMs_files/figure-html/tosari-billa-billa-1.png" width="672" style="display: block; margin: auto;"></p>
+<pre><code>## Object of Class DHARMa with simulated residuals based on 250 simulations with refit = FALSE . See ?DHARMa::simulateResiduals for help. 
+##  
+## Scaled residual values: 0.07218306 0.6503369 0.8940689 0.1368317 0.758629 0.2132113 0.7425183 0.1585707 0.1243184 0.2005616 0.1686062 0.8710129 0.07444707 0.364408 0.2818884 0.2019707 0.6495531 0.3774864 0.3617681 0.6932231 ...</code></pre>
+</div>
+<div id="check-overall-performance" class="section level3">
+<h3 class="hasAnchor">
+<a href="#check-overall-performance" class="anchor"></a>Check overall performance</h3>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">performance</span><span class="fu">::</span><span class="fu"><a href="https://easystats.github.io/performance/reference/check_model.html">check_model</a></span><span class="op">(</span><span class="va">mod3</span>, panel <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<pre><code>## Loading required namespace: qqplotr</code></pre>
+<pre><code>## For confidence bands, please install `qqplotr`.</code></pre>
+<p><img src="Fit%20GLMMs_files/figure-html/over-all-performance-1.png" width="672" style="display: block; margin: auto;"><img src="Fit%20GLMMs_files/figure-html/over-all-performance-2.png" width="672" style="display: block; margin: auto;"><img src="Fit%20GLMMs_files/figure-html/over-all-performance-3.png" width="672" style="display: block; margin: auto;"><img src="Fit%20GLMMs_files/figure-html/over-all-performance-4.png" width="672" style="display: block; margin: auto;"></p>
+<p>There is moderate collinearity between relative humidity and wind direction, but since both are not directly related, both predictors have been included in the model. Here is the <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/j.1600-0587.2012.07348.x">reference</a></p>
+</div>
+<div id="check-heteroscedasticity" class="section level3">
+<h3 class="hasAnchor">
+<a href="#check-heteroscedasticity" class="anchor"></a>Check heteroscedasticity</h3>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">performance</span><span class="fu">::</span><span class="fu"><a href="https://easystats.github.io/performance/reference/check_heteroscedasticity.html">check_heteroscedasticity</a></span><span class="op">(</span><span class="va">mod3</span><span class="op">)</span></code></pre></div>
+<pre><code>## OK: Error variance appears to be homoscedastic (p = 0.567).</code></pre>
+<p>No heteroscedasticity detected</p>
+</div>
+<div id="check-for-zero-inflation" class="section level3">
+<h3 class="hasAnchor">
+<a href="#check-for-zero-inflation" class="anchor"></a>Check for zero-inflation</h3>
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/DHARMa/man/testZeroInflation.html">testZeroInflation</a></span><span class="op">(</span><span class="va">mod3</span><span class="op">)</span></code></pre></div>
+<p><img src="Fit%20GLMMs_files/figure-html/check-zero-inflation-1.png" width="672" style="display: block; margin: auto;"></p>
+<pre><code>## 
+##  DHARMa zero-inflation test via comparison to expected zeros with
+##  simulation under H0 = fitted model
+## 
+## data:  simulationOutput
+## ratioObsSim = 1.0339, p-value = 0.352
+## alternative hypothesis: two.sided</code></pre>
+<p>No zero-inflation detected</p>
+</div>
 </div>
   </div>
 
