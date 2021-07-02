@@ -242,6 +242,10 @@ f5 <- plot(ggpredict(both_mod3, "wind_direction"))
 fig_5 <- grid.arrange(f1, f2, f3, f4, f5)
 fig_5
 
+```
+
+
+```{r save-fig5, include=FALSE, eval=FALSE}
 ggsave(
    here("man", "figures/fig_5.png"),
    plot = fig_5,
@@ -255,7 +259,6 @@ fig_5
 
 dev.off()
 ```
-
 
 ## Model diagnostics
 
