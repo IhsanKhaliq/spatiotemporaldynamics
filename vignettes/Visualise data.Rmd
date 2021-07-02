@@ -280,8 +280,10 @@ fig_3 <-
    xlab("") +
    theme_pubclean(base_family = "Arial Unicode MS")
 
-fig_3
+```
 
+
+```{r save-fig3, include=FALSE, eval=FALSE}
 ggsave(
    here("man", "figures/Fig3.png"),
    width = 9,
@@ -297,6 +299,7 @@ cairo_ps(
 fig_3
 dev.off()
 ```
+
 
 ## plot windrose by assessment number
 
@@ -428,9 +431,10 @@ fig_3 <-
    fig_3 +
    plot_annotation(tag_levels = "A") &
    theme(plot.tag = element_text())
+```
 
-print(fig_3)
 
+```{r save-fig3, include=FALSE, eval=FALSE}
 ggsave(
    here("man", "figures/Fig3.png"),
    width = 9,
@@ -446,3 +450,4 @@ cairo_ps(
 fig_3
 dev.off()
 ```
+
