@@ -174,9 +174,10 @@ fig_1 <- ggplot(
    xlab("Assessment number") +
    ylab("Infected plants") +
    theme_pubclean(base_family = "Arial Unicode MS")
+```
 
-fig_1
 
+```{r save-fig1, include=FALSE, eval=FALSE}
 ggsave(
    here("man", "figures/Fig1.png"),
    width = 9,
@@ -192,18 +193,6 @@ fig_1
 dev.off()
 ```
 
-
-### Scatter plot with smoothed fit lines
-
-```{r scatter-plot}
-ggplot(dat, aes(assessment_date, incidence)) +
-   geom_point() +
-   geom_smooth() +
-   facet_grid(distance ~ location, labeller = label_both) +
-   xlab("Assessment Date") +
-   ylab("Disease Incidence") +
-   theme_pubclean(base_family = "Arial Unicode MS")
-```
 
 ## Wind rose
 
