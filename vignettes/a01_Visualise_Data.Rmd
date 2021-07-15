@@ -1,34 +1,23 @@
 ---
-title: "Visualise spatiotemporal spread data"
+title: "Visualise data"
 author: "Adam Sparks and Ihsan Khaliq"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+   rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Visualise spatiotemporal spread data}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\usepackage[utf8]{inputenc}
-  %\usepackage{extrafont}
-  %\VignetteDepends{cowplot}
-  %\VignetteDepends{clifro}
-  %\VignetteDepends{ggplot2}
-  %\VignetteDepends{ggpubr}
-  %\VignetteDepends{readxl}
-  %\VignetteDepends{ggpubr}
-  %\VignetteDepends{lubridate}
-  %\VignetteDepends{viridis}
-  %\VignetteDepends{showtext}
-  %\VignetteDepends{here}
-  %\VignetteDepends{patchwork}
-  %\VignetteDepends{classInt}
+  %\VignetteIndexEntry{Visualise data}
+  %\VignetteEngine{knitr::rmarkdown_notangle}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(echo = TRUE, error = TRUE)
 knitr::opts_chunk$set(progress = TRUE, verbose = TRUE)
 knitr::opts_chunk$set(
   echo = TRUE,
-  fig.width = 7,
-  fig.height = 7,
+  fig.width = 9,
+  fig.height = 9,
   fig.align = "center"
 )
 ```
@@ -59,9 +48,11 @@ if (.Platform$OS.type == "windows") {
 }
 ```
 
+
 ### Load libraries 
 
 ```{r libraries, message=FALSE, echo=TRUE, warning=FALSE}
+
 library("readxl")
 library("cowplot")
 library("ggplot2")
@@ -92,6 +83,7 @@ dat <-
       sheet = 1
    )
 ```
+
 
 ### Examine data
 
@@ -131,9 +123,10 @@ dat$assessment_date <- as.Date(dat$assessment_date)
 sapply(dat, class)
 ```
 
-## Visualise data distribution by distance and location
 
-### Density plot
+## Kernel denisty plots
+
+### Kernel density plot to visualise data distribution as by distance & location
 
 ```{r density-plot}
 ggplot(dat, aes(infected_plants)) +
@@ -142,7 +135,8 @@ ggplot(dat, aes(infected_plants)) +
    theme_pubclean(base_family = "Arial Unicode MS")
 ```
 
-### Visualise data as a whole
+
+### Kernel density plot to visualise overall data distribution 
 
 ```{r}
 ggplot(dat, aes(x = infected_plants)) +
@@ -154,43 +148,31 @@ ggplot(dat, aes(x = infected_plants)) +
 
 ### Line plot with median and max/min values
 
-```{r fig-1}
-fig_1 <- ggplot(
-   data = dat,
-   mapping = aes(x = assessment_number, y = infected_plants)
-) +
+```{r line-graph, warning=FALSE}
+fig_1 <- ggplot(data = dat,
+                mapping = aes(x = assessment_number, y = infected_plants)) +
    geom_pointrange(
       stat = "summary",
       fun.min = min,
       fun.max = max,
       fun = median
    ) +
-   stat_summary(
-      fun = median,
-      geom = "line",
-      aes(group = location)
-   ) +
+   stat_summary(fun = median,
+                geom = "line",
+                aes(group = location)) +
    facet_grid(distance ~ location) +
    xlab("Assessment number") +
    ylab("Infected plants") +
    theme_pubclean(base_family = "Arial Unicode MS")
+
+fig_1
 ```
 
 
 ```{r save-fig1, include=FALSE, eval=FALSE}
-ggsave(
-   here("man", "figures/Fig1.png"),
-   width = 9,
-   height = 9,
-   units = "in",
-   dpi = 600
-)
 
-cairo_ps(here("man", "figures/Fig1.eps"),
-         family = "Arial Unicode MS")
-
-fig_1
-dev.off()
+ggsave(here::here("man", "figures/Fig1.png"))
+ggsave(here::here("man", "figures/Fig1.eps"), device = cairo_ps)
 ```
 
 
@@ -199,6 +181,8 @@ dev.off()
 ### Import wind direction data and covert wind direction from text to degrees
 
 ```{r convert-text-to-degrees}
+
+# data munging
 wind_direc_dat <-
    read_csv(
       system.file("extdata", "WindDirectionData.csv",
@@ -241,28 +225,29 @@ wind_direc_dat <-
          TRUE ~ wind_direction
       )
    ) %>%
-   mutate(wind_direction_degrees = as.numeric(wind_direction_degrees)) %>% 
+   mutate(wind_direction_degrees = as.numeric(wind_direction_degrees)) %>%
    mutate(date = dmy(date))
 ```
+
 
 ### Join wind speed and wind direction data 
 
 ```{r join-data}
+
 # Import wind speed data
 wind_speed_dat <-
-   read_csv(
-      system.file("extdata", "WindSpeedData.csv",
-                  package = "spatiotemporaldynamics")) %>% 
+   read_csv(system.file("extdata", "WindSpeedData.csv",
+                        package = "spatiotemporaldynamics")) %>%
    mutate(date = as_date(dmy_hm(date)))
-   
+
 ### Join wind speed and wind direction data
 wind_dat <- left_join(wind_speed_dat, wind_direc_dat)
 ```
 
 ### Plot windrose over chickpea growing season
 
-```{r fig-3,  message=FALSE, warning=FALSE}
-fig_3 <-
+```{r windrose-over-season,  message=FALSE, warning=FALSE}
+fig_2 <-
    with(
       wind_dat,
       windrose(
@@ -274,42 +259,32 @@ fig_3 <-
       )
    )
 
-fig_3 <-
-   fig_3 +
+fig_2 <-
+   fig_2 +
    scale_fill_viridis_d(name = "Wind Speed (m/s)", direction = -1) +
    xlab("") +
    theme_pubclean(base_family = "Arial Unicode MS")
 
+fig_2
 ```
 
 
-```{r save-fig3, include=FALSE, eval=FALSE}
-ggsave(
-   here("man", "figures/Fig3.png"),
-   width = 9,
-   height = 9,
-   units = "in",
-   dpi = 600
-)
+```{r save-fig2, include=FALSE, eval=FALSE}
 
-cairo_ps(
-   here("man", "figures/Fig3.eps"),
-   family = "Arial Unicode MS"
-)
-fig_3
-dev.off()
+ggsave(here::here("man", "figures/Fig2.png"))
+ggsave(here::here("man", "figures/Fig2.eps"), device = cairo_ps)
 ```
 
 
-## plot windrose by assessment number
+## Data munging for ploting windrose by assessment number
 
+```{r windrose-assessment-number}
 
-```{r windrose-over-season}
 # data munging
 wind_dt <-
    wind_dat %>%
    mutate(
-      assessment_number=
+      assessment_number =
          case_when(
             date <= "2020-07-02" & location == "Billa Billa" ~ 1,
             date > "2020-07-02" &
@@ -329,7 +304,8 @@ wind_dt <-
             date > "2020-10-08" &
                date <= "2020-10-22" & location == "Billa Billa" ~ 9,
             date > "2020-10-22" &
-               date <= "2020-10-27" & location == "Billa Billa" ~ 10,
+               date <= "2020-10-27" &
+               location == "Billa Billa" ~ 10,
             date <= "2020-07-30" & location == "Tosari" ~ 1,
             date > "2020-07-30" &
                date <= "2020-08-14" & location == "Tosari" ~ 2,
@@ -351,29 +327,31 @@ wind_dt <-
 
 
 Billa_Billa_wind_dt <- filter(wind_dt, location == "Billa Billa")
-Tosari_wind_dt <- filter(wind_dt, location == "Tosari") %>% 
-  droplevels()
+Tosari_wind_dt <- filter(wind_dt, location == "Tosari") %>%
+   droplevels()
 ```
 
-### Plot windros 
+### Plot windrose 
 
 ```{r windrose-by-assessment-number, message=FALSE, warning=FALSE}
-# create breaks for the windroses 
-breaks <- classIntervals(wind_dat$wind_speed, n = 4, style = "jenks")
+
+# create breaks for the windroses
+breaks <-
+   classIntervals(wind_dat$wind_speed, n = 4, style = "jenks")
 
 # Billa Billa windrose
 fig_3.1 <-
-  with(
-   Billa_Billa_wind_dt,
-    windrose(
-      wind_speed,
-      wind_direction_degrees,
-      facet = assessment_number,
-      n_col = 5,
-      legend_title = "Wind speed (m/s)",
-      speed_cuts = c(0, 1.4, 2.8, 4.2, 5.6, 7)
-    )
-  )
+   with(
+      Billa_Billa_wind_dt,
+      windrose(
+         wind_speed,
+         wind_direction_degrees,
+         facet = assessment_number,
+         n_col = 5,
+         legend_title = "Wind speed (m/s)",
+         speed_cuts = c(0, 1.4, 2.8, 4.2, 5.6, 7)
+      )
+   )
 
 fig_3.1 <-
    fig_3.1 +
@@ -394,17 +372,17 @@ fig_3.1 <-
 
 # Tosari windrose
 fig_3.2 <-
-  with(
-   Tosari_wind_dt,
-    windrose(
-      wind_speed,
-      wind_direction_degrees,
-      facet = assessment_number,
-      n_col = 5,
-      legend_title = "Wind speed (m/s)",
-      speed_cuts = c(0, 1.4, 2.8, 4.2, 5.6, 7)
-    )
-  )
+   with(
+      Tosari_wind_dt,
+      windrose(
+         wind_speed,
+         wind_direction_degrees,
+         facet = assessment_number,
+         n_col = 5,
+         legend_title = "Wind speed (m/s)",
+         speed_cuts = c(0, 1.4, 2.8, 4.2, 5.6, 7)
+      )
+   )
 
 fig_3.2 <-
    fig_3.2 +
@@ -425,29 +403,26 @@ fig_3.2 <-
    )
 
 fig_3 <-
-  fig_3.1 / fig_3.2
+   fig_3.1 / fig_3.2
 
 fig_3 <-
    fig_3 +
    plot_annotation(tag_levels = "A") &
    theme(plot.tag = element_text())
+
+fig_3
 ```
 
 
 ```{r save-fig3, include=FALSE, eval=FALSE}
-ggsave(
-   here("man", "figures/Fig3.png"),
-   width = 9,
-   height = 9,
-   units = "in",
-   dpi = 600
-)
 
-cairo_ps(
-   here("man", "figures/Fig3.eps"),
-   family = "Arial Unicode MS"
-)
-fig_3
-dev.off()
+ggsave(here::here("man", "figures/Fig3.png"))
+ggsave(here::here("man", "figures/Fig3.eps"), device = cairo_ps)
 ```
 
+
+## Colophon
+
+```{r sessioninfo}
+sessionInfo()
+```

@@ -8,7 +8,8 @@
 The goal of of this project is to investigate the spatiotemporal development of Ascochyta blight from primary infection foci, and to investigate the key environmental factors influencing disease progress in space and time. 
 
 A user-friendly website of this research compendium is available here, <https://ihsankhaliq.github.io/spatiotemporaldynamics/>.
-Interested parties may wish to view the data analysis and visualisation pipeline as well as model fitting, these are available under the "Articles" menu item of the [web page](https://ihsankhaliq.github.io/spatiotemporaldynamics/).
+Interested parties may wish to view the code for visualisation pipeline as well as models fitting. These are available under the "Articles" menu item of the [web page](https://ihsankhaliq.github.io/spatiotemporaldynamics/).
+
 
 ## Reproducibility and data availability
 
@@ -17,7 +18,7 @@ This analysis is packaged and fully reproducible. All data from this work are in
 
 ## Citation
 
-As these analysis notes are an integral part of the paper and have their own DOI, it is kindly request that you cite the full research compendium as follows:
+As these analysis notes are an integral part of the paper and have their own DOI, it is kindly requested that you cite the full research compendium as follows:
 > Ihsanul Khaliq. Spatiotemporaldynamics: A research compendium to accompany 'Spatiotemporal dynamics of Ascochyta blight in chickpea`. Available at https://zenodo.org/record/4563709
 
 

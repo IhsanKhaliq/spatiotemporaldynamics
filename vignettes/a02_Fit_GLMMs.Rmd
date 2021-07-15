@@ -1,13 +1,19 @@
 ---
-title: "Fit GLMMs to Ascocyta blight spatiotemporal development data"
-author: "Ihsan"
+title: "Fit GLMMs"
+author: "Ihsan Khaliq"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+   rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Fit GLMMs}
+  %\VignetteEngine{knitr::rmarkdown_notangle}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, error = TRUE)
 knitr::opts_chunk$set(progress = TRUE, verbose = TRUE)
+knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(
   echo = TRUE,
   fig.width = 7,
@@ -20,6 +26,7 @@ knitr::opts_chunk$set(
 ### Load libraries 
 
 ```{r load-libraries, message=FALSE, echo=TRUE, warning=FALSE}
+
 library("readxl")
 library("tidyverse")
 library("lubridate")
@@ -33,9 +40,11 @@ library("here")
 library("ggeffects")
 ```
 
-### Import disease data
+
+### Import disease spread data
 
 ```{r import-diseaes-data}
+
 ### import spatiotemporal spread data
 dat <-
   read_excel(
@@ -47,18 +56,21 @@ dat <-
 summary(dat)
 ```
 
+
 ### Import daily average wind direction data
 
 ```{r import-wind-direction-data}
-wind <- 
+
+wind <-
   read_excel(
-      system.file("extdata", "DailyWindDirectionData.xlsx",
-                  package = "spatiotemporaldynamics"),
-      sheet = 1
-   )
+    system.file("extdata", "DailyWindDirectionData.xlsx",
+                package = "spatiotemporaldynamics"),
+    sheet = 1
+  )
 
 summary(wind)
 ```
+
 
 ### Convert text to degrees
 
@@ -66,6 +78,7 @@ Wind direction for the Billa Billa site is the character format recorded as the 
 We need to convert it to degrees for calculations and then calculate the fortnightly average wind direction for use in the GLMMs.
 
 ```{r convert-text-to-degrees, message=FALSE}
+
 wind <-
   wind %>%
   mutate(wind_degrees = as.numeric(
@@ -108,6 +121,8 @@ wind <-
   group_by(location, assessment_number) %>%
   summarise(wind_direction = circular.averaging(wind_degrees))
 ```
+
+
 ### Join the wind direction and disease spread data 
 
 Left-join the wind and disease data for analysis in the GLMMs.
@@ -115,6 +130,7 @@ Left-join the wind and disease data for analysis in the GLMMs.
 ```{r join-data}
 dat <- left_join(dat, wind, by = c("location", "assessment_number"))
 ```
+
 
 ### Combine quadrat direction and location columns 
 
@@ -132,9 +148,11 @@ dat <-
 str(dat)
 ```
 
-### Convert data to correct classes
+
+### Convert data to correct classes for analyses
 
 ```{r class-coversion}
+
 cols_1 <- c("location", "quadrat", "direction", "quadrat_direc")
 dat[cols_1] <- lapply(dat[cols_1], factor)
 cols_2 <- c("infected_plants", "total_plants")
@@ -149,11 +167,13 @@ dat$assessment_number <- as.factor(dat$assessment_number)
 sapply(dat, class)
 ```
 
+
 ### Set seed number for reproducibility purposes
 
 ```{r set-seed-number}
 set.seed(42)
 ```
+
 
 ## Fit models
 
@@ -162,7 +182,7 @@ set.seed(42)
 Use glmms to include different assessment dates/assessment numbers as random effects since they were not independent. That is, disease assessment conducted at a later assessment date was dependent on the amount of disease present in the former assessment date. 
 Density plots show the data is over-dispersed. It should be noted that over-dispersion is due to excess zeros, especially at the beginning, which in turn is attributed to low level of inoculum/rain. That is, excess zeros explains biological phenomena, and we don't want to control for over-dispersion. Rather we are interested in making inferences about over-dispersion as a component of ecological process. The use of quasipoisson family, which fits an extra parameter that allows variance is greater than mean, allows to make such inferences
 
-```{r fit-mod-1}
+```{r fit-mod-1, message=FALSE}
 mod1 <-
    glmmTMB(
       infected_plants ~ total_rain + avg_rh + avg_temp + avg_wind_speed + distance  + location +  (1 |assessment_number) + offset(log(total_plants)),
@@ -174,6 +194,7 @@ summary(mod1)
 ```
 
 The predictor `quadrat_direc` had to be dropped from the model because the model failed to converge. There is not enough data for the mixed model to include all predictors. 
+
 
 ### Mod2 (Interaction b/w wind speed & direction)
 
@@ -191,6 +212,7 @@ summary(mod2)
 ```
 
 It can be seen that significant negative effect of relative humidity has been removed with a significant negative interaction between wind speed and wind direction
+
 
 ### Mod3 (Remove wind speed)
 
@@ -210,6 +232,7 @@ summary(mod3)
 ## Compare models
 
 ### ANOVA
+
 ```{r compare-models}
 anova(mod1, mod2, mod3)
 ```
@@ -221,7 +244,7 @@ Mod3 explains significant variations.
 
 Remove offset to make prediction for the current number of plants. Retaining them result in very low y-axis values
 
-```{r both-locations, message=FALSE}
+```{r both-locations, warning=FALSE}
 both_mod3 <-
    glmmTMB(
       infected_plants ~ total_rain + wind_direction + avg_rh * wind_direction +  avg_temp + distance + location + (1 | assessment_number),
@@ -231,9 +254,10 @@ both_mod3 <-
 summary(both_mod3)
 ```
 
-Make plot for single predictors and later combine them - ggeffects package facet plots by color, which are hard to interpret
+Make plots for individual predictors and combine them using `gridExtra` package
 
-```{r plot-predictions}
+```{r plot-predictions, warning=FALSE}
+
 f1 <- plot(ggpredict(both_mod3 , "total_rain"))
 f2 <- plot(ggpredict(both_mod3 , c("avg_rh", "wind_direction")))
 f3 <- plot(ggpredict(both_mod3 , "avg_temp"))
@@ -241,18 +265,18 @@ f4 <- plot(ggpredict(both_mod3, "distance"))
 f5 <- plot(ggpredict(both_mod3, "wind_direction"))
 fig_5 <- grid.arrange(f1, f2, f3, f4, f5)
 fig_5
-
 ```
 
 
 ```{r save-fig5, include=FALSE, eval=FALSE}
+
 ggsave(
-   here("man", "figures/fig_5.png"),
-   plot = fig_5,
-   width = 9,
-   height = 9,
-   units = "in",
-   dpi = 600
+  here("man", "figures/fig_5.png"),
+  plot = fig_5,
+  width = 9,
+  height = 9,
+  units = "in",
+  dpi = 600
 )
 
 fig_5
@@ -260,36 +284,45 @@ fig_5
 dev.off()
 ```
 
+
 ## Model diagnostics
 
 ### Check residuals significance 
 
-```{r tosari-billa-billa, message=FALSE}
+```{r tosari-billa-billa, warning=FALSE}
 simulateResiduals(mod3, plot = T, quantreg=T)
 ```
 
+Significant DHARMa tests alert indicate that there COULD be a problem. A likely reason could be the large number of observations (n=1800). DHARMa tests are usually significant for the last number of observations because some deviations from observations are inevitable in a large scale study. It might also be possible that an important predictors is missing. The weather station used in this study didn't record `dew points`. Future studies should aim to include `dew points` as a predictor.  
 
 ### Check overall performance
 
-```{r over-all-performance}
+```{r over-all-performance, warning=FALSE}
 performance::check_model(mod3, panel = FALSE)
 ```
 
 There is moderate collinearity between relative humidity and wind direction, but since both are not directly related, both predictors have been included in the model. Here is the [reference](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1600-0587.2012.07348.x) 
 
+
 ### Check heteroscedasticity 
 
-```{r check-heteroscedasticity}
+```{r check-heteroscedasticity, warning=FALSE}
 performance::check_heteroscedasticity(mod3)
 ```
 
 No heteroscedasticity detected
 
+
 ### Check for zero-inflation 
 
-```{r check-zero-inflation }
+```{r check-zero-inflation, warning=FALSE}
 testZeroInflation(mod3)
 ```
 
 No zero-inflation detected
 
+
+## Colophon
+
+```{r sessioninfo}
+sessionInfo()

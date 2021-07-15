@@ -2,7 +2,7 @@ pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  Fit GLMMs: Fit GLMMs.html
-  Visualise data: Visualise data.html
-last_built: 2021-06-01T22:03Z
+  a01_Visualise_Data: a01_Visualise_Data.html
+  a02_Fit_GLMMs: a02_Fit_GLMMs.html
+last_built: 2021-07-15T01:43Z
 

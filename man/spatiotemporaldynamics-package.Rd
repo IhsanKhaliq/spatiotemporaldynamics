@@ -4,11 +4,11 @@
 \name{spatiotemporaldynamics-package}
 \alias{spatiotemporaldynamics}
 \alias{spatiotemporaldynamics-package}
-\title{spatiotemporaldynamics: Spatiotemporal dynamics of chickpea ascochyta blight spread in the paddock}
+\title{spatiotemporaldynamics: Spatiotemporal dynamics of chickpea ascochyta blight in chickpea}
 \description{
 Research compendium documenting data visualisation and generalised
-            additive model (GAM) fitting for the spatiotemporal dynamics of
-            chickpea Ascochyta blight spread in the paddock from research
+            linear mixed models fitting to determine the spatiotemporal dynamics of
+            chickpea Ascochyta blight in chickpea from primary infection foci in
             studies conducted in Queensland, AU during the 2020 winter 
             cropping season.
 }
